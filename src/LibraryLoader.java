@@ -13,14 +13,11 @@ public class LibraryLoader {
 
     public static void loadNativeLibraries() throws Exception {
         if ((System.getProperty("os.name")).equals("Mac OS X")) {
-            URL loc = Main.class.getProtectionDomain().getCodeSource().getLocation();
-            addLibraryPath(loc.getFile() + "natives/macosx");
+            addLibraryPath("natives/macosx");
         } else if ((System.getProperty("os.name")).equals("Linux")) {
-            URL loc = Main.class.getProtectionDomain().getCodeSource().getLocation();
-            addLibraryPath(loc.getFile() + "natives/linux");
+            addLibraryPath("natives/linux");
         } else {
-            URL loc = Main.class.getProtectionDomain().getCodeSource().getLocation();
-            addLibraryPath(loc.getFile() + "natives/windows");
+            addLibraryPath("natives/windows");
             if (System.getProperty("os.arch").equals("amd64") || System.getProperty("os.arch").equals("x86_64")) {
                 System.loadLibrary("OpenAL64");
             } else {
