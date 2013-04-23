@@ -1,3 +1,5 @@
+package core;
+
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
