@@ -9,6 +9,12 @@ package Screens;
  */
 public class  Screen{
 
+    public String ScreenName;
+
+    public Screen (String name)
+    {
+        this.ScreenName = name;
+    }
     public void Render(){}
 
     public void Update(){}
