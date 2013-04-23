@@ -5,5 +5,9 @@
 *.war
 *.ear
 
+# IDE Files #
+.idea/*
+*.iml
+
 !libs/*
 !natives/*
