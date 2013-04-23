@@ -11,11 +11,27 @@ public class  Screen{
 
     public String ScreenName;
 
-    public Screen (String name)
-    {
+    public Screen(){}
+
+    public Screen (String name){
         this.ScreenName = name;
     }
+
+    //region Update / Render
+
     public void Render(){}
 
     public void Update(){}
+
+    //endregion
+
+    //region Other Methods
+
+    public void SetScreenName(String name)
+    {
+        this.ScreenName = name;
+    }
+
+    //endregion
 }
+
