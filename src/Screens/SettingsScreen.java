@@ -58,21 +58,22 @@ public class SettingsScreen extends MenuScreen{
 
             super.font.drawString(150f, 150f +(i*50), MenuOptions.get(i), current);
         }
+        glDisable(GL11.GL_BLEND);
     }
 
     public void Update(){
-        if(Keyboard.isKeyDown(Keyboard.KEY_RETURN) && selectedIndex == 0) {
-            //Hard coded, change later..
-            delegate.change(0);
-
+        if(Keyboard.isKeyDown(Keyboard.KEY_RETURN) ) {
+            if(selectedIndex == 0 && lastKeyPressed != Keyboard.KEY_RETURN)
+                delegate.change(0);
+            lastKeyPressed = Keyboard.KEY_RETURN;
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+        else if(Keyboard.isKeyDown(Keyboard.KEY_UP)) {
             if(lastKeyPressed != Keyboard.KEY_UP)
-                selectedIndex = ((selectedIndex + 3)-1)%3;
+                selectedIndex = ((selectedIndex + 4)-1)%4;
             lastKeyPressed = Keyboard.KEY_UP;
         }else if(Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
             if(lastKeyPressed != Keyboard.KEY_DOWN)
-                selectedIndex = (selectedIndex+1)%3;
+                selectedIndex = (selectedIndex+1)%4;
             lastKeyPressed = Keyboard.KEY_DOWN;
         } else {
             lastKeyPressed = -1;
