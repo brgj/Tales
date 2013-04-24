@@ -21,7 +21,7 @@ public class Background {
     public Texture texture;
 
     public Background() {
-        texture = TextureHelper.LoadTexture("png", "Images/B.png");
+        texture = TextureHelper.LoadTexture("png", "images/B.png");
 //        try {
 //            texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("images/B.png"));
 //        } catch (Exception e) {

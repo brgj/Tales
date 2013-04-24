@@ -37,7 +37,7 @@ public class MainMenuScreen extends MenuScreen {
         super(d);
         fnt = new Font("Courier New", Font.PLAIN, 40);
         titleFont = new TrueTypeFont(fnt, true);
-        background = TextureHelper.LoadTexture("jpg", "Images/menuScreenBackground.jpg");
+        background = TextureHelper.LoadTexture("jpg", "images/menuScreenBackground.jpg");
     }
 
     public  void Initialize(){
