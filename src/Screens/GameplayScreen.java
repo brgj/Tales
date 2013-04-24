@@ -24,7 +24,7 @@ import static org.lwjgl.opengl.GL11.*;
 public class GameplayScreen extends Screen {
     //Camera for single player
     Camera cam;
-    GLModel object;
+//    GLModel object;
     Background background;
 
     public GameplayScreen(Delegate d) {
@@ -41,12 +41,12 @@ public class GameplayScreen extends Screen {
         glMatrixMode(GL_MODELVIEW);
 
         //Create Background
-        //background = new Background();
+        background = new Background();
 
         //background.createBackground();
         //load the model
-        object = new GLModel("data/chopper/Chopper.obj");
-        object.regenerateNormals();
+//        object = new GLModel("data/chopper/Chopper.obj");
+//        object.regenerateNormals();
 
     }
 
@@ -56,14 +56,16 @@ public class GameplayScreen extends Screen {
         glColor3f(0.0f, 1.0f, 1.0f);
 
         //glRotatef(0.0f, 0.0f, 0.0f, 1.0f);
-        glEnable(GL_DEPTH_TEST);
+
+
+
 
         glBegin(GL_QUADS);
         GL11.glPushMatrix();
         {
             //GL11.glRotatef(rotation, 0, 1, 0);  // turn it
             GL11.glScalef(0.01f,0.01f,0.01f);
-            object.render();
+//            object.render();
         }
 
         glColor3d(1, 0, 0);
@@ -106,7 +108,7 @@ public class GameplayScreen extends Screen {
         glVertex3i(-50, -50, 50);
         glVertex3i(50, -50, 50);
         glVertex3i(50, -50, -50);
-
+background.createBackground();
         glEnd();
         cam.setCameraView();
 

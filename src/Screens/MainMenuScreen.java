@@ -1,6 +1,7 @@
 package Screens;
 
 import helpers.Delegate;
+import helpers.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
@@ -36,7 +37,7 @@ public class MainMenuScreen extends MenuScreen {
         super(d);
         fnt = new Font("Courier New", Font.PLAIN, 40);
         titleFont = new TrueTypeFont(fnt, true);
-        background = loadTexture();
+        background = TextureHelper.LoadTexture("jpg", "Images/menuScreenBackground.jpg");
     }
 
     public  void Initialize(){
@@ -45,18 +46,6 @@ public class MainMenuScreen extends MenuScreen {
         this.MenuOptions.add("Single Player");
         this.MenuOptions.add("Multi Player");
 
-    }
-    public Texture loadTexture()
-    {
-        try {
-            //Todo: Hard coded file Path. Change later
-            return TextureLoader.getTexture("jpg", new FileInputStream(new File("Images/menuScreenBackground.jpg")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        return null;
     }
 
     public void Render(){

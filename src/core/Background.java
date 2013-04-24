@@ -2,6 +2,7 @@ package core;
 
 import org.lwjgl.util.glu.GLU;
 import org.newdawn.slick.opengl.Texture;
+import helpers.*;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
@@ -20,12 +21,13 @@ public class Background {
     public Texture texture;
 
     public Background() {
-        try {
-            texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("images/B.png"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(0);
-        }
+        texture = TextureHelper.LoadTexture("png", "Images/B.png");
+//        try {
+//            texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("images/B.png"));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.exit(0);
+//        }
     }
 
     public void createBackground() {
