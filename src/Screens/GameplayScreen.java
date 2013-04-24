@@ -8,9 +8,10 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
-
+import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
-
+import glapp.*;
+import glmodel.*;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -23,11 +24,12 @@ import static org.lwjgl.opengl.GL11.*;
 public class GameplayScreen extends Screen {
     //Camera for single player
     Camera cam;
+    GLModel object;
     Background background;
 
     public GameplayScreen(Delegate d) {
         super(d);
-        cam = new Camera(new Vector3f(1, 1, -200));
+        cam = new Camera(new Vector3f(0, 0, -1000));
     }
 
     public void Initialize() {
@@ -42,6 +44,9 @@ public class GameplayScreen extends Screen {
         //background = new Background();
 
         //background.createBackground();
+        //load the model
+        object = new GLModel("data/chopper/Chopper.obj");
+        object.regenerateNormals();
 
     }
 
@@ -54,6 +59,12 @@ public class GameplayScreen extends Screen {
         glEnable(GL_DEPTH_TEST);
 
         glBegin(GL_QUADS);
+        GL11.glPushMatrix();
+        {
+            //GL11.glRotatef(rotation, 0, 1, 0);  // turn it
+            GL11.glScalef(0.01f,0.01f,0.01f);
+            object.render();
+        }
 
         glColor3d(1, 0, 0);
         glVertex3i(50, 50, 50);
