@@ -7,6 +7,17 @@ package Screens;
  * Time: 3:10 PM
  * To change this template use File | Settings | File Templates.
  */
-public class GameplayScreen extends Screen
+public class GameplayScreen implements Screen
 {
+    public void Initialize(){
+
+    }
+
+    public void Render(){
+
+    }
+
+    public void Update(){
+
+    }
 }

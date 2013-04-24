@@ -8,7 +8,18 @@ package Screens;
  * Time: 2:43 PM
  * To change this template use File | Settings | File Templates.
  */
-public class MainMenuScreen extends Screen {
+public class MainMenuScreen extends MenuScreen {
 
+    public  void Initialize(){
+
+    }
+
+    public void Render(){
+
+    }
+
+    public void Update(){
+
+    }
 
 }

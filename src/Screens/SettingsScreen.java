@@ -7,5 +7,17 @@ package Screens;
  * Time: 3:30 PM
  * To change this template use File | Settings | File Templates.
  */
-public class SettingsScreen {
+public class SettingsScreen extends MenuScreen{
+
+    public void Initialize(){
+
+    }
+
+    public void Render(){
+
+    }
+
+    public void Update(){
+
+    }
 }

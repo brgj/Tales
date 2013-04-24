@@ -7,31 +7,12 @@ package Screens;
  * Time: 2:36 PM
  * To change this template use File | Settings | File Templates.
  */
-public class  Screen{
+public interface  Screen{
 
-    public String ScreenName;
+    public void Initialize();
 
-    public Screen(){}
+    public void Render();
 
-    public Screen (String name){
-        this.ScreenName = name;
-    }
-
-    //region Update / Render
-
-    public void Render(){}
-
-    public void Update(){}
-
-    //endregion
-
-    //region Other Methods
-
-    public void SetScreenName(String name)
-    {
-        this.ScreenName = name;
-    }
-
-    //endregion
+    public void Update();
 }
 
