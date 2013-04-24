@@ -21,10 +21,12 @@ import static org.lwjgl.opengl.GL11.*;
 public class MainMenuScreen extends MenuScreen {
 
     TrueTypeFont font;
+    private int selectedIndex;
     public MainMenuScreen(Delegate d) {
         super(d);
-        Font awtFont = new Font("Times New Roman", Font.BOLD, 24);
+        Font awtFont = new Font("Verdana", Font.BOLD, 24);
         font = new TrueTypeFont(awtFont, false);
+        selectedIndex = 0;
     }
 
     public  void Initialize(){
@@ -32,6 +34,7 @@ public class MainMenuScreen extends MenuScreen {
         this.MenuOptions.add("Settings");
         this.MenuOptions.add("Single Player");
         this.MenuOptions.add("Multi Player");
+
     }
 
     public void Render(){
@@ -40,7 +43,7 @@ public class MainMenuScreen extends MenuScreen {
 
         glBegin(GL_QUADS);
 
-        glVertex2f(100,100);
+        glVertex2f(100, 100);
         glVertex2f(100+600,100);
         glVertex2f(100+600,100+400);
         glVertex2f(100,100+400);
@@ -48,8 +51,16 @@ public class MainMenuScreen extends MenuScreen {
         glEnd();
 
         GL11.glEnable(GL11.GL_BLEND);
+        Color current;
+        for(int i = 0; i < this.MenuOptions.size(); i++)
+        {
+            if(selectedIndex == i)
+                current = Color.darkGray;
+            else
+                current = Color.gray;
 
-        font.drawString(0.3f, 0.3f, "Test", Color.white);
+            font.drawString(150f, 150f +(i*50), MenuOptions.get(i), current);
+        }
         GL11.glDisable(GL11.GL_BLEND);
     }
 
@@ -58,6 +69,10 @@ public class MainMenuScreen extends MenuScreen {
             //Hard coded, change later..
             delegate.change(2);
         }
+        if(Keyboard.isKeyDown(Keyboard.KEY_DOWN))
+            selectedIndex = (selectedIndex-1)%3;
+        if(Keyboard.isKeyDown(Keyboard.KEY_UP))
+            selectedIndex = (selectedIndex+1)%3;
     }
 
 }
