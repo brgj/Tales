@@ -30,7 +30,10 @@ public class GameplayScreen extends Screen
     }
 
     public void Initialize(){
-
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        GLU.gluPerspective(50.0f, (float) Display.getWidth() / (float) Display.getHeight(), 1f, 5000f);
+        glMatrixMode(GL_MODELVIEW);
     }
 
     public void Render(){

@@ -28,8 +28,6 @@ public class Camera {
         yaw = 0.0f;
         pitch = 0.0f;
         roll = 0.0f;
-        //Set initial camera view
-        setCameraView();
     }
 
     /*
