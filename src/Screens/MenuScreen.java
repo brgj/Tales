@@ -22,9 +22,15 @@ public abstract class MenuScreen extends Screen
 
     public MenuScreen(Delegate d) {
         super(d);
-        Font awtFont = new Font("Verdana", Font.BOLD, 24);
+        Font awtFont = new Font("Verdana", Font.PLAIN, 24);
         font = new TrueTypeFont(awtFont, false);
         selectedIndex = 0;
         lastKeyPressed = -1;
     }
+
+    //TODO: make method here that deals with rendering background image.
+
+    //TODO: make method here that deals with rendering the list of texts
+
+    //TODO: make method here that deals with updating the selected option
 }

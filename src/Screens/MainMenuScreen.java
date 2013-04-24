@@ -34,7 +34,7 @@ public class MainMenuScreen extends MenuScreen {
 
     public MainMenuScreen(Delegate d) {
         super(d);
-        fnt = new Font("Verdana", Font.PLAIN, 40);
+        fnt = new Font("Courier New", Font.PLAIN, 40);
         titleFont = new TrueTypeFont(fnt, true);
         background = loadTexture();
     }
@@ -61,25 +61,26 @@ public class MainMenuScreen extends MenuScreen {
 
     public void Render(){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //glColor3f(1.0f, 1.0f, 0.0f);
+        glColor3f(1.0f, 1.0f, 1.0f);
 
         background.bind();
 
         glBegin(GL_QUADS);
 
-        glTexCoord2f(0,0);glVertex2f(100, 100);
-        glTexCoord2f(1,0);glVertex2f(100 + 600, 100);
-        glTexCoord2f(1,0.5f);glVertex2f(100+600,100+400);
-        glTexCoord2f(0,0.5f);glVertex2f(100, 100 + 400);
+        glTexCoord2f(0,0);glVertex2f(0, 0);
+        glTexCoord2f(0.9f,0);glVertex2f(800, 0);
+        glTexCoord2f(0.9f,0.5f);glVertex2f(800,600);
+        glTexCoord2f(0,0.5f);glVertex2f(0,600);
 
         glEnd();
         GL11.glEnable(GL11.GL_BLEND);
         Color current;
-        titleFont.drawString(150, 40, "Main Menu", Color.white);
+        titleFont.drawString(99, 79, "Main Menu", Color.orange);
+        titleFont.drawString(100, 80, "Main Menu", Color.white);
         for(int i = 0; i < this.MenuOptions.size(); i++)
         {
             if(selectedIndex == i)
-                current = Color.darkGray;
+                current = Color.yellow;
             else
                 current = Color.gray;
 
