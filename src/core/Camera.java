@@ -37,7 +37,6 @@ public class Camera {
     //Changes the cameras view based on the position, yew, and pitch
     public void setCameraView()
     {
-
         glEnable(GL_DEPTH_TEST);
         glLoadIdentity();
         //Sets the cameras X rotation
@@ -56,15 +55,10 @@ public class Camera {
         position.z += units * (float)Math.cos(Math.toRadians(yaw));
     }
 
-    public void rwalk(float units)
-    {
-        position.x += units * (float)Math.sin(Math.toRadians(yaw));
-        position.z -= units * (float)Math.cos(Math.toRadians(yaw));
-    }
-
     public void strafe(float units)
     {
-
+        position.x -= units * (float)Math.sin(Math.toRadians(yaw-90));
+        position.z += units * (float)Math.cos(Math.toRadians(yaw-90));
     }
 
 

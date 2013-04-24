@@ -99,7 +99,31 @@ public class GameplayScreen extends Screen
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_DOWN))
         {
-            cam.rwalk(1);
+            cam.walk(-1);
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_D))
+        {
+            cam.setYaw(1);
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_A))
+        {
+            cam.setYaw(-1);
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_W))
+        {
+            cam.setPitch(1);
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_S))
+        {
+            cam.setPitch(-1);
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_Q))
+        {
+            cam.strafe(1);
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_E))
+        {
+            cam.strafe(-1);
         }
     }
 }
