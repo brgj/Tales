@@ -50,7 +50,7 @@ public class MainMenuScreen extends MenuScreen {
     {
         try {
             //Todo: Hard coded file Path. Change later
-            return TextureLoader.getTexture("jpg", new FileInputStream(new File("C:/Users/hp/Desktop/test.jpg")));
+            return TextureLoader.getTexture("jpg", new FileInputStream(new File("Images/menuScreenBackground.jpg")));
         } catch (FileNotFoundException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (IOException e) {
