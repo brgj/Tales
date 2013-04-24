@@ -37,7 +37,8 @@ public class Camera {
     //Changes the cameras view based on the position, yew, and pitch
     public void setCameraView()
     {
-        glEnable(GL_DEPTH_TEST);
+        glPushAttrib(GL_TRANSFORM_BIT);
+        glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         //Sets the cameras X rotation
         glRotatef(pitch, 1.0f, 0.0f, 0.0f);
@@ -47,6 +48,7 @@ public class Camera {
         glRotatef(roll, 0.0f, 0.0f, 1.0f);
         //Sets the camera to a position
         glTranslatef(position.x, position.y, position.z);
+        glPopAttrib();
     }
 
     public void walk(float units)
@@ -72,6 +74,10 @@ public class Camera {
         this.position = position;
     }
 
+    public void setY(float units) {
+        this.position.y += units;
+    }
+
     public float getYaw() {
         return yaw;
     }
@@ -93,7 +99,7 @@ public class Camera {
     }
 
     public void setRoll(float roll) {
-        this.roll = roll;
+        this.roll += roll;
     }
 
     //endregion

@@ -1,5 +1,6 @@
 package Screens;
 
+import core.Background;
 import core.Camera;
 import helpers.Delegate;
 import org.lwjgl.input.Keyboard;
@@ -19,30 +20,38 @@ import static org.lwjgl.opengl.GL11.*;
  * Time: 3:10 PM
  * To change this template use File | Settings | File Templates.
  */
-public class GameplayScreen extends Screen
-{
+public class GameplayScreen extends Screen {
     //Camera for single player
     Camera cam;
+    Background background;
 
     public GameplayScreen(Delegate d) {
         super(d);
-        cam = new Camera(new Vector3f(0, 0, 0));
+        cam = new Camera(new Vector3f(1, 1, -200));
     }
 
-    public void Initialize(){
+    public void Initialize() {
+
+        //This code resets the camera view and the ModelView to initial view and identity respectively
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         GLU.gluPerspective(50.0f, (float) Display.getWidth() / (float) Display.getHeight(), 1f, 5000f);
         glMatrixMode(GL_MODELVIEW);
+
+        //Create Background
+        //background = new Background();
+
+        //background.createBackground();
+
     }
 
-    public void Render(){
+    public void Render() {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glColor3f(0.0f, 1.0f, 1.0f);
 
-        glRotatef(0.0f, 0.0f, 0.0f, 1.0f);
-        glDisable(GL_DEPTH_TEST);
+        //glRotatef(0.0f, 0.0f, 0.0f, 1.0f);
+        glEnable(GL_DEPTH_TEST);
 
         glBegin(GL_QUADS);
 
@@ -92,38 +101,44 @@ public class GameplayScreen extends Screen
 
     }
 
-    public void Update(){
-        if(Keyboard.isKeyDown(Keyboard.KEY_UP))
-        {
+    public void Update() {
+
+        //Temporary controls for the camera
+        if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
             cam.walk(1);
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_DOWN))
-        {
+        if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
             cam.walk(-1);
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_D))
-        {
+        if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
             cam.setYaw(1);
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_A))
-        {
+        if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
             cam.setYaw(-1);
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_W))
-        {
+        if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
             cam.setPitch(1);
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_S))
-        {
+        if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
             cam.setPitch(-1);
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_Q))
-        {
+        if (Keyboard.isKeyDown(Keyboard.KEY_Q)) {
             cam.strafe(1);
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_E))
-        {
+        if (Keyboard.isKeyDown(Keyboard.KEY_E)) {
             cam.strafe(-1);
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
+            cam.setRoll(1);
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_R)) {
+            cam.setRoll(-1);
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            cam.setY(1);
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+            cam.setY(-1);
         }
     }
 }
