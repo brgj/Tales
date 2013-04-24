@@ -40,7 +40,6 @@ public class ScreenManager {
 
     private void switchScreens(int val) {
         CurrentScreen = screens[val];
-        CurrentScreen.Initialize();
         delegate.change(1);
     }
 
