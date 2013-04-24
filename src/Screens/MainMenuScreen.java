@@ -26,10 +26,7 @@ public class MainMenuScreen extends MenuScreen {
 
     public MainMenuScreen(Delegate d) {
         super(d);
-        Font awtFont = new Font("Verdana", Font.BOLD, 24);
-        font = new TrueTypeFont(awtFont, false);
-        selectedIndex = 0;
-        lastKeyPressed = -1;
+
     }
 
     public  void Initialize(){
@@ -62,7 +59,7 @@ public class MainMenuScreen extends MenuScreen {
             else
                 current = Color.gray;
 
-            font.drawString(150f, 150f +(i*50), MenuOptions.get(i), current);
+            super.font.drawString(150f, 150f +(i*50), MenuOptions.get(i), current);
         }
         GL11.glDisable(GL11.GL_BLEND);
     }
@@ -70,7 +67,7 @@ public class MainMenuScreen extends MenuScreen {
     public void Update(){
         if(Keyboard.isKeyDown(Keyboard.KEY_RETURN)) {
             //Hard coded, change later..
-            delegate.change(2);
+            delegate.change(selectedIndex +1);
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_UP)) {
             if(lastKeyPressed != Keyboard.KEY_UP)
