@@ -1,5 +1,7 @@
 package Screens;
 
+import helpers.Delegate;
+
 /**
  * Created with IntelliJ IDEA.
  * User: hp
@@ -9,10 +11,37 @@ package Screens;
  */
 public class ScreenManager {
     private Screen CurrentScreen;
-    private MainMenuScreen MainMenu;
-    private GameplayScreen GameScreenSingle;
-    private GameplayScreen GameScreenMulti;
-    private SettingsScreen SettingsMenu;
+    private Screen[] screens;
+    Delegate delegate;
+
+    public ScreenManager(Delegate d) {
+        delegate = d;
+        initScreens();
+    }
+
+    private void initScreens() {
+
+        Delegate d = new Delegate() {
+            @Override
+            public void change(int val) {
+                switchScreens(val);
+            }
+        };
+
+
+        screens = new Screen[]{
+                new MainMenuScreen(d),
+                new SettingsScreen(d),
+                new GameplayScreen(d),
+                new GameplayScreen(d)};
+
+        CurrentScreen = screens[0];
+    }
+
+    private void switchScreens(int val) {
+        CurrentScreen = screens[val];
+        delegate.change(1);
+    }
 
     public void Initialize(){
         CurrentScreen.Initialize();

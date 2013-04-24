@@ -1,5 +1,7 @@
 package Screens;
 
+import helpers.Delegate;
+
 /**
  * Created with IntelliJ IDEA.
  * User: hp
@@ -7,12 +9,18 @@ package Screens;
  * Time: 2:36 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface  Screen{
+public abstract class Screen{
 
-    public void Initialize();
+    protected Delegate delegate;
 
-    public void Render();
+    public Screen(Delegate d) {
+        delegate = d;
+    }
 
-    public void Update();
+    abstract public void Initialize();
+
+    abstract public void Render();
+
+    abstract public void Update();
 }
 

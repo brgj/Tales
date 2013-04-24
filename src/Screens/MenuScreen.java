@@ -1,5 +1,7 @@
 package Screens;
 
+import helpers.Delegate;
+
 import java.util.ArrayList;
 
 /**
@@ -9,7 +11,11 @@ import java.util.ArrayList;
  * Time: 3:31 PM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class MenuScreen implements Screen
+public abstract class MenuScreen extends Screen
 {
     ArrayList<String> MenuOptions;
+
+    public MenuScreen(Delegate d) {
+        super(d);
+    }
 }

@@ -1,5 +1,7 @@
 package core;
 
+import Screens.*;
+import helpers.Delegate;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
@@ -13,6 +15,20 @@ import static org.lwjgl.opengl.GL11.*;
  * To change this template use File | Settings | File Templates.
  */
 public class Main {
+    private static boolean isChanged;
+    private static ScreenManager SM;
+
+    public static void init() {
+        Delegate d = new Delegate() {
+            @Override
+            public void change(int val) {
+                isChanged = val != 0;
+            }
+        };
+
+        SM = new ScreenManager(d);
+
+    }
 
     public static void main(String[] args) {
         try {
@@ -38,20 +54,17 @@ public class Main {
         glOrtho(0, 800, 0, 600, -1, 1);
         glMatrixMode(GL_MODELVIEW);
 
+        init();
+
+        isChanged = true;
+
         while (!Display.isCloseRequested()) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            glColor3f(1.0f, 1.0f, 0.0f);
-
-            glBegin(GL_QUADS);
-            {
-                glVertex2f(100, 100);
-                glVertex2f(100 + 200, 100);
-                glVertex2f(100 + 200, 100 + 200);
-                glVertex2f(100, 100 + 200);
+            if(isChanged) {
+                SM.Initialize();
+                isChanged = false;
             }
-            glEnd();
-
+            SM.Update();
+            SM.Render();
             Display.update();
         }
 
