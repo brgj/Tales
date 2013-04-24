@@ -2,8 +2,6 @@ package Screens;
 
 import helpers.Delegate;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
@@ -22,8 +20,11 @@ import static org.lwjgl.opengl.GL11.*;
  */
 public class MainMenuScreen extends MenuScreen {
 
+    TrueTypeFont font;
     public MainMenuScreen(Delegate d) {
         super(d);
+        Font awtFont = new Font("Times New Roman", Font.BOLD, 24);
+        font = new TrueTypeFont(awtFont, false);
     }
 
     public  void Initialize(){
@@ -45,12 +46,6 @@ public class MainMenuScreen extends MenuScreen {
         glVertex2f(100,100+400);
 
         glEnd();
-
-
-
-        Font awtFont = new Font("Times New Roman", Font.BOLD, 24);
-        TrueTypeFont font = new TrueTypeFont(awtFont, false);
-
 
         GL11.glEnable(GL11.GL_BLEND);
 
