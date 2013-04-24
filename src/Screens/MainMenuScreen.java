@@ -6,8 +6,11 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.openal.Audio;
+import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
+import org.newdawn.slick.util.ResourceLoader;
 
 import java.awt.*;
 import java.io.File;
@@ -32,6 +35,7 @@ public class MainMenuScreen extends MenuScreen {
     private int selectedIndex;
     private int lastKeyPressed;
     Texture background;
+    private Audio wavEffect;
 
     public MainMenuScreen(Delegate d) {
         super(d);
@@ -40,15 +44,23 @@ public class MainMenuScreen extends MenuScreen {
         background = TextureHelper.LoadTexture("jpg", "images/menuScreenBackground.jpg");
     }
 
-    public  void Initialize(){
+    public void Initialize() {
         this.MenuOptions = new ArrayList<String>();
         this.MenuOptions.add("Settings");
         this.MenuOptions.add("Single Player");
         this.MenuOptions.add("Multi Player");
 
+        //Start Menu screen music
+        try {
+            wavEffect = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("music/02_TitleScreen.wav"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        wavEffect.playAsMusic(1.0f, 1.0f, true);
+
     }
 
-    public void Render(){
+    public void Render() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glColor3f(1.0f, 1.0f, 1.0f);
 
@@ -56,41 +68,43 @@ public class MainMenuScreen extends MenuScreen {
 
         glBegin(GL_QUADS);
 
-        glTexCoord2f(0,0);glVertex2f(0, 0);
-        glTexCoord2f(0.9f,0);glVertex2f(800, 0);
-        glTexCoord2f(0.9f,0.5f);glVertex2f(800,600);
-        glTexCoord2f(0,0.5f);glVertex2f(0,600);
+        glTexCoord2f(0, 0);
+        glVertex2f(0, 0);
+        glTexCoord2f(0.9f, 0);
+        glVertex2f(800, 0);
+        glTexCoord2f(0.9f, 0.5f);
+        glVertex2f(800, 600);
+        glTexCoord2f(0, 0.5f);
+        glVertex2f(0, 600);
 
         glEnd();
         GL11.glEnable(GL11.GL_BLEND);
         Color current;
         titleFont.drawString(99, 79, "Main Menu", Color.orange);
         titleFont.drawString(100, 80, "Main Menu", Color.white);
-        for(int i = 0; i < this.MenuOptions.size(); i++)
-        {
-            if(selectedIndex == i)
+        for (int i = 0; i < this.MenuOptions.size(); i++) {
+            if (selectedIndex == i)
                 current = Color.yellow;
             else
                 current = Color.gray;
 
-            super.font.drawString(150f, 150f +(i*50), MenuOptions.get(i), current);
+            super.font.drawString(150f, 150f + (i * 50), MenuOptions.get(i), current);
         }
         GL11.glDisable(GL11.GL_BLEND);
     }
 
-    public void Update(){
-        if(Keyboard.isKeyDown(Keyboard.KEY_RETURN)) {
-            if(lastKeyPressed != Keyboard.KEY_RETURN)
-                delegate.change(selectedIndex +1);
+    public void Update() {
+        if (Keyboard.isKeyDown(Keyboard.KEY_RETURN)) {
+            if (lastKeyPressed != Keyboard.KEY_RETURN)
+                delegate.change(selectedIndex + 1);
             lastKeyPressed = Keyboard.KEY_RETURN;
-        }
-        else if(Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-            if(lastKeyPressed != Keyboard.KEY_UP)
-                selectedIndex = ((selectedIndex + 3)-1)%3;
+        } else if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+            if (lastKeyPressed != Keyboard.KEY_UP)
+                selectedIndex = ((selectedIndex + 3) - 1) % 3;
             lastKeyPressed = Keyboard.KEY_UP;
-        }else if(Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-            if(lastKeyPressed != Keyboard.KEY_DOWN)
-                selectedIndex = (selectedIndex+1)%3;
+        } else if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+            if (lastKeyPressed != Keyboard.KEY_DOWN)
+                selectedIndex = (selectedIndex + 1) % 3;
             lastKeyPressed = Keyboard.KEY_DOWN;
         } else {
             lastKeyPressed = -1;

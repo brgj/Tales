@@ -9,9 +9,15 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.opengl.GL11;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import glapp.*;
 import glmodel.*;
+import org.newdawn.slick.openal.Audio;
+import org.newdawn.slick.openal.AudioLoader;
+import org.newdawn.slick.util.ResourceLoader;
+
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -26,6 +32,7 @@ public class GameplayScreen extends Screen {
     Camera cam;
 //    GLModel object;
     Background background;
+    private Audio wavEffect;
 
     public GameplayScreen(Delegate d) {
         super(d);
@@ -39,6 +46,14 @@ public class GameplayScreen extends Screen {
         glLoadIdentity();
         GLU.gluPerspective(50.0f, (float) Display.getWidth() / (float) Display.getHeight(), 1f, 5000f);
         glMatrixMode(GL_MODELVIEW);
+
+        //Start Gamescreen music
+        try {
+            wavEffect = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("music/36-VersusMode.wav"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        wavEffect.playAsMusic(1.0f, 1.0f, true);
 
         //Create Background
         background = new Background();
