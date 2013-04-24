@@ -1,9 +1,13 @@
 package core;
 
-import Screens.*;
+import Screens.ScreenManager;
 import helpers.Delegate;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import text.TTFTest;
+import text.TrueTypeFont;
+
+import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -39,38 +43,40 @@ public class Main {
             System.exit(0);
         }
 
-        try {
-            Display.setDisplayMode(new DisplayMode(800, 600));
-            Display.create();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(0);
-        }
+        new TTFTest();
 
-        Display.setTitle("Project");
-
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(0, 800, 0, 600, -1, 1);
-        glMatrixMode(GL_MODELVIEW);
-
-        init();
-
-        isChanged = true;
-
-        while (!Display.isCloseRequested()) {
-            if(isChanged) {
-                SM.Initialize();
-                isChanged = false;
-            }
-            SM.Update();
-            SM.Render();
-            Display.update();
-        }
-
-        Display.destroy();
-
-        System.exit(0);
+//        try {
+//            Display.setDisplayMode(new DisplayMode(800, 600));
+//            Display.create();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.exit(0);
+//        }
+//
+//        Display.setTitle("Project");
+//
+//        glMatrixMode(GL_PROJECTION);
+//        glLoadIdentity();
+//        glOrtho(0, 800, 0, 600, -1, 1);
+//        glMatrixMode(GL_MODELVIEW);
+//
+//        init();
+//
+//        isChanged = true;
+//
+//        while (!Display.isCloseRequested()) {
+//            if (isChanged) {
+//                SM.Initialize();
+//                isChanged = false;
+//            }
+//            SM.Update();
+//            SM.Render();
+//            Display.update();
+//        }
+//
+//        Display.destroy();
+//
+//        System.exit(0);
     }
 
 }

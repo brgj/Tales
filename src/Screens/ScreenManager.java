@@ -10,9 +10,9 @@ import helpers.Delegate;
  * To change this template use File | Settings | File Templates.
  */
 public class ScreenManager {
+    Delegate delegate;
     private Screen CurrentScreen;
     private Screen[] screens;
-    Delegate delegate;
 
     public ScreenManager(Delegate d) {
         delegate = d;
@@ -43,15 +43,15 @@ public class ScreenManager {
         delegate.change(1);
     }
 
-    public void Initialize(){
+    public void Initialize() {
         CurrentScreen.Initialize();
     }
 
-    public void Render(){
+    public void Render() {
         CurrentScreen.Render();
     }
 
-    public void Update(){
+    public void Update() {
         CurrentScreen.Update();
     }
 
