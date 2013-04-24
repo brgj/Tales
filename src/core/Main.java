@@ -73,6 +73,7 @@ public class Main {
             SM.Update();
             SM.Render();
             Display.update();
+            Display.sync(30);
         }
 
         Display.destroy();

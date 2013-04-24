@@ -22,11 +22,14 @@ public class MainMenuScreen extends MenuScreen {
 
     TrueTypeFont font;
     private int selectedIndex;
+    private int lastKeyPressed;
+
     public MainMenuScreen(Delegate d) {
         super(d);
         Font awtFont = new Font("Verdana", Font.BOLD, 24);
         font = new TrueTypeFont(awtFont, false);
         selectedIndex = 0;
+        lastKeyPressed = -1;
     }
 
     public  void Initialize(){
@@ -69,10 +72,17 @@ public class MainMenuScreen extends MenuScreen {
             //Hard coded, change later..
             delegate.change(2);
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_DOWN))
-            selectedIndex = (selectedIndex-1)%3;
-        if(Keyboard.isKeyDown(Keyboard.KEY_UP))
-            selectedIndex = (selectedIndex+1)%3;
+        if(Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+            if(lastKeyPressed != Keyboard.KEY_UP)
+                selectedIndex = ((selectedIndex + 3)-1)%3;
+            lastKeyPressed = Keyboard.KEY_UP;
+        }else if(Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+            if(lastKeyPressed != Keyboard.KEY_DOWN)
+                selectedIndex = (selectedIndex+1)%3;
+            lastKeyPressed = Keyboard.KEY_DOWN;
+        } else {
+            lastKeyPressed = -1;
+        }
     }
 
 }
