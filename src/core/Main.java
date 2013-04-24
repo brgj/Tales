@@ -1,9 +1,14 @@
 package core;
 
-import Screens.*;
+import Screens.ScreenManager;
 import helpers.Delegate;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.TrueTypeFont;
+
+import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -51,15 +56,17 @@ public class Main {
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho(0, 800, 0, 600, -1, 1);
+        glOrtho(0, 800, 600, 0, -1, 1);
         glMatrixMode(GL_MODELVIEW);
 
         init();
 
         isChanged = true;
 
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
         while (!Display.isCloseRequested()) {
-            if(isChanged) {
+            if (isChanged) {
                 SM.Initialize();
                 isChanged = false;
             }
