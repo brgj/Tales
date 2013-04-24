@@ -70,8 +70,8 @@ public class Main {
                 SM.Initialize();
                 isChanged = false;
             }
-            SM.Update();
             SM.Render();
+            SM.Update();
             Display.update();
             Display.sync(80);
         }
