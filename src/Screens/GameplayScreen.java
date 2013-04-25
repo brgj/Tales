@@ -30,17 +30,31 @@ import static org.lwjgl.opengl.GL11.*;
 public class GameplayScreen extends Screen {
     //Camera for single player
     Camera cam;
-//    GLModel object;
+    GLModel object;
+    public GLImage sky;
+    float lightDirection[]= { -2f, 2f, 2f, 0f };
     Background background;
     private Audio wavEffect;
 
     public GameplayScreen(Delegate d) {
         super(d);
-        cam = new Camera(new Vector3f(0, 0, -1000));
+        cam = new Camera(new Vector3f(0, 0, -10));
     }
 
     public void Initialize() {
 
+        GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+        GL11.glClearColor(.5f,.6f,.9f,1f);
+        // Create a light
+        GLApp.setLight( GL11.GL_LIGHT1,
+                new float[] { 1f,  1f,  1f,  1f },    // diffuse color
+                new float[] { .6f, .6f, .9f, 1f },    // ambient
+                new float[] { 1f,  1f,  1f,  1f },    // specular
+                lightDirection );                     // direction/position
+
+        GLApp.setAmbientLight(new float[] { .6f, .6f, .9f, 1f });
         //This code resets the camera view and the ModelView to initial view and identity respectively
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -56,12 +70,13 @@ public class GameplayScreen extends Screen {
         wavEffect.playAsMusic(1.0f, 1.0f, true);
 
         //Create Background
-        background = new Background();
+        //background = new Background();
 
         //background.createBackground();
+        sky = GLApp.loadImage("images/sky.jpg");
         //load the model
-//        object = new GLModel("data/chopper/Chopper.obj");
-//        object.regenerateNormals();
+        object = new GLModel("data/chopper/chopper.obj");
+       object.regenerateNormals();
 
     }
 
@@ -74,16 +89,10 @@ public class GameplayScreen extends Screen {
 
 
 
-
         glBegin(GL_QUADS);
-        GL11.glPushMatrix();
-        {
-            //GL11.glRotatef(rotation, 0, 1, 0);  // turn it
-            GL11.glScalef(0.01f,0.01f,0.01f);
-//            object.render();
-        }
-
-        glColor3d(1, 0, 0);
+        GLApp.drawImageFullScreen(sky);
+        object.render();
+       /* glColor3d(1, 0, 0);
         glVertex3i(50, 50, 50);
         glVertex3i(50, -50, 50);
         glVertex3i(-50, -50, 50);
@@ -122,8 +131,7 @@ public class GameplayScreen extends Screen {
         glVertex3i(-50, -50, -50);
         glVertex3i(-50, -50, 50);
         glVertex3i(50, -50, 50);
-        glVertex3i(50, -50, -50);
-background.createBackground();
+        glVertex3i(50, -50, -50);*/
         glEnd();
         cam.setCameraView();
 
