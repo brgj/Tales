@@ -5,13 +5,11 @@ import core.Camera;
 import helpers.Delegate;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import glapp.*;
 import glmodel.*;
 import org.newdawn.slick.openal.Audio;
@@ -75,7 +73,7 @@ public class GameplayScreen extends Screen {
         //background.createBackground();
         sky = GLApp.loadImage("images/sky.jpg");
         //load the model
-        object = new GLModel("data/chopper/chopper.obj");
+        object = new GLModel("data/arwing/finalarwing.obj");
        object.regenerateNormals();
 
     }

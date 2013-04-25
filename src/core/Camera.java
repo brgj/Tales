@@ -37,7 +37,6 @@ public class Camera {
     //Changes the cameras view based on the position, yew, and pitch
     public void setCameraView()
     {
-        glPushAttrib(GL_TRANSFORM_BIT);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         //Sets the cameras X rotation
@@ -48,7 +47,6 @@ public class Camera {
         glRotatef(roll, 0.0f, 0.0f, 1.0f);
         //Sets the camera to a position
         glTranslatef(position.x, position.y, position.z);
-        glPopAttrib();
     }
 
     public void walk(float units)
