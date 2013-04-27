@@ -1898,8 +1898,6 @@ public class GLApp {
      *  <P>
      *  Called by run() at the beginning of each loop.
      *
-     *  @see run()
-     *  @see getSecondsPerFrame()
      */
     public static void updateTimer()
     {
@@ -1920,7 +1918,6 @@ public class GLApp {
      * than the secondsSinceLastFrame variable, which holds the exact time elapsed
      * during the last frame (but may jump or lag as processor load varies).
      *
-     * @see updateTimer()
      */
 	public static double getSecondsPerFrame() {
     	return avgSecsPerFrame;
@@ -1929,7 +1926,6 @@ public class GLApp {
 	/**
      * Return the moving average of the frames per second for the last 50 frames.
      *
-     * @see updateTimer()
      */
 	public static double getFramesPerSecond() {
     	return 1d/avgSecsPerFrame;
@@ -1950,7 +1946,6 @@ public class GLApp {
 
     /**
      * Load an image from the given file and return a GLImage object.
-     * @param image filename
      * @return the loaded GLImage
      */
     public static GLImage loadImage(String imgFilename) {
@@ -2097,9 +2092,6 @@ public class GLApp {
      * insure that the image is drawn truly full screen, call resetViewport()
      * before drawImageFullScreen().
      * <P>
-     * @see loadImage(String)
-     * @see setViewport(int,int,int,int)
-     * @see resetViewport()
      */
     public static void drawImageFullScreen(GLImage img) {
     	if (img == null || img.isLoaded() == false) {

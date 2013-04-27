@@ -61,9 +61,6 @@ public class GLImage {
 
     /**
      * Create GLImage from image file bytes (the contents of a jpg, gif or png file). Flip Y axis.
-     * @param pixels
-     * @param w
-     * @param h
      */
     public GLImage(byte[] bytes) {
         BufferedImage img = makeBufferedImage(bytes);
@@ -77,9 +74,6 @@ public class GLImage {
 
     /**
      * Create GLImage from image file bytes (the contents of a jpg, gif or png file).
-     * @param pixels
-     * @param w
-     * @param h
      */
     public GLImage(byte[] bytes, boolean flipYaxis, boolean convertPow2) {
         BufferedImage img = makeBufferedImage(bytes);
@@ -110,9 +104,6 @@ public class GLImage {
     /**
      * Create GLImage from pixels passed in a ByteBuffer.  This is a non-standard approach
      * that may give unpredictable results.
-     * @param pixels
-     * @param w
-     * @param h
      */
     public GLImage(ByteBuffer gl_pixels, int w, int h) {
 		if (gl_pixels != null) {
@@ -144,7 +135,6 @@ public class GLImage {
      * Load an image from the given filename.  If convertToPow2 is true then convert
      * the image to a power of two.  Store pixels as ARGB ints in the pixels array
      * and as RGBA bytes in the pixelBuffer ByteBuffer.  Hold onto image width/height.
-     * @param imgName
      */
     public boolean makeGLImage(BufferedImage tmpi, boolean flipYaxis, boolean convertToPow2) {
         if (tmpi != null) {

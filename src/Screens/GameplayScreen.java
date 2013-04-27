@@ -2,6 +2,7 @@ package Screens;
 
 import core.Background;
 import core.Camera;
+import core.*;
 import helpers.Delegate;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -28,11 +29,16 @@ import static org.lwjgl.opengl.GL11.*;
 public class GameplayScreen extends Screen {
     //Camera for single player
     Camera cam;
-    GLModel object;
+    Model model;
     public GLImage sky;
-    float lightDirection[]= { -2f, 2f, 2f, 0f };
     Background background;
     private Audio wavEffect;
+    float lightDirection[]= { -2f, 2f, 2f, 0f };//direction , position
+    float diffuse[] = { 1f,  1f,  1f,  1f };  // diffuse color
+    float ambient[] = { .6f, .6f, .9f, 1f };    // ambient
+    float specular[]= { 1f,  1f,  1f,  1f };
+    Light l = new Light(lightDirection,diffuse,ambient,specular);
+    float objrot = 0.0f;
 
     public GameplayScreen(Delegate d) {
         super(d);
@@ -41,18 +47,12 @@ public class GameplayScreen extends Screen {
 
     public void Initialize() {
 
-        GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 
         GL11.glClearColor(.5f,.6f,.9f,1f);
         // Create a light
-        GLApp.setLight( GL11.GL_LIGHT1,
-                new float[] { 1f,  1f,  1f,  1f },    // diffuse color
-                new float[] { .6f, .6f, .9f, 1f },    // ambient
-                new float[] { 1f,  1f,  1f,  1f },    // specular
-                lightDirection );                     // direction/position
+        l.setLight();
 
-        GLApp.setAmbientLight(new float[] { .6f, .6f, .9f, 1f });
         //This code resets the camera view and the ModelView to initial view and identity respectively
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -73,23 +73,19 @@ public class GameplayScreen extends Screen {
         //background.createBackground();
         sky = GLApp.loadImage("images/sky.jpg");
         //load the model
-        object = new GLModel("data/arwing/finalarwing.obj");
-       object.regenerateNormals();
+        model = new Model("data/DarkFighter/dark_fighter.obj",0.5f,0.0f,0.0f,0.0f,-10.0f,-10.0f,0.0f)   ;
 
     }
 
     public void Render() {
-
+        objrot += 25f * GLApp.getSecondsPerFrame();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glColor3f(0.0f, 1.0f, 1.0f);
-
-        //glRotatef(0.0f, 0.0f, 0.0f, 1.0f);
-
-
-
         glBegin(GL_QUADS);
         GLApp.drawImageFullScreen(sky);
-        object.render();
+        model.updateRotation(objrot,0.0f,0.0f);
+        model.updatePosition(objrot/10,objrot/10-0.5f,0.0f);
+        model.render();
        /* glColor3d(1, 0, 0);
         glVertex3i(50, 50, 50);
         glVertex3i(50, -50, 50);
@@ -138,6 +134,7 @@ public class GameplayScreen extends Screen {
     public void Update() {
 
         //Temporary controls for the camera
+
         if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
             cam.walk(1);
         }
