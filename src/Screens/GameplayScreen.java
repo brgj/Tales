@@ -30,6 +30,7 @@ public class GameplayScreen extends Screen {
     //Camera for single player
     Camera cam;
     Model model;
+    HUD hud;
     public GLImage sky;
     Background background;
     private Audio wavEffect;
@@ -53,12 +54,6 @@ public class GameplayScreen extends Screen {
         // Create a light
         l.setLight();
 
-        //This code resets the camera view and the ModelView to initial view and identity respectively
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        GLU.gluPerspective(50.0f, (float) Display.getWidth() / (float) Display.getHeight(), 1f, 5000f);
-        glMatrixMode(GL_MODELVIEW);
-
         //Start Gamescreen music
         try {
             wavEffect = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("music/36-VersusMode.wav"));
@@ -73,18 +68,30 @@ public class GameplayScreen extends Screen {
         //background.createBackground();
         sky = GLApp.loadImage("images/sky.jpg");
         //load the model
-        model = new Model("data/DarkFighter/dark_fighter.obj",0.5f,0.0f,0.0f,0.0f,-10.0f,-10.0f,0.0f)   ;
+        model = new Model("data/arwing/finalarwing.obj",0.5f,0.0f,0.0f,0.0f,-10.0f,-10.0f,0.0f);
+
+        //TODO: implement huds for individual players
+        hud = new HUD();
 
     }
 
     public void Render() {
+
+        glViewport(0, 0, Display.getWidth(), Display.getHeight());
+
+        //This code resets the camera view and the ModelView to initial view and identity respectively
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        GLU.gluPerspective(45.0f, (float) Display.getWidth() / (float) Display.getHeight(), 1f, 5000f);
+        glMatrixMode(GL_MODELVIEW);
+
         objrot += 25f * GLApp.getSecondsPerFrame();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glColor3f(0.0f, 1.0f, 1.0f);
         glBegin(GL_QUADS);
-        GLApp.drawImageFullScreen(sky);
-        model.updateRotation(objrot,0.0f,0.0f);
-        model.updatePosition(objrot/10,objrot/10-0.5f,0.0f);
+        //GLApp.drawImageFullScreen(sky);
+        //model.updateRotation(objrot,0.0f,0.0f);
+        //model.updatePosition(objrot/10,objrot/10-0.5f,0.0f);
         model.render();
        /* glColor3d(1, 0, 0);
         glVertex3i(50, 50, 50);
@@ -128,36 +135,40 @@ public class GameplayScreen extends Screen {
         glVertex3i(50, -50, -50);*/
         glEnd();
         cam.setCameraView();
-
+        hud.render();
     }
 
     public void Update() {
 
-        //Temporary controls for the camera
+        //Temporary controls for the camera and target
 
         if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-            cam.walk(1);
+            cam.walk(.1f);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-            cam.walk(-1);
+            cam.walk(-.1f);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
             cam.setYaw(1);
+            hud.setCrosshairX(10);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
             cam.setYaw(-1);
+            hud.setCrosshairX(-10);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
             cam.setPitch(1);
+            hud.setCrosshairY(10);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
             cam.setPitch(-1);
+            hud.setCrosshairY(-10);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_Q)) {
-            cam.strafe(1);
+            cam.strafe(.1f);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_E)) {
-            cam.strafe(-1);
+            cam.strafe(-.1f);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
             cam.setRoll(1);
@@ -166,10 +177,16 @@ public class GameplayScreen extends Screen {
             cam.setRoll(-1);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            cam.setY(1);
+            cam.setY(.1f);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
-            cam.setY(-1);
+            cam.setY(-.1f);
+        }
+        //If not movement keys are pressed
+        if (!Keyboard.isKeyDown(Keyboard.KEY_D) && !Keyboard.isKeyDown(Keyboard.KEY_A) &&
+                !Keyboard.isKeyDown(Keyboard.KEY_W )&& !Keyboard.isKeyDown(Keyboard.KEY_S))
+        {
+            hud.crosshairReset();
         }
     }
 }

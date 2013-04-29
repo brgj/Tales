@@ -52,6 +52,7 @@ public class Main {
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
+        //TODO: Window size may not remain static, might need to adjust in the future
         glOrtho(0, 800, 600, 0, -1, 1);
         glMatrixMode(GL_MODELVIEW);
 
