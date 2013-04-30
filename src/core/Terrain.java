@@ -1,15 +1,14 @@
 package core;
 
-import helpers.*;
+import helpers.EulerCamera;
+import helpers.PNGDecoder;
+import helpers.ShaderLoader;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.util.glu.GLU;
-//import utility.EulerCamera;
-import helpers.ShaderLoader;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -21,6 +20,9 @@ import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
+
+//import utility.EulerCamera;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Tammy
@@ -30,25 +32,34 @@ import static org.lwjgl.opengl.GL20.*;
  */
 public class Terrain {
     private static String heightmapstr = "images/terrain/heightmap.bmp";
-    private static String heightmaplookupstr="images/terrain/heightmap_lookup.png";
+    private static String heightmaplookupstr = "images/terrain/heightmap_lookup.png";
     //private static final String WINDOW_TITLE = "Terrain!";
     //private static final int[] WINDOW_DIMENSIONS = {1200, 650};
     private static final float ASPECT_RATIO = (float) 800 / (float) 600;
     private static final EulerCamera camera = new EulerCamera.Builder().setPosition(-8.5f, 19.2f,
             17.2f).setRotation(21, 95, 0).setAspectRatio(ASPECT_RATIO).setFieldOfView(60).build();
-    /** The shader program that will use the lookup texture and the height-map's vertex data to draw the terrain. */
+    /**
+     * The shader program that will use the lookup texture and the height-map's vertex data to draw the terrain.
+     */
     private static int shaderProgram;
-    /** The texture that will be used to find out which colours correspond to which heights. */
+    /**
+     * The texture that will be used to find out which colours correspond to which heights.
+     */
     private static int lookupTexture;
-    /** The display list that will contain the height-map's vertex data. */
+    /**
+     * The display list that will contain the height-map's vertex data.
+     */
     private static int heightmapDisplayList;
     /**
      * The points of the height. The first dimension represents the z-coordinate. The second dimension represents the
      * x-coordinate. The float value represents the height.
      */
     private static float[][] data;
-    /** Whether the terrain should vary in height or be displayed on a grid. */
+    /**
+     * Whether the terrain should vary in height or be displayed on a grid.
+     */
     private static boolean flatten = false;
+
     public static void render() {
         // Clear the pixels on the screen and clear the contents of the depth buffer (3D contents of the scene)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -89,37 +100,29 @@ public class Terrain {
                         glPolygonMode(GL_FRONT, GL_LINE);
                     }
                 }
-                if(Keyboard.getEventKey() == Keyboard.KEY_1)
-                {
-                    heightmapstr =   "images/terrain/heightmap.bmp";
+                if (Keyboard.getEventKey() == Keyboard.KEY_1) {
+                    heightmapstr = "images/terrain/heightmap.bmp";
+                    Terrain.setUpHeightmap();
+                    Terrain.setUpShaders();
+                    Terrain.setUpMatrices();
+                } else if (Keyboard.getEventKey() == Keyboard.KEY_2) {
+                    heightmapstr = "images/terrain/heightmap2.bmp";
+                    Terrain.setUpHeightmap();
+                    Terrain.setUpShaders();
+                    Terrain.setUpMatrices();
+                } else if (Keyboard.getEventKey() == Keyboard.KEY_3) {
+                    heightmapstr = "images/terrain/heightmap3.jpg";
                     Terrain.setUpHeightmap();
                     Terrain.setUpShaders();
                     Terrain.setUpMatrices();
                 }
-                else if(Keyboard.getEventKey() == Keyboard.KEY_2)
-                {
-                    heightmapstr =   "images/terrain/heightmap2.bmp";
+                if (Keyboard.getEventKey() == Keyboard.KEY_4) {
+                    heightmaplookupstr = "images/terrain/heightmap_lookup.png";
                     Terrain.setUpHeightmap();
                     Terrain.setUpShaders();
                     Terrain.setUpMatrices();
-                }
-                else if(Keyboard.getEventKey() == Keyboard.KEY_3)
-                {
-                    heightmapstr =   "images/terrain/heightmap3.jpg";
-                    Terrain.setUpHeightmap();
-                    Terrain.setUpShaders();
-                    Terrain.setUpMatrices();
-                }
-                 if(Keyboard.getEventKey() == Keyboard.KEY_4)
-                {
-                    heightmaplookupstr="images/terrain/heightmap_lookup.png";
-                    Terrain.setUpHeightmap();
-                    Terrain.setUpShaders();
-                    Terrain.setUpMatrices();
-                }
-                else if(Keyboard.getEventKey() == Keyboard.KEY_5)
-                {
-                    heightmaplookupstr="images/terrain/heightmap_lookup2.png";
+                } else if (Keyboard.getEventKey() == Keyboard.KEY_5) {
+                    heightmaplookupstr = "images/terrain/heightmap_lookup2.png";
                     Terrain.setUpHeightmap();
                     Terrain.setUpShaders();
                     Terrain.setUpMatrices();

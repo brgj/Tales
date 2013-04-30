@@ -16,13 +16,12 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class TextureHelper {
-    public static Texture LoadTexture(String type, String path){
+    public static Texture LoadTexture(String type, String path) {
         try {
             return TextureLoader.getTexture(type, new FileInputStream(new File(path)));
-        }catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         return null;

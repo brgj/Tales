@@ -1,7 +1,7 @@
 package Screens;
 
 import helpers.Delegate;
-import helpers.*;
+import helpers.TextureHelper;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;

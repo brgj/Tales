@@ -36,7 +36,9 @@ package helpers;
  */
 public interface Camera {
 
-    /** Processes mouse input and converts it in to camera movement. */
+    /**
+     * Processes mouse input and converts it in to camera movement.
+     */
     public void processMouse();
 
     /**
@@ -49,8 +51,8 @@ public interface Camera {
     /**
      * Processes mouse input and converts it into camera movement.
      *
-     * @param mouseSpeed the speed (sensitivity) of the mouse, 1.0 should suffice
-     * @param maxLookUp the maximum angle in degrees at which you can look up
+     * @param mouseSpeed  the speed (sensitivity) of the mouse, 1.0 should suffice
+     * @param maxLookUp   the maximum angle in degrees at which you can look up
      * @param maxLookDown the maximum angle in degrees at which you can look down
      */
     public void processMouse(float mouseSpeed, float maxLookUp, float maxLookDown);
@@ -59,7 +61,6 @@ public interface Camera {
      * Processes keyboard input and converts into camera movement.
      *
      * @param delta the elapsed time since the last frame update in milliseconds
-     *
      * @throws IllegalArgumentException if delta is 0 or delta is smaller than 0
      */
     public void processKeyboard(float delta);
@@ -69,7 +70,6 @@ public interface Camera {
      *
      * @param delta the elapsed time since the last frame update in milliseconds
      * @param speed the speed of the movement (normal = 1.0)
-     *
      * @throws IllegalArgumentException if delta is 0 or delta is smaller than 0
      */
     public void processKeyboard(float delta, float speed);
@@ -77,11 +77,10 @@ public interface Camera {
     /**
      * Processes keyboard input and converts into camera movement.
      *
-     * @param delta the elapsed time since the last frame update in milliseconds
+     * @param delta  the elapsed time since the last frame update in milliseconds
      * @param speedX the speed of the movement on the x-axis (normal = 1.0)
      * @param speedY the speed of the movement on the y-axis (normal = 1.0)
      * @param speedZ the speed of the movement on the z-axis (normal = 1.0)
-     *
      * @throws IllegalArgumentException if delta is 0 or delta is smaller than 0
      */
     public void processKeyboard(float delta, float speedX, float speedY, float speedZ);
@@ -111,7 +110,9 @@ public interface Camera {
      */
     public void applyOrthographicMatrix();
 
-    /** Enables or disables OpenGL states that will enhance the camera appearance. */
+    /**
+     * Enables or disables OpenGL states that will enhance the camera appearance.
+     */
     public void applyOptimalStates();
 
     /**
@@ -120,37 +121,53 @@ public interface Camera {
      */
     public void applyPerspectiveMatrix();
 
-    /** Applies the camera translations and rotations to GL_MODELVIEW. */
+    /**
+     * Applies the camera translations and rotations to GL_MODELVIEW.
+     */
     public void applyTranslations();
 
     /**
      * Sets the rotation of the camera.
      *
      * @param pitch the rotation around the x-axis in degrees
-     * @param yaw the rotation around the y-axis in degrees
-     * @param roll the rotation around the z-axis in degrees
+     * @param yaw   the rotation around the y-axis in degrees
+     * @param roll  the rotation around the z-axis in degrees
      */
     public void setRotation(float pitch, float yaw, float roll);
 
-    /** @return the x-coordinate of the camera */
+    /**
+     * @return the x-coordinate of the camera
+     */
     public float x();
 
-    /** @return y the y-coordinate of the camera */
+    /**
+     * @return y the y-coordinate of the camera
+     */
     public float y();
 
-    /** @return the z-coordinate of the camera */
+    /**
+     * @return the z-coordinate of the camera
+     */
     public float z();
 
-    /** @return the pitch of the camera in degrees */
+    /**
+     * @return the pitch of the camera in degrees
+     */
     public float pitch();
 
-    /** @return the yaw of the camera in degrees */
+    /**
+     * @return the yaw of the camera in degrees
+     */
     public float yaw();
 
-    /** @return the roll of the camera in degrees */
+    /**
+     * @return the roll of the camera in degrees
+     */
     public float roll();
 
-    /** @return the fov of the camera in degrees in the y direction */
+    /**
+     * @return the fov of the camera in degrees in the y direction
+     */
     public float fieldOfView();
 
     /**
@@ -166,17 +183,22 @@ public interface Camera {
      * applyOrthographicMatrix.
      *
      * @param aspectRatio the aspect ratio of the camera
-     *
      * @throws IllegalArgumentException if aspectRatio is 0 or less
      */
     public void setAspectRatio(float aspectRatio);
 
-    /** @return the aspect ratio of the camera */
+    /**
+     * @return the aspect ratio of the camera
+     */
     public float aspectRatio();
 
-    /** @return the distance from the camera to the near clipping pane */
+    /**
+     * @return the distance from the camera to the near clipping pane
+     */
     public float nearClippingPane();
 
-    /** @return the distance from the camera to the far clipping pane */
+    /**
+     * @return the distance from the camera to the far clipping pane
+     */
     public float farClippingPane();
 }

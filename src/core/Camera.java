@@ -1,9 +1,7 @@
 package core;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -25,7 +23,6 @@ public class Camera {
     private float pitch;
     //Rotation around Z axis
     private float roll;
-
     private boolean upsidedown = false;
 
     //Constructor that takes a vector
@@ -51,7 +48,6 @@ public class Camera {
             int dX = (midX - Mouse.getX());
             int dY = (midY - Mouse.getY());
 
-
             pitch += mouseSpeed * dY;
             pitch %= 360;
 
@@ -63,7 +59,7 @@ public class Camera {
             hud.setCrosshairX(-dX / 5);
             hud.setCrosshairY(dY / 5);
 
-            if(dX < 5 && dY < 5)
+            if (Math.abs(dX) < 5 && Math.abs(dY) < 5)
                 hud.crosshairReset();
 
             Mouse.setCursorPosition(midX, midY);
@@ -86,7 +82,7 @@ public class Camera {
     }
 
     public void move(float units, int dir) {
-        if(dir % 180 == 0 && upsidedown) {
+        if (dir % 180 == 0 && upsidedown) {
             units = -units;
         }
         double rad = Math.toRadians(yaw + dir);

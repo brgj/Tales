@@ -24,17 +24,15 @@ public class HUD {
     //Stores the position of the crosshair
     public Vector2f crosshairPos;
 
-    public HUD()
-    {
+    public HUD() {
         crosshairPos = new Vector2f(0, 0);
     }
 
-    public void render()
-    {
-        glMatrixMode (GL_PROJECTION);
+    public void render() {
+        glMatrixMode(GL_PROJECTION);
         //Saves any perspective that may already be in place (camera)
         glPushMatrix();
-        glLoadIdentity ();
+        glLoadIdentity();
         //Setup 2d display
         gluOrtho2D(0, Display.getWidth(), Display.getHeight(), 0);
 
@@ -58,14 +56,13 @@ public class HUD {
         glEnable(GL_DEPTH_TEST);
 
         //Reload matrix and view transformations
-        glMatrixMode (GL_PROJECTION);
+        glMatrixMode(GL_PROJECTION);
         glPopMatrix();
         glMatrixMode(GL_MODELVIEW);
         glPopMatrix();
     }
 
-    public void drawCrossHair()
-    {
+    public void drawCrossHair() {
         //Sets the line width of the crosshair
         glLineWidth(5);
         glColor3f(0.0f, 1.0f, 0.0f);
@@ -95,40 +92,30 @@ public class HUD {
     }
 
     //Resets the crosshair gradually to the center.
-    public void crosshairReset()
-    {
+    public void crosshairReset() {
         float slope;
-        if(crosshairPos.y == 0 || crosshairPos.x == 0)
-        {
+        if (crosshairPos.y == 0 || crosshairPos.x == 0) {
             slope = 1;
-        }
-        else
-        {
+        } else {
             slope = Math.abs(crosshairPos.y / crosshairPos.x);
         }
-        if(crosshairPos.x != 0)
-        {
+        if (crosshairPos.x != 0) {
             crosshairPos.x = (crosshairPos.x >= 1) ? crosshairPos.x - 5 : crosshairPos.x + 5;
         }
-        if(crosshairPos.y != 0)
-        {
+        if (crosshairPos.y != 0) {
             crosshairPos.y = (crosshairPos.y >= 1) ? crosshairPos.y - 5 * slope : crosshairPos.y + 5 * slope;
         }
     }
 
     //Sets the crosshair value, cannot go outside screen range
-    public void setCrosshairX(int i)
-    {
-        if(crosshairPos.x <= Display.getWidth() / 2 - TARGETX - BUFFER && crosshairPos.x >= -Display.getWidth() / 2 + TARGETX + BUFFER)
-        {
+    public void setCrosshairX(int i) {
+        if (crosshairPos.x <= Display.getWidth() / 2 - TARGETX - BUFFER && crosshairPos.x >= -Display.getWidth() / 2 + TARGETX + BUFFER) {
             crosshairPos.x += i * 5;
         }
     }
 
-    public void setCrosshairY(int i)
-    {
-        if(crosshairPos.y <= Display.getHeight() / 2 - TARGETY - BUFFER && crosshairPos.y >= -Display.getHeight() / 2 + TARGETY + BUFFER)
-        {
+    public void setCrosshairY(int i) {
+        if (crosshairPos.y <= Display.getHeight() / 2 - TARGETY - BUFFER && crosshairPos.y >= -Display.getHeight() / 2 + TARGETY + BUFFER) {
             crosshairPos.y += i * 5;
         }
     }

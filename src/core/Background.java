@@ -1,8 +1,8 @@
 package core;
 
-import org.lwjgl.opengl.GL12;
+import helpers.TextureHelper;
 import org.newdawn.slick.opengl.Texture;
-import helpers.*;
+
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -37,7 +37,6 @@ public class Background {
         glPushMatrix();
 
 
-        glPushAttrib(GL_TEXTURE_BIT);
         glPushAttrib(GL_ENABLE_BIT);
         glDisable(GL_LIGHTING);
         glDisable(GL_DEPTH_TEST);
@@ -134,7 +133,6 @@ public class Background {
         }
         glEnd();
 
-        glPopAttrib();
         glPopAttrib();
     }
 }

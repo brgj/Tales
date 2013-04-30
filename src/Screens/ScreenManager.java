@@ -43,15 +43,15 @@ public class ScreenManager {
         delegate.change(1);
     }
 
-    public void Initialize(){
+    public void Initialize() {
         CurrentScreen.Initialize();
     }
 
-    public void Render(){
+    public void Render() {
         CurrentScreen.Render();
     }
 
-    public void Update(){
+    public void Update() {
         CurrentScreen.Update();
     }
 

@@ -13,8 +13,7 @@ import java.util.ArrayList;
  * Time: 3:31 PM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class MenuScreen extends Screen
-{
+public abstract class MenuScreen extends Screen {
     ArrayList<String> MenuOptions;
     protected int selectedIndex;
     protected int lastKeyPressed;

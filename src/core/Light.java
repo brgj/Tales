@@ -12,11 +12,11 @@ import org.lwjgl.opengl.GL11;
  */
 public class Light {
     float lightDirection[];//direction , position
-    float diffuse[] ;  // diffuse color
-    float ambient[] ;    // ambient
+    float diffuse[];  // diffuse color
+    float ambient[];    // ambient
     float specular[];
-    public Light(float lightDirection[], float diffuse[], float ambient[], float specular[])
-    {
+
+    public Light(float lightDirection[], float diffuse[], float ambient[], float specular[]) {
         this.lightDirection = new float[4];
         this.diffuse = new float[4];
         this.ambient = new float[4];
@@ -27,8 +27,8 @@ public class Light {
         this.specular = specular;
 
     }
-    public void setLight()
-    {
+
+    public void setLight() {
 
         GL11.glEnable(GL11.GL_LIGHTING);
         GLApp.setLight(GL11.GL_LIGHT1,
@@ -36,6 +36,6 @@ public class Light {
                 ambient,    // ambient
                 specular,    // specular
                 lightDirection);                     // direction/position
-        GLApp.setAmbientLight(new float[] { .6f, .6f, .9f, 1f });
+        GLApp.setAmbientLight(new float[]{.6f, .6f, .9f, 1f});
     }
 }

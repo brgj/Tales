@@ -41,9 +41,8 @@ public class ShaderLoader {
     /**
      * Loads a shader program from two source files.
      *
-     * @param vertexShaderLocation the location of the file containing the vertex shader source
+     * @param vertexShaderLocation   the location of the file containing the vertex shader source
      * @param fragmentShaderLocation the location of the file containing the fragment shader source
-     *
      * @return the shader program or -1 if the loading or compiling failed
      */
     public static int loadShaderPair(String vertexShaderLocation, String fragmentShaderLocation) {
