@@ -27,10 +27,11 @@ import static org.lwjgl.opengl.GL11.*;
 public class Model {
     GLModel model;
     float scaleratio = 1.0f, rotx = 0.0f, roty = 0.0f, rotz = 0.0f,
-     transx = 0.0f, transy = 0.0f, transz = 0.0f;
+            transx = 0.0f, transy = 0.0f, transz = 0.0f;
     public Model(String filename)
     {
         model = new GLModel(filename);
+        model.regenerateNormals();
 
 
     }

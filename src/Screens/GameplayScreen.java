@@ -4,6 +4,7 @@ import core.Background;
 import core.Camera;
 import core.*;
 import helpers.Delegate;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.glu.GLU;
@@ -26,6 +27,45 @@ import static org.lwjgl.opengl.GL11.*;
  * Time: 3:10 PM
  * To change this template use File | Settings | File Templates.
  */
+public class GameplayScreen extends Screen {
+
+    float lightDirection[]= { -2f, 2f, 2f, 0f };//direction , position
+    float diffuse[] = { 1f,  1f,  1f,  1f };  // diffuse color
+    float ambient[] = { .6f, .6f, .9f, 1f };    // ambient
+    float specular[]= { 1f,  1f,  1f,  1f };
+    Light l = new Light(lightDirection,diffuse,ambient,specular);
+    Model model;//=new Model("data/DarkFighter/dark_fighter.obj",1.0f,0.0f,0.0f,0.0f,-10.0f,10.0f,0.0f);
+    public GameplayScreen(Delegate d) {
+        super(d);
+
+    }
+
+    public void Initialize() {
+        model = new Model("data/DarkFighter/dark_fighter.obj",5.0f,0.0f,0.0f,0.0f,-6.0f,60.0f,16.0f)   ;
+        //Terrain.setUpDisplay();
+        l.setLight();
+        Terrain.setUpStates();
+        Terrain.setUpHeightmap();
+        Terrain.setUpShaders();
+        Terrain.setUpMatrices();
+    }
+
+    public void Render() {
+        Terrain.render();
+        //glClear( GL_DEPTH_BUFFER_BIT);
+        //glColor3f(0.0f, 1.0f, 1.0f);
+        //glBegin(GL_QUADS);
+        glEnable( GL_TEXTURE_2D );
+        model.render();
+        // glEnd();
+    }
+
+    public void Update() {
+        Terrain.input();
+    }
+}
+
+/*
 public class GameplayScreen extends Screen {
     //Camera for single player
     Camera cam;
@@ -93,49 +133,49 @@ public class GameplayScreen extends Screen {
         //model.updateRotation(objrot,0.0f,0.0f);
         //model.updatePosition(objrot/10,objrot/10-0.5f,0.0f);
         model.render();
-       /* glColor3d(1, 0, 0);
-        glVertex3i(50, 50, 50);
-        glVertex3i(50, -50, 50);
-        glVertex3i(-50, -50, 50);
-        glVertex3i(-50, 50, 50);
+       //glColor3d(1, 0, 0);
+        //glVertex3i(50, 50, 50);
+        //glVertex3i(50, -50, 50);
+        //glVertex3i(-50, -50, 50);
+        //glVertex3i(-50, 50, 50);
 
 
-        glColor3d(0, 1, 0);
-        glVertex3i(50, 50, -50);
-        glVertex3i(50, -50, -50);
-        glVertex3i(-50, -50, -50);
-        glVertex3i(-50, 50, -50);
+        //glColor3d(0, 1, 0);
+        //glVertex3i(50, 50, -50);
+        //glVertex3i(50, -50, -50);
+        //glVertex3i(-50, -50, -50);
+        //glVertex3i(-50, 50, -50);
 
 
-        glColor3d(0, 0, 1);
-        glVertex3i(50, 50, 50);
-        glVertex3i(50, -50, 50);
-        glVertex3i(50, -50, -50);
-        glVertex3i(50, 50, -50);
+        //glColor3d(0, 0, 1);
+        //glVertex3i(50, 50, 50);
+        //glVertex3i(50, -50, 50);
+        //glVertex3i(50, -50, -50);
+        //glVertex3i(50, 50, -50);
 
 
-        glColor3d(0, 1, 1);
-        glVertex3i(-50, 50, 50);
-        glVertex3i(-50, -50, 50);
-        glVertex3i(-50, -50, -50);
-        glVertex3i(-50, 50, -50);
+        //glColor3d(0, 1, 1);
+        //glVertex3i(-50, 50, 50);
+        //glVertex3i(-50, -50, 50);
+        //glVertex3i(-50, -50, -50);
+        //glVertex3i(-50, 50, -50);
 
 
-        glColor3d(1, 0, 0);
-        glVertex3i(-50, 50, -50);
-        glVertex3i(-50, 50, 50);
-        glVertex3i(50, 50, 50);
-        glVertex3i(50, 50, -50);
+        //glColor3d(1, 0, 0);
+        //glVertex3i(-50, 50, -50);
+        //glVertex3i(-50, 50, 50);
+        //glVertex3i(50, 50, 50);
+        //glVertex3i(50, 50, -50);
 
 
-        glColor3d(1, 1, 0);
-        glVertex3i(-50, -50, -50);
-        glVertex3i(-50, -50, 50);
-        glVertex3i(50, -50, 50);
-        glVertex3i(50, -50, -50);*/
-        glEnd();
-        cam.setCameraView();
-        hud.render();
+        //glColor3d(1, 1, 0);
+        //glVertex3i(-50, -50, -50);
+        //glVertex3i(-50, -50, 50);
+        //glVertex3i(50, -50, 50);
+        //glVertex3i(50, -50, -50);
+        //glEnd();
+        //cam.setCameraView();
+        //hud.render();
     }
 
     public void Update() {
@@ -189,4 +229,4 @@ public class GameplayScreen extends Screen {
             hud.crosshairReset();
         }
     }
-}
+}    */
