@@ -129,7 +129,7 @@ public class HUD {
     {
         if(crosshairPos.y <= Display.getHeight() / 2 - TARGETY - BUFFER && crosshairPos.y >= -Display.getHeight() / 2 + TARGETY + BUFFER)
         {
-            crosshairPos.y += i * 10;
+            crosshairPos.y += i * 5;
         }
     }
 }
