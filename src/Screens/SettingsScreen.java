@@ -2,12 +2,14 @@ package Screens;
 
 import helpers.Delegate;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 
 import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.util.glu.GLU.gluOrtho2D;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,47 +34,50 @@ public class SettingsScreen extends MenuScreen {
     }
 
     public void Render() {
+        glMatrixMode(GL_PROJECTION);
+        //Saves any perspective that may already be in place (camera)
+        glPushMatrix();
+        {
+            glLoadIdentity();
+            //Setup 2d display
+            gluOrtho2D(0, Display.getWidth(), Display.getHeight(), 0);
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glColor3f(1.0f, 1.0f, 1.0f);
+            glMatrixMode(GL_MODELVIEW);
+            //Saves any matrix transformations we may have on 3d objects
+            glPushMatrix();
+            {
+                glLoadIdentity();
 
-        glBegin(GL_QUADS);
+                // Push currently enabled flags
+                glPushAttrib(GL_ENABLE_BIT);
+                {
+                    //Disable depth, texture, and lighting. Lighting is not needed . Depth will prevent clipping. Texture will incorporate any current textures.
+                    // Blend is needed for transparency with game
+                    glDisable(GL_DEPTH_TEST);
+                    glDisable(GL_TEXTURE_2D);
+                    glDisable(GL_LIGHTING);
+                    glEnable(GL_BLEND);
+                    // Blending eq: (A * Src) + ((1 - A) * Dst)
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        glVertex2f(100, 100);
-        glVertex2f(100 + 600, 100);
-        glVertex2f(100 + 600, 100 + 400);
-        glVertex2f(100, 100 + 400);
+                    //Draw the menu
+                    drawBackground();
+                    drawOptions("Settings");
 
-        glEnd();
+                }
+                glPopAttrib();
 
-        GL11.glEnable(GL11.GL_BLEND);
-        Color current;
-        for (int i = 0; i < this.MenuOptions.size(); i++) {
-            if (selectedIndex == i)
-                current = Color.darkGray;
-            else
-                current = Color.gray;
-
-            super.font.drawString(150f, 150f + (i * 50), MenuOptions.get(i), current);
+                //Reload matrix and view transformations
+                glMatrixMode(GL_PROJECTION);
+            }
+            glPopMatrix();
+            glMatrixMode(GL_MODELVIEW);
         }
-        glDisable(GL11.GL_BLEND);
+        glPopMatrix();
     }
 
     public void Update() {
-        if (Keyboard.isKeyDown(Keyboard.KEY_RETURN)) {
-            if (selectedIndex == 0 && lastKeyPressed != Keyboard.KEY_RETURN)
-                delegate.change(0);
-            lastKeyPressed = Keyboard.KEY_RETURN;
-        } else if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-            if (lastKeyPressed != Keyboard.KEY_UP)
-                selectedIndex = ((selectedIndex + 4) - 1) % 4;
-            lastKeyPressed = Keyboard.KEY_UP;
-        } else if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-            if (lastKeyPressed != Keyboard.KEY_DOWN)
-                selectedIndex = (selectedIndex + 1) % 4;
-            lastKeyPressed = Keyboard.KEY_DOWN;
-        } else {
-            lastKeyPressed = -1;
-        }
+        if(updateOptions() == 0)
+            delegate.change(0);
     }
 }

@@ -87,6 +87,7 @@ public class GameplayScreen extends Screen {
     }
 
     public void Initialize() {
+        model = null;
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 
@@ -147,45 +148,48 @@ public class GameplayScreen extends Screen {
     public void Update() {
 
         //Temporary controls for the camera and target
-if(!chatting) {
-    if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-        cam.move(0.2f, 90);
-    }
-    if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-        cam.move(0.2f, 270);
-    }
-    if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-        cam.move(0.2f, 0);
-        cam.moveUp(0.2f, 0);
-    }
-    if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-        cam.move(0.2f, 180);
-        cam.moveUp(0.2f, 180);
-    }
-    if(Keyboard.isKeyDown(Keyboard.KEY_RETURN)) {
-        chatting = true;
-    }
-} else {
-    if(Keyboard.isKeyDown(Keyboard.KEY_RETURN)) {
-        if(lastKeyPressed != Keyboard.KEY_RETURN)
-            chat.sendMessage();
-        lastKeyPressed = Keyboard.KEY_RETURN;
-    } else if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
-        chatting = false;
-        lastKeyPressed = Keyboard.KEY_ESCAPE;
-    } else if(Keyboard.isKeyDown(Keyboard.KEY_BACK)) {
-        if(lastKeyPressed != Keyboard.KEY_BACK)
-            chat.removeChar();
-        lastKeyPressed = Keyboard.KEY_BACK;
-    } else if(Keyboard.next()) {
-        char c = Keyboard.getEventCharacter();
-        if(Character.isLetterOrDigit(c) || c == ' ')
-            chat.addChar(c);
-        lastKeyPressed = Keyboard.getEventKey();
-    } else {
-        lastKeyPressed = -1;
-    }
-}
+        if(!chatting) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+                cam.move(0.2f, 90);
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+                cam.move(0.2f, 270);
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+                cam.move(0.2f, 0);
+                cam.moveUp(0.2f, 0);
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+                cam.move(0.2f, 180);
+                cam.moveUp(0.2f, 180);
+            }
+            if(Keyboard.isKeyDown(Keyboard.KEY_C)) {
+                chatting = true;
+            }
+            if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)){
+                delegate.change(0);
+            }
+        } else {
+            if(Keyboard.isKeyDown(Keyboard.KEY_RETURN)) {
+                if(lastKeyPressed != Keyboard.KEY_RETURN)
+                    chat.sendMessage();
+                lastKeyPressed = Keyboard.KEY_RETURN;
+            } else if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+                chatting = false;
+                lastKeyPressed = Keyboard.KEY_ESCAPE;
+            } else if(Keyboard.isKeyDown(Keyboard.KEY_BACK)) {
+                if(lastKeyPressed != Keyboard.KEY_BACK)
+                    chat.removeChar();
+                lastKeyPressed = Keyboard.KEY_BACK;
+            } else if(Keyboard.next()) {
+                char c = Keyboard.getEventCharacter();
+                if(Character.isLetterOrDigit(c) || c == ' ')
+                    chat.addChar(c);
+                lastKeyPressed = Keyboard.getEventKey();
+            } else {
+                lastKeyPressed = -1;
+            }
+        }
 
 
 

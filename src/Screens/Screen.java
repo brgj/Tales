@@ -22,5 +22,6 @@ public abstract class Screen {
     abstract public void Render();
 
     abstract public void Update();
+
 }
 
