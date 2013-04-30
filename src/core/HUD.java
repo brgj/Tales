@@ -44,15 +44,17 @@ public class HUD {
         glLoadIdentity();
         glTranslatef(0.375f, 0.375f, 0.0f);
 
-        //Disable depth and lighting. Lighting is not needed on HUD. Depth will prevent HUD clipping
+        //Disable depth, texture, and lighting. Lighting is not needed on HUD. Depth will prevent HUD clipping. Texture will incorporate any current textures into the HUD.
         glDisable(GL_DEPTH_TEST);
+        glDisable(GL_TEXTURE_2D);
         glDisable(GL_LIGHTING);
 
         //Call HUD functions
         drawCrossHair();
 
-        //Re-enable lighting and depth for 3D models
+        //Re-enable lighting, texture, and depth for 3D models
         glEnable(GL_LIGHTING);
+        glEnable(GL_TEXTURE_2D);
         glEnable(GL_DEPTH_TEST);
 
         //Reload matrix and view transformations

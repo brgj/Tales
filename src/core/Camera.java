@@ -34,7 +34,7 @@ public class Camera {
     TODO: Implement following of the player. This will have to be implemented when we figure out how the camera will transform as it follows the ship
      */
 
-    //Changes the cameras view based on the position, yew, and pitch
+    //Changes the cameras view based on the yaw, and pitch
     public void setCameraView()
     {
         glMatrixMode(GL_MODELVIEW);
@@ -45,6 +45,9 @@ public class Camera {
         glRotatef(yaw, 0.0f, 1.0f, 0.0f);
         //Sets the cameras Z rotation
         glRotatef(roll, 0.0f, 0.0f, 1.0f);
+    }
+
+    public void moveCamera() {
         //Sets the camera to a position
         glTranslatef(position.x, position.y, position.z);
     }

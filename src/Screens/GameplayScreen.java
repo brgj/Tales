@@ -27,7 +27,7 @@ import static org.lwjgl.opengl.GL11.*;
  * Time: 3:10 PM
  * To change this template use File | Settings | File Templates.
  */
-public class GameplayScreen extends Screen {
+/*public class GameplayScreen extends Screen {
 
     float lightDirection[]= { -2f, 2f, 2f, 0f };//direction , position
     float diffuse[] = { 1f,  1f,  1f,  1f };  // diffuse color
@@ -63,9 +63,8 @@ public class GameplayScreen extends Screen {
     public void Update() {
         Terrain.input();
     }
-}
+}*/
 
-/*
 public class GameplayScreen extends Screen {
     //Camera for single player
     Camera cam;
@@ -103,10 +102,7 @@ public class GameplayScreen extends Screen {
         wavEffect.playAsMusic(1.0f, 1.0f, true);
 
         //Create Background
-        //background = new Background();
-
-        //background.createBackground();
-        sky = GLApp.loadImage("images/sky.jpg");
+        background = new Background();
         //load the model
         model = new Model("data/arwing/finalarwing.obj",0.5f,0.0f,0.0f,0.0f,-10.0f,-10.0f,0.0f);
 
@@ -127,55 +123,12 @@ public class GameplayScreen extends Screen {
 
         objrot += 25f * GLApp.getSecondsPerFrame();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glColor3f(0.0f, 1.0f, 1.0f);
-        glBegin(GL_QUADS);
-        //GLApp.drawImageFullScreen(sky);
-        //model.updateRotation(objrot,0.0f,0.0f);
-        //model.updatePosition(objrot/10,objrot/10-0.5f,0.0f);
+
+        cam.setCameraView();
+        background.drawSkybox(50.0f);
+        cam.moveCamera();
         model.render();
-       //glColor3d(1, 0, 0);
-        //glVertex3i(50, 50, 50);
-        //glVertex3i(50, -50, 50);
-        //glVertex3i(-50, -50, 50);
-        //glVertex3i(-50, 50, 50);
-
-
-        //glColor3d(0, 1, 0);
-        //glVertex3i(50, 50, -50);
-        //glVertex3i(50, -50, -50);
-        //glVertex3i(-50, -50, -50);
-        //glVertex3i(-50, 50, -50);
-
-
-        //glColor3d(0, 0, 1);
-        //glVertex3i(50, 50, 50);
-        //glVertex3i(50, -50, 50);
-        //glVertex3i(50, -50, -50);
-        //glVertex3i(50, 50, -50);
-
-
-        //glColor3d(0, 1, 1);
-        //glVertex3i(-50, 50, 50);
-        //glVertex3i(-50, -50, 50);
-        //glVertex3i(-50, -50, -50);
-        //glVertex3i(-50, 50, -50);
-
-
-        //glColor3d(1, 0, 0);
-        //glVertex3i(-50, 50, -50);
-        //glVertex3i(-50, 50, 50);
-        //glVertex3i(50, 50, 50);
-        //glVertex3i(50, 50, -50);
-
-
-        //glColor3d(1, 1, 0);
-        //glVertex3i(-50, -50, -50);
-        //glVertex3i(-50, -50, 50);
-        //glVertex3i(50, -50, 50);
-        //glVertex3i(50, -50, -50);
-        //glEnd();
-        //cam.setCameraView();
-        //hud.render();
+        hud.render();
     }
 
     public void Update() {
@@ -229,4 +182,4 @@ public class GameplayScreen extends Screen {
             hud.crosshairReset();
         }
     }
-}    */
+}

@@ -8,6 +8,7 @@
 # IDE files #
 .idea/*
 *.iml
+out/*
 
 !libs/*
 !natives/*

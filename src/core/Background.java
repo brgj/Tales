@@ -1,5 +1,6 @@
 package core;
 
+import org.lwjgl.opengl.GL12;
 import org.newdawn.slick.opengl.Texture;
 import helpers.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -12,85 +13,128 @@ import static org.lwjgl.opengl.GL11.*;
  * To change this template use File | Settings | File Templates.
  */
 public class Background {
-    public Texture texture;
+    private final static int SKY_LEFT = 0;
+    private final static int SKY_BACK = 1;
+    private final static int SKY_RIGHT = 2;
+    private final static int SKY_FRONT = 3;
+    private final static int SKY_TOP = 4;
+    private final static int SKY_BOTTOM = 5;
+    public Texture[] skybox;
 
     public Background() {
-        texture = TextureHelper.LoadTexture("png", "images/B.png");
+        skybox = new Texture[6];
+        skybox[SKY_LEFT] = TextureHelper.LoadTexture("png", "images/left.png");
+        skybox[SKY_BACK] = TextureHelper.LoadTexture("png", "images/back.png");
+        skybox[SKY_RIGHT] = TextureHelper.LoadTexture("png", "images/right.png");
+        skybox[SKY_FRONT] = TextureHelper.LoadTexture("png", "images/front.png");
+        skybox[SKY_TOP] = TextureHelper.LoadTexture("png", "images/top.png");
+        skybox[SKY_BOTTOM] = TextureHelper.LoadTexture("png", "images/bottom.png");
     }
 
-    public void createBackground() {
+    public void drawSkybox(float size) {
+        glColor3f(1.0f, 1.0f, 1.0f);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glLoadIdentity();
         glPushMatrix();
 
+
+        glPushAttrib(GL_TEXTURE_BIT);
         glPushAttrib(GL_ENABLE_BIT);
-        glEnable(GL_TEXTURE_2D);
-        glDisable(GL_DEPTH_TEST);
         glDisable(GL_LIGHTING);
+        glDisable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
+        glEnable(GL_TEXTURE_2D);
 
-        glColor4f(1,1,1,1.0f);
-
-        // Render the front quad
-        glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
+        skybox[SKY_FRONT].bind();
         glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(-1.0f, 1.0f, -1.0f);
-        glTexCoord2f(1, 0); glVertex3f(-1.0f, 1.0f, 1.0f);
-        glTexCoord2f(1, 1); glVertex3f(1.0f, 1.0f, 1.0f);
-        glTexCoord2f(0, 1); glVertex3f(1.0f, 1.0f, -1.0f);
+        {
+            // front
+            glTexCoord2f(0, 0);
+            glVertex3f(size / 2, size / 2, size / 2);
+            glTexCoord2f(1, 0);
+            glVertex3f(-size / 2, size / 2, size / 2);
+            glTexCoord2f(1, 1);
+            glVertex3f(-size / 2, -size / 2, size / 2);
+            glTexCoord2f(0, 1);
+            glVertex3f(size / 2, -size / 2, size / 2);
+        }
         glEnd();
 
-        // Render the left quad
-        glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
+        skybox[SKY_LEFT].bind();
         glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(-1.0f, -1.0f, 1.0f);
-        glTexCoord2f(1, 0); glVertex3f(-1.0f, 1.0f, 1.0f);
-        glTexCoord2f(1, 1); glVertex3f(-1.0f, 1.0f, -1.0f);
-        glTexCoord2f(0, 1); glVertex3f(-1.0f, -1.0f, -1.0f);
+        {
+            // left
+            glTexCoord2f(0, 0);
+            glVertex3f(-size / 2, size / 2, size / 2);
+            glTexCoord2f(1, 0);
+            glVertex3f(-size / 2, size / 2, -size / 2);
+            glTexCoord2f(1, 1);
+            glVertex3f(-size / 2, -size / 2, -size / 2);
+            glTexCoord2f(0, 1);
+            glVertex3f(-size / 2, -size / 2, size / 2);
+        }
         glEnd();
 
-        // Render the back quad
-        glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
+        skybox[SKY_BACK].bind();
         glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(-1.0f, -1.0f, -1.0f);
-        glTexCoord2f(1, 0); glVertex3f(-1.0f, -1.0f, 1.0f);
-        glTexCoord2f(1, 1); glVertex3f(1.0f, -1.0f, 1.0f);
-        glTexCoord2f(0, 1); glVertex3f(1.0f, -1.0f, -1.0f);
-
+        {
+            // back
+            glTexCoord2f(1, 0);
+            glVertex3f(size / 2, size / 2, -size / 2);
+            glTexCoord2f(0, 0);
+            glVertex3f(-size / 2, size / 2, -size / 2);
+            glTexCoord2f(0, 1);
+            glVertex3f(-size / 2, -size / 2, -size / 2);
+            glTexCoord2f(1, 1);
+            glVertex3f(size / 2, -size / 2, -size / 2);
+        }
         glEnd();
 
-        // Render the right quad
-        glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
+        skybox[SKY_RIGHT].bind();
         glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(1.0f, -1.0f, 1.0f);
-        glTexCoord2f(1, 0); glVertex3f(1.0f, 1.0f, 1.0f);
-        glTexCoord2f(1, 1); glVertex3f(1.0f, 1.0f, -1.0f);
-        glTexCoord2f(0, 1); glVertex3f(1.0f, -1.0f, -1.0f);
+        {
+            // right
+            glTexCoord2f(0, 0);
+            glVertex3f(size / 2, size / 2, -size / 2);
+            glTexCoord2f(1, 0);
+            glVertex3f(size / 2, size / 2, size / 2);
+            glTexCoord2f(1, 1);
+            glVertex3f(size / 2, -size / 2, size / 2);
+            glTexCoord2f(0, 1);
+            glVertex3f(size / 2, -size / 2, -size / 2);
+        }
         glEnd();
 
-        // Render the top quad
-        glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
+        skybox[SKY_TOP].bind();
         glBegin(GL_QUADS);
-        glTexCoord2f(0, 1); glVertex3f(1.0f, -1.0f, 1.0f);
-        glTexCoord2f(0, 0); glVertex3f(1.0f, 1.0f, 1.0f);
-        glTexCoord2f(1, 0); glVertex3f(-1.0f, 1.0f, 1.0f);
-        glTexCoord2f(1, 1); glVertex3f(-1.0f, -1.0f, 1.0f);
+        {
+            // top
+            glTexCoord2f(1, 0);
+            glVertex3f(size / 2, size / 2, size / 2);
+            glTexCoord2f(0, 0);
+            glVertex3f(-size / 2, size / 2, size / 2);
+            glTexCoord2f(0, 1);
+            glVertex3f(-size / 2, size / 2, -size / 2);
+            glTexCoord2f(1, 1);
+            glVertex3f(size / 2, size / 2, -size / 2);
+        }
         glEnd();
 
-        // Render the bottom quad
-        glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
+        skybox[SKY_BOTTOM].bind();
         glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(1.0f, -1.0f, -1.0f);
-        glTexCoord2f(0, 1); glVertex3f(1.0f, 1.0f, -1.0f);
-        glTexCoord2f(1, 1); glVertex3f(-1.0f, 1.0f, -1.0f);
-        glTexCoord2f(1, 0); glVertex3f(-1.0f, -1.0f, -1.0f);
+        {
+            // bottom
+            glTexCoord2f(1, 1);
+            glVertex3f(size / 2, -size / 2, size / 2);
+            glTexCoord2f(0, 1);
+            glVertex3f(-size / 2, -size / 2, size / 2);
+            glTexCoord2f(0, 0);
+            glVertex3f(-size / 2, -size / 2, -size / 2);
+            glTexCoord2f(1, 0);
+            glVertex3f(size / 2, -size / 2, -size / 2);
+        }
         glEnd();
 
-        // Restore enable bits and matrix
         glPopAttrib();
-        glPopMatrix();
+        glPopAttrib();
     }
 }
