@@ -119,9 +119,6 @@ public class HUD {
     //Sets the crosshair value, cannot go outside screen range
     public void setCrosshairX(int i)
     {
-        if(i != 0) {
-            System.out.println("MOVING X!!");
-        }
         if(crosshairPos.x <= Display.getWidth() / 2 - TARGETX - BUFFER && crosshairPos.x >= -Display.getWidth() / 2 + TARGETX + BUFFER)
         {
             crosshairPos.x += i * 5;
@@ -130,9 +127,6 @@ public class HUD {
 
     public void setCrosshairY(int i)
     {
-        if(i != 0) {
-            System.out.println("MOVING Y!!");
-        }
         if(crosshairPos.y <= Display.getHeight() / 2 - TARGETY - BUFFER && crosshairPos.y >= -Display.getHeight() / 2 + TARGETY + BUFFER)
         {
             crosshairPos.y += i * 10;

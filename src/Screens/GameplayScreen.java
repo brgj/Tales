@@ -174,10 +174,10 @@ public class GameplayScreen extends Screen {
 //            cam.setY(-.1f);
 //        }
         //If not movement keys are pressed
-        if (!Keyboard.isKeyDown(Keyboard.KEY_D) && !Keyboard.isKeyDown(Keyboard.KEY_A) &&
-                !Keyboard.isKeyDown(Keyboard.KEY_W )&& !Keyboard.isKeyDown(Keyboard.KEY_S))
-        {
-            hud.crosshairReset();
-        }
+//        if (!Keyboard.isKeyDown(Keyboard.KEY_D) && !Keyboard.isKeyDown(Keyboard.KEY_A) &&
+//                !Keyboard.isKeyDown(Keyboard.KEY_W )&& !Keyboard.isKeyDown(Keyboard.KEY_S))
+//        {
+//            hud.crosshairReset();
+//        }
     }
 }

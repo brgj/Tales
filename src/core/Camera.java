@@ -63,6 +63,9 @@ public class Camera {
             hud.setCrosshairX(-dX / 5);
             hud.setCrosshairY(dY / 5);
 
+            if(dX < 5 && dY < 5)
+                hud.crosshairReset();
+
             Mouse.setCursorPosition(midX, midY);
         } else {
             Mouse.setGrabbed(false);
