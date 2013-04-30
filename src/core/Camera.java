@@ -1,6 +1,11 @@
 package core;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
+
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -21,9 +26,10 @@ public class Camera {
     //Rotation around Z axis
     private float roll;
 
+    private boolean upsidedown = false;
+
     //Constructor that takes a vector
-    public Camera(Vector3f initialPosition)
-    {
+    public Camera(Vector3f initialPosition) {
         position = initialPosition;
         yaw = 0.0f;
         pitch = 0.0f;
@@ -35,8 +41,32 @@ public class Camera {
      */
 
     //Changes the cameras view based on the yaw, and pitch
-    public void setCameraView()
-    {
+    public void setCameraView(float mouseSpeed, HUD hud) {
+        if (Mouse.isInsideWindow()) {
+            Mouse.setGrabbed(true);
+
+            int midX = Display.getWidth() / 2;
+            int midY = Display.getHeight() / 2;
+
+            int dX = (midX - Mouse.getX());
+            int dY = (midY - Mouse.getY());
+
+
+            pitch += mouseSpeed * dY;
+            pitch %= 360;
+
+            upsidedown = pitch > 90 || pitch < -90;
+
+            yaw -= upsidedown ? -1 * mouseSpeed * dX : mouseSpeed * dX;
+            yaw %= 360;
+
+            hud.setCrosshairX(-dX / 5);
+            hud.setCrosshairY(dY / 5);
+
+            Mouse.setCursorPosition(midX, midY);
+        } else {
+            Mouse.setGrabbed(false);
+        }
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         //Sets the cameras X rotation
@@ -52,16 +82,18 @@ public class Camera {
         glTranslatef(position.x, position.y, position.z);
     }
 
-    public void walk(float units)
-    {
-        position.x -= units * (float)Math.sin(Math.toRadians(yaw));
-        position.z += units * (float)Math.cos(Math.toRadians(yaw));
+    public void move(float units, int dir) {
+        if(dir % 180 == 0 && upsidedown) {
+            units = -units;
+        }
+        double rad = Math.toRadians(yaw + dir);
+        position.x -= units * (float) Math.sin(rad);
+        position.z += units * (float) Math.cos(rad);
     }
 
-    public void strafe(float units)
-    {
-        position.x -= units * (float)Math.sin(Math.toRadians(yaw-90));
-        position.z += units * (float)Math.cos(Math.toRadians(yaw-90));
+    public void moveUp(float units, float dir) {
+        double rad = Math.toRadians(pitch + dir);
+        position.y += units * (float) Math.sin(rad);
     }
 
 

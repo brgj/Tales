@@ -108,28 +108,34 @@ public class HUD {
         }
         if(crosshairPos.x != 0)
         {
-            crosshairPos.x = (crosshairPos.x >= 1) ? crosshairPos.x - 10 : crosshairPos.x + 10;
+            crosshairPos.x = (crosshairPos.x >= 1) ? crosshairPos.x - 5 : crosshairPos.x + 5;
         }
         if(crosshairPos.y != 0)
         {
-            crosshairPos.y = (crosshairPos.y >= 1) ? crosshairPos.y - 10 * slope : crosshairPos.y + 10 * slope;
+            crosshairPos.y = (crosshairPos.y >= 1) ? crosshairPos.y - 5 * slope : crosshairPos.y + 5 * slope;
         }
     }
 
     //Sets the crosshair value, cannot go outside screen range
     public void setCrosshairX(int i)
     {
+        if(i != 0) {
+            System.out.println("MOVING X!!");
+        }
         if(crosshairPos.x <= Display.getWidth() / 2 - TARGETX - BUFFER && crosshairPos.x >= -Display.getWidth() / 2 + TARGETX + BUFFER)
         {
-            crosshairPos.x += i;
+            crosshairPos.x += i * 5;
         }
     }
 
     public void setCrosshairY(int i)
     {
+        if(i != 0) {
+            System.out.println("MOVING Y!!");
+        }
         if(crosshairPos.y <= Display.getHeight() / 2 - TARGETY - BUFFER && crosshairPos.y >= -Display.getHeight() / 2 + TARGETY + BUFFER)
         {
-            crosshairPos.y += i;
+            crosshairPos.y += i * 10;
         }
     }
 }

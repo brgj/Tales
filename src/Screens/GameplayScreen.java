@@ -124,7 +124,7 @@ public class GameplayScreen extends Screen {
         objrot += 25f * GLApp.getSecondsPerFrame();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        cam.setCameraView();
+        cam.setCameraView(0.2f, hud);
         background.drawSkybox(50.0f);
         cam.moveCamera();
         model.render();
@@ -135,46 +135,44 @@ public class GameplayScreen extends Screen {
 
         //Temporary controls for the camera and target
 
-        if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-            cam.walk(.1f);
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-            cam.walk(-.1f);
-        }
+//        if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+//            cam.walk(.1f);
+//        }
+//        if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+//            cam.walk(-.1f);
+//        }
         if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-            cam.setYaw(1);
-            hud.setCrosshairX(10);
+            cam.move(0.2f, 90);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-            cam.setYaw(-1);
-            hud.setCrosshairX(-10);
+            cam.move(0.2f, 270);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-            cam.setPitch(1);
-            hud.setCrosshairY(10);
+            cam.move(0.2f, 0);
+            cam.moveUp(0.2f, 0);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-            cam.setPitch(-1);
-            hud.setCrosshairY(-10);
+            cam.move(0.2f, 180);
+            cam.moveUp(0.2f, 180);
         }
-        if (Keyboard.isKeyDown(Keyboard.KEY_Q)) {
-            cam.strafe(.1f);
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_E)) {
-            cam.strafe(-.1f);
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
-            cam.setRoll(1);
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_R)) {
-            cam.setRoll(-1);
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            cam.setY(.1f);
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
-            cam.setY(-.1f);
-        }
+//        if (Keyboard.isKeyDown(Keyboard.KEY_Q)) {
+//            cam.strafe(.1f);
+//        }
+//        if (Keyboard.isKeyDown(Keyboard.KEY_E)) {
+//            cam.strafe(-.1f);
+//        }
+//        if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
+//            cam.setRoll(1);
+//        }
+//        if (Keyboard.isKeyDown(Keyboard.KEY_R)) {
+//            cam.setRoll(-1);
+//        }
+//        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+//            cam.setY(.1f);
+//        }
+//        if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+//            cam.setY(-.1f);
+//        }
         //If not movement keys are pressed
         if (!Keyboard.isKeyDown(Keyboard.KEY_D) && !Keyboard.isKeyDown(Keyboard.KEY_A) &&
                 !Keyboard.isKeyDown(Keyboard.KEY_W )&& !Keyboard.isKeyDown(Keyboard.KEY_S))
