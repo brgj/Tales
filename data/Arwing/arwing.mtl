@@ -1,0 +1,112 @@
+# Blender MTL File: 'None'
+# Material Count: 10
+
+newmtl mat1
+Ns 3.921569
+Ka 0.000000 0.000000 0.000000
+Kd 0.576000 0.576000 0.576000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd arwing_01.png
+map_d arwing_01.png
+
+newmtl mat1.001
+Ns 3.921569
+Ka 0.000000 0.000000 0.000000
+Kd 0.576000 0.576000 0.576000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd arwing_01.png
+map_d arwing_01.png
+
+newmtl mat2
+Ns 3.921569
+Ka 0.000000 0.000000 0.000000
+Kd 0.576000 0.576000 0.576000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd arwing_01.png
+map_d arwing_01.png
+
+newmtl mat2.001
+Ns 3.921569
+Ka 0.000000 0.000000 0.000000
+Kd 0.576000 0.576000 0.576000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd arwing_01.png
+map_d arwing_01.png
+
+newmtl mat3
+Ns 3.921569
+Ka 0.000000 0.000000 0.000000
+Kd 0.576000 0.576000 0.576000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd arwing_01.png
+map_d arwing_01.png
+
+newmtl mat3.001
+Ns 3.921569
+Ka 0.000000 0.000000 0.000000
+Kd 0.576000 0.576000 0.576000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd arwing_01.png
+map_d arwing_01.png
+
+newmtl mat7
+Ns 3.921569
+Ka 0.000000 0.000000 0.000000
+Kd 0.576000 0.576000 0.576000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd jet_3.png
+map_d jet_3.png
+
+newmtl mat7.001
+Ns 3.921569
+Ka 0.000000 0.000000 0.000000
+Kd 0.576000 0.576000 0.576000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd jet_3.png
+map_d jet_3.png
+
+newmtl mat8
+Ns 3.921569
+Ka 0.000000 0.000000 0.000000
+Kd 0.576000 0.576000 0.576000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd arwing_03.png
+map_d arwing_03.png
+
+newmtl mat8.001
+Ns 3.921569
+Ka 0.000000 0.000000 0.000000
+Kd 0.576000 0.576000 0.576000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd arwing_03.png
+map_d arwing_03.png

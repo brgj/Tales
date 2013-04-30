@@ -106,7 +106,7 @@ public class GameplayScreen extends Screen {
         //Create Background
         background = new Background();
         //load the model
-        model = new Model("data/arwing/finalarwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, -10.0f, -10.0f, 0.0f);
+        model = new Model("data/arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, -10.0f, -10.0f, 0.0f);
 
         //TODO: implement huds for individual players
         chat = new Chat();
