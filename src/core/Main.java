@@ -2,7 +2,6 @@ package core;
 
 import Screens.ScreenManager;
 import helpers.Delegate;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -63,7 +62,7 @@ public class Main {
 
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-        while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+        while (!Display.isCloseRequested()) {
             if (isChanged) {
                 SM.Initialize();
                 isChanged = false;

@@ -162,6 +162,9 @@ public class GameplayScreen extends Screen {
             if (Keyboard.isKeyDown(Keyboard.KEY_C)) {
                 chatting = true;
             }
+            if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+                delegate.change(0);
+            }
         } else if (keyPressed && Keyboard.getEventKeyState()) {
             int key = Keyboard.getEventKey();
             if (key == Keyboard.KEY_RETURN) {
