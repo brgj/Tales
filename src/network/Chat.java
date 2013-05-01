@@ -87,21 +87,6 @@ public class Chat {
         glPopMatrix();
     }
 
-    public void addChar(char c) {
-        messageToSend.append(c);
-    }
-
-    public void removeChar() {
-        if(messageToSend.length() > 0)
-            messageToSend.deleteCharAt(messageToSend.length() - 1);
-    }
-
-    public void sendMessage() {
-        client.sendMessage(messageToSend.toString());
-        addMessageToLog("You: " + messageToSend.toString());
-        messageToSend.delete(0, messageToSend.length());
-    }
-
     private void drawChatBox() {
         glBegin(GL_QUADS);
         {
@@ -112,6 +97,24 @@ public class Chat {
             glVertex2f(Display.getWidth(), Display.getHeight());
         }
         glEnd();
+    }
+
+    public void addChar(char c) {
+        messageToSend.append(c);
+    }
+
+    public void removeChar() {
+        if (messageToSend.length() > 0)
+            messageToSend.deleteCharAt(messageToSend.length() - 1);
+    }
+
+    public boolean sendMessage() {
+        if (messageToSend.length() == 0)
+            return false;
+        client.sendMessage(messageToSend.toString());
+        addMessageToLog("You: " + messageToSend.toString());
+        messageToSend.delete(0, messageToSend.length());
+        return true;
     }
 
     private void getMessageFromClient() {

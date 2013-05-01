@@ -40,10 +40,14 @@ public class Camera {
     //Changes the cameras view based on the yaw, and pitch
     public void setCameraView(float mouseSpeed, HUD hud) {
         if (Mouse.isInsideWindow()) {
-            Mouse.setGrabbed(true);
 
             int midX = Display.getWidth() / 2;
             int midY = Display.getHeight() / 2;
+
+            if (!Mouse.isGrabbed())
+                Mouse.setCursorPosition(midX, midY);
+
+            Mouse.setGrabbed(true);
 
             int dX = (midX - Mouse.getX());
             int dY = (midY - Mouse.getY());

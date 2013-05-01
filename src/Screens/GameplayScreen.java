@@ -2,7 +2,6 @@ package Screens;
 
 import core.*;
 import glapp.GLApp;
-import glapp.GLImage;
 import helpers.Delegate;
 import network.Chat;
 import org.lwjgl.input.Keyboard;
@@ -69,7 +68,6 @@ public class GameplayScreen extends Screen {
     Model model;
     HUD hud;
     Chat chat;
-    public GLImage sky;
     Background background;
     private Audio wavEffect;
     float lightDirection[] = {-2f, 2f, 2f, 0f};//direction , position
@@ -79,7 +77,6 @@ public class GameplayScreen extends Screen {
     Light l = new Light(lightDirection, diffuse, ambient, specular);
     float objrot = 0.0f;
     private boolean chatting = false;
-    private int lastKeyPressed;
 
     public GameplayScreen(Delegate d) {
         super(d);
@@ -87,7 +84,6 @@ public class GameplayScreen extends Screen {
     }
 
     public void Initialize() {
-        model = null;
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 
@@ -106,27 +102,26 @@ public class GameplayScreen extends Screen {
         //Create Background
         background = new Background();
         //load the model
-        model = new Model("data/arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, -10.0f, -10.0f, 0.0f);
+        model = new Model("data/Arwing/finalarwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, -10.0f, -10.0f, 0.0f);
 
         //TODO: implement huds for individual players
         chat = new Chat();
         hud = new HUD();
-
     }
 
     public void Render() {
 
         glViewport(0, 0, Display.getWidth(), Display.getHeight());
-            //This code resets the camera view and the ModelView to initial view and identity respectively
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            GLU.gluPerspective(45.0f, (float) Display.getWidth() / (float) Display.getHeight(), 1f, 5000f);
-            glMatrixMode(GL_MODELVIEW);
+        //This code resets the camera view and the ModelView to initial view and identity respectively
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        GLU.gluPerspective(45.0f, (float) Display.getWidth() / (float) Display.getHeight(), 1f, 5000f);
+        glMatrixMode(GL_MODELVIEW);
 
-            objrot += 25f * GLApp.getSecondsPerFrame();
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        objrot += 25f * GLApp.getSecondsPerFrame();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            cam.setCameraView(0.2f, hud);
+        cam.setCameraView(0.2f, hud);
         // Push the Texture bit so the stupid model doesn't throw a hissy-fit
         glPushAttrib(GL_TEXTURE_BIT);
         {
@@ -137,7 +132,7 @@ public class GameplayScreen extends Screen {
         model.render();
         glPushAttrib(GL_TEXTURE_BIT);
         {
-            if(chatting)
+            if (chatting)
                 chat.render();
             else
                 hud.render();
@@ -148,7 +143,8 @@ public class GameplayScreen extends Screen {
     public void Update() {
 
         //Temporary controls for the camera and target
-        if(!chatting) {
+        boolean keyPressed = Keyboard.next();
+        if (!chatting) {
             if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
                 cam.move(0.2f, 90);
             }
@@ -163,34 +159,22 @@ public class GameplayScreen extends Screen {
                 cam.move(0.2f, 180);
                 cam.moveUp(0.2f, 180);
             }
-            if(Keyboard.isKeyDown(Keyboard.KEY_C)) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_C)) {
                 chatting = true;
             }
-            if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)){
-                delegate.change(0);
-            }
-        } else {
-            if(Keyboard.isKeyDown(Keyboard.KEY_RETURN)) {
-                if(lastKeyPressed != Keyboard.KEY_RETURN)
-                    chat.sendMessage();
-                lastKeyPressed = Keyboard.KEY_RETURN;
-            } else if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
-                chatting = false;
-                lastKeyPressed = Keyboard.KEY_ESCAPE;
-            } else if(Keyboard.isKeyDown(Keyboard.KEY_BACK)) {
-                if(lastKeyPressed != Keyboard.KEY_BACK)
-                    chat.removeChar();
-                lastKeyPressed = Keyboard.KEY_BACK;
-            } else if(Keyboard.next()) {
-                char c = Keyboard.getEventCharacter();
-                if(Character.isLetterOrDigit(c) || c == ' ')
-                    chat.addChar(c);
-                lastKeyPressed = Keyboard.getEventKey();
+        } else if (keyPressed && Keyboard.getEventKeyState()) {
+            int key = Keyboard.getEventKey();
+            if (key == Keyboard.KEY_RETURN) {
+                if (!chat.sendMessage())
+                    chatting = false;
+            } else if (key == Keyboard.KEY_BACK) {
+                chat.removeChar();
             } else {
-                lastKeyPressed = -1;
+                char c = Keyboard.getEventCharacter();
+                if (Character.isLetterOrDigit(c) || c == ' ')
+                    chat.addChar(c);
             }
         }
-
 
 
 //        if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
