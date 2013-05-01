@@ -1,12 +1,13 @@
-package Screens;
+package screens;
 
 import helpers.Delegate;
 import helpers.TextureHelper;
 import org.lwjgl.input.Keyboard;
-import org.newdawn.slick.*;
-import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.Color;
-import java.awt.Font;
+import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.opengl.Texture;
+
+import java.awt.*;
 import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.*;

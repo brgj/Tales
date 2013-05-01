@@ -1,4 +1,4 @@
-package core;
+package environment;
 
 import glmodel.GLModel;
 import org.lwjgl.opengl.GL11;

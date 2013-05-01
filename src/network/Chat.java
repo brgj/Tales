@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.util.glu.GLU.gluOrtho2D;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,7 +19,9 @@ import static org.lwjgl.util.glu.GLU.gluOrtho2D;
  */
 public class Chat {
 
-    private final float chatTop = 2.0f * Display.getHeight() / 3;
+    // Defines to what position on the screen the chat will reach from the bottom
+    private final float ChatTop = 2.0f * Display.getHeight() / 3;
+
     TrueTypeFont chatFont;
     private List<String> log;
     private StringBuffer messageToSend;
@@ -28,86 +29,82 @@ public class Chat {
 
     public Chat() {
         log = new ArrayList<String>();
+        messageToSend = new StringBuffer();
+
+        //TODO: change constants to user entered values
         int clientPort = 7777;
         String host = "localhost";
 
+        // Create a client using the hostname and port
         client = new Client(host, clientPort);
 
+        // First message on screen lets client know where they've connected
         log.add("Client connecting to " + host + " using port " + clientPort);
 
+        // Create font, push Texture to avoid messing with model texture
         Font font = new Font("Courier New", Font.PLAIN, 13);
         glPushAttrib(GL_TEXTURE_BIT);
         chatFont = new TrueTypeFont(font, true);
         glPopAttrib();
-        messageToSend = new StringBuffer();
     }
 
+    /**
+     * Renders the chatbox and messages
+     */
     public void render() {
-        glMatrixMode(GL_PROJECTION);
-        //Saves any perspective that may already be in place (camera)
-        glPushMatrix();
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        // Push currently enabled flags
+        glPushAttrib(GL_ENABLE_BIT);
         {
-            glLoadIdentity();
-            //Setup 2d display
-            gluOrtho2D(0, Display.getWidth(), Display.getHeight(), 0);
+            glDisable(GL_DEPTH_TEST); // Depth is disabled to prevent clipping
+            glDisable(GL_TEXTURE_2D); // Texture 2D is disabled so no textures are incorporated
+            glDisable(GL_LIGHTING); // Lighting is turned off for 2D
+            glEnable(GL_BLEND); // Blend is needed for transparency with game
 
-            glMatrixMode(GL_MODELVIEW);
-            //Saves any matrix transformations we may have on 3d objects
-            glPushMatrix();
-            {
-                glLoadIdentity();
-                glTranslatef(0.375f, 0.375f, 0.0f);
-
-                // Push currently enabled flags
-                glPushAttrib(GL_ENABLE_BIT);
-                {
-                    //Disable depth, texture, and lighting. Lighting is not needed . Depth will prevent clipping. Texture will incorporate any current textures.
-                    // Blend is needed for transparency with game
-                    glDisable(GL_DEPTH_TEST);
-                    glDisable(GL_TEXTURE_2D);
-                    glDisable(GL_LIGHTING);
-                    glEnable(GL_BLEND);
-                    // Blending eq: (A * Src) + ((1 - A) * Dst)
-                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-                    //Draw the chat box
-                    drawChatBox();
-                    getMessageFromClient();
-                    drawText();
-
-                }
-                glPopAttrib();
-
-                //Reload matrix and view transformations
-                glMatrixMode(GL_PROJECTION);
-            }
-            glPopMatrix();
-            glMatrixMode(GL_MODELVIEW);
+            drawChatBox(); // Draw the container for chat box
+            getMessageFromClient(); // Poll for message from client receiver
+            drawText(); // Draw the text to the screen
         }
-        glPopMatrix();
+        glPopAttrib();
     }
 
+    /**
+     * Draw a chatbox from the bottom of the screen to ChatTop, and fill the screen horizontally
+     */
     private void drawChatBox() {
         glBegin(GL_QUADS);
         {
             glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
             glVertex2f(0.0f, Display.getHeight());
-            glVertex2f(0.0f, chatTop);
-            glVertex2f(Display.getWidth(), chatTop);
+            glVertex2f(0.0f, ChatTop);
+            glVertex2f(Display.getWidth(), ChatTop);
             glVertex2f(Display.getWidth(), Display.getHeight());
         }
         glEnd();
     }
 
+    /**
+     * Add a character to the message buffer
+     * @param c
+     */
     public void addChar(char c) {
         messageToSend.append(c);
     }
 
+    /**
+     * Backspace a character from the message buffer
+     */
     public void removeChar() {
         if (messageToSend.length() > 0)
             messageToSend.deleteCharAt(messageToSend.length() - 1);
     }
 
+    /**
+     * Send a message to the client
+     * @return true if message is not empty
+     */
     public boolean sendMessage() {
         if (messageToSend.length() == 0)
             return false;
@@ -117,6 +114,9 @@ public class Chat {
         return true;
     }
 
+    /**
+     * Poll the client for a message, add it to the log if not null
+     */
     private void getMessageFromClient() {
         String rec = client.receiveMessage();
 
@@ -125,17 +125,32 @@ public class Chat {
         }
     }
 
+    /**
+     * Draw the chatlog to the chat
+     */
     private void drawText() {
         for (int i = 0; i < log.size(); i++) {
-            chatFont.drawString(0, i * 15 + chatTop, log.get(i), Color.white);
+            chatFont.drawString(0, i * 15 + ChatTop, log.get(i), Color.white);
         }
-        chatFont.drawString(0, 12 * 15 + chatTop, messageToSend.toString(), Color.green);
+        chatFont.drawString(0, 12 * 15 + ChatTop, messageToSend.toString(), Color.green);
     }
 
+    /**
+     * Add a message to the log
+     * @param message
+     */
     private void addMessageToLog(String message) {
         log.add(message);
         if (log.size() > 12) {
             log.remove(0);
         }
+    }
+
+    /**
+     * Disconnect from the server
+     */
+    public void disconnect() {
+        client.disconnect();
+        client = null;
     }
 }

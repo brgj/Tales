@@ -1,25 +1,6 @@
 package glmodel;
 
 import org.lwjgl.opengl.GL11;
-import core.Background;
-import core.Camera;
-import core.*;
-import helpers.Delegate;
-import org.lwjgl.Sys;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.util.glu.GLU;
-import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.opengl.GL11;
-
-import java.io.IOException;
-import glapp.*;
-import glmodel.*;
-import org.newdawn.slick.openal.Audio;
-import org.newdawn.slick.openal.AudioLoader;
-import org.newdawn.slick.util.ResourceLoader;
-
-import static org.lwjgl.opengl.GL11.*;
 /**
  *  This class loads and renders a mesh from an OBJ file format.  The mesh can have
  *  multiple materials, including texture images.

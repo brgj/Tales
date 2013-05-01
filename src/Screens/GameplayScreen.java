@@ -1,15 +1,16 @@
-package Screens;
+package screens;
 
-import core.*;
-import glapp.GLApp;
+import environment.Background;
+import display.Camera;
+import display.HUD;
+import environment.Light;
+import environment.Model;
 import helpers.Delegate;
 import network.Chat;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
-import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
@@ -63,19 +64,12 @@ import static org.lwjgl.opengl.GL11.*;
 }*/
 
 public class GameplayScreen extends Screen {
-    //Camera for single player
     Camera cam;
     Model model;
     HUD hud;
     Chat chat;
     Background background;
-    private Audio wavEffect;
-    float lightDirection[] = {-2f, 2f, 2f, 0f};//direction , position
-    float diffuse[] = {1f, 1f, 1f, 1f};  // diffuse color
-    float ambient[] = {.6f, .6f, .9f, 1f};    // ambient
-    float specular[] = {1f, 1f, 1f, 1f};
-    Light l = new Light(lightDirection, diffuse, ambient, specular);
-    float objrot = 0.0f;
+    Light l;
     private boolean chatting = false;
 
     public GameplayScreen(Delegate d) {
@@ -84,20 +78,27 @@ public class GameplayScreen extends Screen {
     }
 
     public void Initialize() {
+        // Enable Texture 2D for texturing models
+        glEnable(GL_TEXTURE_2D);
+        // Enable depth testing for correct drawing order
+        glEnable(GL_DEPTH_TEST);
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-        GL11.glClearColor(.5f, .6f, .9f, 1f);
         // Create a light
+        float lightDirection[] = {-2f, 2f, 2f, 0f}; //direction/position
+        float diffuse[] = {1f, 1f, 1f, 1f};
+        float ambient[] = {.6f, .6f, .9f, 1f};
+        float specular[] = {1f, 1f, 1f, 1f};
+        l = new Light(lightDirection, diffuse, ambient, specular);
         l.setLight();
 
         //Start Gamescreen music
+        killAudio();
         try {
-            wavEffect = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("music/36-VersusMode.wav"));
+            audio = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("music/36-VersusMode.wav"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        wavEffect.playAsMusic(1.0f, 1.0f, true);
+        audio.playAsMusic(1.0f, 1.0f, true);
 
         //Create Background
         background = new Background();
@@ -110,39 +111,58 @@ public class GameplayScreen extends Screen {
     }
 
     public void Render() {
-
-        glViewport(0, 0, Display.getWidth(), Display.getHeight());
-        //This code resets the camera view and the ModelView to initial view and identity respectively
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        GLU.gluPerspective(45.0f, (float) Display.getWidth() / (float) Display.getHeight(), 1f, 5000f);
-        glMatrixMode(GL_MODELVIEW);
-
-        objrot += 25f * GLApp.getSecondsPerFrame();
+        // Clear colour and depth buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        cam.setCameraView(0.2f, hud);
-        // Push the Texture bit so the stupid model doesn't throw a hissy-fit
-        glPushAttrib(GL_TEXTURE_BIT);
+        glMatrixMode(GL_PROJECTION);
+
+        // Push the 2D projection to stack
+        glPushMatrix();
         {
-            background.drawSkybox(50.0f);
-            cam.moveCamera();
+            //region 3D stuff
+            // Specify the size of the viewport and create a 3D projection matrix
+            glViewport(0, 0, Display.getWidth(), Display.getHeight());
+            glLoadIdentity();
+            GLU.gluPerspective(45.0f, (float) Display.getWidth() / (float) Display.getHeight(), 1f, 5000f);
+            glMatrixMode(GL_MODELVIEW);
+
+            // Rotate camera
+            cam.setCameraView(0.2f, hud);
+
+            // Push the Texture bit for the model
+            glPushAttrib(GL_TEXTURE_BIT);
+            {
+                background.drawSkybox(50.0f);
+                cam.moveCamera();
+            }
+            glPopAttrib();
+            model.render();
+            glMatrixMode(GL_PROJECTION);
+            //endregion
         }
-        glPopAttrib();
-        model.render();
+        glPopMatrix();
+
+        // Push the Texture bit for the model
         glPushAttrib(GL_TEXTURE_BIT);
         {
+            //region 2D stuff
             if (chatting)
                 chat.render();
             else
                 hud.render();
+            //endregion
         }
         glPopAttrib();
     }
 
     public void Update() {
 
-        //Temporary controls for the camera and target
+        if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+            chat.disconnect();
+            chat = null;
+            delegate.change(0);
+            return;
+        }
         boolean keyPressed = Keyboard.next();
         if (!chatting) {
             if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
@@ -162,9 +182,6 @@ public class GameplayScreen extends Screen {
             if (Keyboard.isKeyDown(Keyboard.KEY_C)) {
                 chatting = true;
             }
-            if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
-                delegate.change(0);
-            }
         } else if (keyPressed && Keyboard.getEventKeyState()) {
             int key = Keyboard.getEventKey();
             if (key == Keyboard.KEY_RETURN) {
@@ -178,37 +195,5 @@ public class GameplayScreen extends Screen {
                     chat.addChar(c);
             }
         }
-
-
-//        if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-//            cam.walk(.1f);
-//        }
-//        if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-//            cam.walk(-.1f);
-//        }
-//        if (Keyboard.isKeyDown(Keyboard.KEY_Q)) {
-//            cam.strafe(.1f);
-//        }
-//        if (Keyboard.isKeyDown(Keyboard.KEY_E)) {
-//            cam.strafe(-.1f);
-//        }
-//        if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
-//            cam.setRoll(1);
-//        }
-//        if (Keyboard.isKeyDown(Keyboard.KEY_R)) {
-//            cam.setRoll(-1);
-//        }
-//        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-//            cam.setY(.1f);
-//        }
-//        if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
-//            cam.setY(-.1f);
-//        }
-        //If not movement keys are pressed
-//        if (!Keyboard.isKeyDown(Keyboard.KEY_D) && !Keyboard.isKeyDown(Keyboard.KEY_A) &&
-//                !Keyboard.isKeyDown(Keyboard.KEY_W )&& !Keyboard.isKeyDown(Keyboard.KEY_S))
-//        {
-//            hud.crosshairReset();
-//        }
     }
 }

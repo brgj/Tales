@@ -1,9 +1,13 @@
 
 package glmodel;
 
+import org.lwjgl.util.glu.GLU;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
-import org.lwjgl.util.glu.*;
-import java.nio.*;
 
 /**
  * Holds a mesh object containing triangles and vertices.  Verts and Triangles

@@ -1,10 +1,11 @@
 
 package glmodel;
 
+import glapp.GLApp;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-import glapp.*;
 
 /**
  *  Loads a library of materials from a .mtl file into an array of GLMaterial objects.

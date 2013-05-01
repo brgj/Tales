@@ -1,8 +1,10 @@
 package glmodel;
 
-import glapp.*;
+import glapp.GLApp;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 /**

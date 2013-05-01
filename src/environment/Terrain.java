@@ -1,4 +1,4 @@
-package core;
+package environment;
 
 import helpers.EulerCamera;
 import helpers.PNGDecoder;

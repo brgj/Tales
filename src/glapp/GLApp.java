@@ -1,16 +1,26 @@
 package glapp;
 
-import java.util.*;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.Sys;
+import org.lwjgl.input.Cursor;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.*;
+import org.lwjgl.util.glu.GLU;
+import org.lwjgl.util.glu.Sphere;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.nio.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Hashtable;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.lang.reflect.Method;
-import java.nio.*;
-import java.io.*;
-import java.net.URL;
-import org.lwjgl.*;
-import org.lwjgl.opengl.*;
-import org.lwjgl.input.*;
-import org.lwjgl.util.glu.*;
 
 /**
  * Collection of functions to init and run an OpenGL app using LWJGL.

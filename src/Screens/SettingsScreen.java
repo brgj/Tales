@@ -1,15 +1,10 @@
-package Screens;
+package screens;
 
 import helpers.Delegate;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.newdawn.slick.Color;
 
 import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.util.glu.GLU.gluOrtho2D;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,54 +25,32 @@ public class SettingsScreen extends MenuScreen {
         this.MenuOptions.add("Option 1");
         this.MenuOptions.add("Option 2");
         this.MenuOptions.add("Option 2");
-
     }
 
     public void Render() {
-        glMatrixMode(GL_PROJECTION);
-        //Saves any perspective that may already be in place (camera)
-        glPushMatrix();
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        // Push currently enabled flags
+        glPushAttrib(GL_ENABLE_BIT);
         {
-            glLoadIdentity();
-            //Setup 2d display
-            gluOrtho2D(0, Display.getWidth(), Display.getHeight(), 0);
+            glDisable(GL_DEPTH_TEST); // Depth is disabled to prevent clipping
+            glDisable(GL_TEXTURE_2D); // Texture 2D is disabled so no textures are incorporated
+            glDisable(GL_LIGHTING); // Lighting is turned off for 2D
+            glEnable(GL_BLEND); // Blend is needed for text transparency
 
-            glMatrixMode(GL_MODELVIEW);
-            //Saves any matrix transformations we may have on 3d objects
-            glPushMatrix();
-            {
-                glLoadIdentity();
-
-                // Push currently enabled flags
-                glPushAttrib(GL_ENABLE_BIT);
-                {
-                    //Disable depth, texture, and lighting. Lighting is not needed . Depth will prevent clipping. Texture will incorporate any current textures.
-                    // Blend is needed for transparency with game
-                    glDisable(GL_DEPTH_TEST);
-                    glDisable(GL_TEXTURE_2D);
-                    glDisable(GL_LIGHTING);
-                    glEnable(GL_BLEND);
-                    // Blending eq: (A * Src) + ((1 - A) * Dst)
-                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-                    //Draw the menu
-                    drawBackground();
-                    drawOptions("Settings");
-
-                }
-                glPopAttrib();
-
-                //Reload matrix and view transformations
-                glMatrixMode(GL_PROJECTION);
-            }
-            glPopMatrix();
-            glMatrixMode(GL_MODELVIEW);
+            drawSettings(); // Draw Settings Menu
         }
-        glPopMatrix();
+        glPopAttrib();
     }
 
     public void Update() {
         if(updateOptions() == 0)
             delegate.change(0);
+    }
+
+    private void drawSettings() {
+        drawBackground();
+        drawOptions("Settings");
     }
 }

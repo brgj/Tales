@@ -1,8 +1,6 @@
-package Screens;
+package screens;
 
 import helpers.Delegate;
-import org.lwjgl.opengl.Display;
-import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
@@ -10,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.util.glu.GLU.gluOrtho2D;
+
 /**
  * Created with IntelliJ IDEA.
  * User: hp
@@ -19,8 +17,6 @@ import static org.lwjgl.util.glu.GLU.gluOrtho2D;
  * To change this template use File | Settings | File Templates.
  */
 public class MainMenuScreen extends MenuScreen {
-
-    private Audio wavEffect;
 
     public MainMenuScreen(Delegate d) {
         super(d);
@@ -33,63 +29,43 @@ public class MainMenuScreen extends MenuScreen {
         this.MenuOptions.add("Multi Player");
 
         //Start Menu screen music
+        killAudio();
         try {
-            wavEffect = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("music/02_TitleScreen.wav"));
+            audio = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("music/02_TitleScreen.wav"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        wavEffect.playAsMusic(1.0f, 1.0f, true);
+        audio.playAsMusic(1.0f, 1.0f, true);
+
+        // Setup blending function
+        // Blending eq: (A * Src) + ((1 - A) * Dst)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     }
 
     public void Render() {
-        glMatrixMode(GL_PROJECTION);
-        //Saves any perspective that may already be in place (camera)
-        glPushMatrix();
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        // Push currently enabled flags
+        glPushAttrib(GL_ENABLE_BIT);
         {
-            glLoadIdentity();
-            //Setup 2d display
-            gluOrtho2D(0, Display.getWidth(), Display.getHeight(), 0);
+            glDisable(GL_DEPTH_TEST); // Depth is disabled to prevent clipping
+            glDisable(GL_TEXTURE_2D); // Texture 2D is disabled so no textures are incorporated
+            glDisable(GL_LIGHTING); // Lighting is turned off for 2D
+            glEnable(GL_BLEND); // Blend is needed for text transparency
 
-            glMatrixMode(GL_MODELVIEW);
-            //Saves any matrix transformations we may have on 3d objects
-            glPushMatrix();
-            {
-                glLoadIdentity();
-
-                // Push currently enabled flags
-                glPushAttrib(GL_ENABLE_BIT);
-                {
-                    //Disable depth, texture, and lighting. Lighting is not needed . Depth will prevent clipping. Texture will incorporate any current textures.
-                    // Blend is needed for transparency with game
-                    glDisable(GL_DEPTH_TEST);
-                    glDisable(GL_TEXTURE_2D);
-                    glDisable(GL_LIGHTING);
-                    glEnable(GL_BLEND);
-                    // Blending eq: (A * Src) + ((1 - A) * Dst)
-                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-                    //Draw the menu
-                    drawMenu();
-
-                }
-                glPopAttrib();
-
-                //Reload matrix and view transformations
-                glMatrixMode(GL_PROJECTION);
-            }
-            glPopMatrix();
-            glMatrixMode(GL_MODELVIEW);
+            drawMenu(); // Draw the menu
         }
-        glPopMatrix();
+        glPopAttrib();
     }
 
     public void Update() {
-        if(updateOptions() != -1)
+        if (updateOptions() != -1)
             delegate.change(super.selectedIndex + 1);
     }
 
-    private void drawMenu(){
+    private void drawMenu() {
         drawBackground();
         drawOptions("Main Menu");
     }

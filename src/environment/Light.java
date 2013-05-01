@@ -1,4 +1,4 @@
-package core;
+package environment;
 
 import glapp.GLApp;
 import org.lwjgl.opengl.GL11;

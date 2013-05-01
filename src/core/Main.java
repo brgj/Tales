@@ -1,12 +1,13 @@
 package core;
 
-import Screens.ScreenManager;
+import screens.Screen;
+import screens.ScreenManager;
 import helpers.Delegate;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.GL11;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.util.glu.GLU.gluOrtho2D;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,22 +17,11 @@ import static org.lwjgl.opengl.GL11.*;
  * To change this template use File | Settings | File Templates.
  */
 public class Main {
-    private static boolean isChanged;
+    private static boolean isChanged = true;
     private static ScreenManager SM;
 
     public static void init() {
-        Delegate d = new Delegate() {
-            @Override
-            public void change(int val) {
-                isChanged = val != 0;
-            }
-        };
-
-        SM = new ScreenManager(d);
-
-    }
-
-    public static void main(String[] args) {
+        // Load OpenGL libraries
         try {
             LibraryLoader.loadNativeLibraries();
         } catch (Exception e) {
@@ -40,6 +30,7 @@ public class Main {
             System.exit(0);
         }
 
+        // Setup Display
         try {
             Display.setDisplayMode(new DisplayMode(800, 600));
             Display.create();
@@ -47,21 +38,29 @@ public class Main {
             e.printStackTrace();
             System.exit(0);
         }
-
         Display.setTitle("Project");
 
+        // Initialize 2D Projection and switch to ModelView mode
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        //TODO: Window size may not remain static, might need to adjust in the future
-        glOrtho(0, 800, 600, 0, -1, 1);
+        gluOrtho2D(0, Display.getWidth(), Display.getHeight(), 0);
         glMatrixMode(GL_MODELVIEW);
 
+        // Create ScreenManager with delegate for communicating with the game loop
+        Delegate d = new Delegate() {
+            @Override
+            public void change(int val) {
+                isChanged = val != 0;
+            }
+        };
+        SM = new ScreenManager(d);
+
+    }
+
+    public static void main(String[] args) {
         init();
 
-        isChanged = true;
-
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
+        // Game loop
         while (!Display.isCloseRequested()) {
             if (isChanged) {
                 SM.Initialize();
@@ -73,8 +72,8 @@ public class Main {
             Display.sync(80);
         }
 
+        Screen.killAudio();
         Display.destroy();
-
         System.exit(0);
     }
 

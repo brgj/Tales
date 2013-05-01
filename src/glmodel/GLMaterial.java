@@ -1,7 +1,10 @@
 package glmodel;
 
-import java.nio.*;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 
 /**
  *  Wraps properties for a material. 

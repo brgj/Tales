@@ -1,6 +1,6 @@
 package glmodel;
 
-import java.io.*;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 /** 

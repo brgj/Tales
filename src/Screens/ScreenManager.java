@@ -1,4 +1,4 @@
-package Screens;
+package screens;
 
 import helpers.Delegate;
 
@@ -27,7 +27,6 @@ public class ScreenManager {
                 switchScreens(val);
             }
         };
-
 
         screens = new Screen[]{
                 new MainMenuScreen(d),
