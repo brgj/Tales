@@ -103,11 +103,10 @@ public class GameplayScreen extends Screen {
         model = new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f);
         model2 = new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, -10.0f, -10.0f, 0.0f);
 
-<<<<<<< HEAD
         terrain = new Model("data/terrain/WS free terrain 014.obj", 20.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-=======
+
         terrain = new Model("data/terrain/WS free terrain 014.obj", 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
->>>>>>> 77470724c7850c910e9a0efab7789e328d428b4f
+
         //TODO: implement huds for individual players
         hud = new HUD();
     }
