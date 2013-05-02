@@ -5,7 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.HashSet;
+import java.util.HashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,7 +15,7 @@ import java.util.HashSet;
  * To change this template use File | Settings | File Templates.
  */
 public class Server implements Runnable {
-    private static HashSet<Integer> portSet = new HashSet<Integer>();
+    private static HashMap<Integer, InetAddress> portMap = new HashMap<Integer, InetAddress>();
 
     @Override
     public void run() {
@@ -59,18 +59,18 @@ public class Server implements Runnable {
 
             // Port number that the connection came from
             int clientPort = receivePacket.getPort();
-            System.out.println("Adding " + clientPort + " to list of connected client ports");
-            portSet.add(clientPort);
+            portMap.put(clientPort, clientIP);
 
             // Send message to other conversation participants
 
             byte[] sendData = clientMessage.getBytes();
 
-            for(Integer port : portSet) {
+            for(Integer port : portMap.keySet()) {
                 if(port != clientPort) {
+                    InetAddress ip = portMap.get(port);
                     // Create DatagramPacket to send to other client
-                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, clientIP, port);
-                    System.out.println("Sending message to " + port);
+                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ip, port);
+                    System.out.println("Sending message to " + ip + ":" + port);
                     try {
                         serverSocket.send(sendPacket);
                     } catch (IOException e) {
