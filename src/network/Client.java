@@ -149,7 +149,7 @@ class ReceiverThread extends Thread {
                 messageQueue.add(serverReply);
                 Thread.yield();
             } catch (SocketException e) {
-                System.out.println("Socket closed! Killing receiver");
+                System.err.println("Socket closed! Killing receiver");
                 break;
             } catch (IOException e) {
                 e.printStackTrace();

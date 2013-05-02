@@ -1,7 +1,10 @@
+package network;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.HashSet;
 
 /**
@@ -11,18 +14,21 @@ import java.util.HashSet;
  * Time: 12:59 AM
  * To change this template use File | Settings | File Templates.
  */
-public class Server {
+public class Server implements Runnable {
     private static HashSet<Integer> portSet = new HashSet<Integer>();
 
-    public static void main(String[] args) throws IOException {
+    @Override
+    public void run() {
         int serverPort = 7777;
-
-        if (args.length > 0) {
-            serverPort = Integer.valueOf(args[0]);
-        }
         System.out.println("Server using port " + serverPort);
 
-        DatagramSocket serverSocket = new DatagramSocket(serverPort);
+        DatagramSocket serverSocket = null;
+        try {
+            serverSocket = new DatagramSocket(serverPort);
+        } catch (SocketException e) {
+            e.printStackTrace();
+            return;
+        }
 
         System.out.println("Server start");
 
@@ -33,7 +39,12 @@ public class Server {
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
             // Blocks until a packet is received
-            serverSocket.receive(receivePacket);
+            try {
+                serverSocket.receive(receivePacket);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
 
             // Create string out of received byte array
             String clientMessage = new String(receivePacket.getData()).trim();
@@ -60,7 +71,12 @@ public class Server {
                     // Create DatagramPacket to send to other client
                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, clientIP, port);
                     System.out.println("Sending message to " + port);
-                    serverSocket.send(sendPacket);
+                    try {
+                        serverSocket.send(sendPacket);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    }
                 }
             }
             System.out.println();

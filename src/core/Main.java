@@ -1,8 +1,7 @@
 package core;
 
+import screens.MenuManager;
 import screens.Screen;
-import screens.ScreenManager;
-import helpers.Delegate;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
@@ -17,8 +16,7 @@ import static org.lwjgl.util.glu.GLU.gluOrtho2D;
  * To change this template use File | Settings | File Templates.
  */
 public class Main {
-    private static boolean isChanged = true;
-    private static ScreenManager SM;
+    private static MenuManager SM;
 
     public static void init() {
         // Load OpenGL libraries
@@ -46,28 +44,19 @@ public class Main {
         gluOrtho2D(0, Display.getWidth(), Display.getHeight(), 0);
         glMatrixMode(GL_MODELVIEW);
 
-        // Create ScreenManager with delegate for communicating with the game loop
-        Delegate d = new Delegate() {
-            @Override
-            public void change(int val) {
-                isChanged = val != 0;
-            }
-        };
-        SM = new ScreenManager(d);
+        SM = new MenuManager();
 
     }
 
     public static void main(String[] args) {
         init();
 
+        SM.Initialize();
+
         // Game loop
         while (!Display.isCloseRequested()) {
-            if (isChanged) {
-                SM.Initialize();
-                isChanged = false;
-            }
-            SM.Render();
             SM.Update();
+            SM.Render();
             Display.update();
             Display.sync(80);
         }

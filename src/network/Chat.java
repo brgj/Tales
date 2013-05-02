@@ -27,13 +27,12 @@ public class Chat {
     private StringBuffer messageToSend;
     private Client client;
 
-    public Chat() {
+    public Chat(String host) {
         log = new ArrayList<String>();
         messageToSend = new StringBuffer();
 
         //TODO: change constants to user entered values
         int clientPort = 7777;
-        String host = "localhost";
 
         // Create a client using the hostname and port
         client = new Client(host, clientPort);

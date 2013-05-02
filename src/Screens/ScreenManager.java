@@ -1,58 +1,22 @@
 package screens;
 
-import helpers.Delegate;
-
 /**
  * Created with IntelliJ IDEA.
- * User: hp
- * Date: 23/04/13
- * Time: 3:10 PM
+ * User: Brad
+ * Date: 5/2/13
+ * Time: 2:47 AM
  * To change this template use File | Settings | File Templates.
  */
-public class ScreenManager {
-    private Screen CurrentScreen;
-    private Screen[] screens;
-    Delegate delegate;
+public interface ScreenManager {
 
-    public ScreenManager(Delegate d) {
-        delegate = d;
-        initScreens();
-    }
+    public void initScreens();
 
-    private void initScreens() {
+    public void switchScreens(int val);
 
-        Delegate d = new Delegate() {
-            @Override
-            public void change(int val) {
-                switchScreens(val);
-            }
-        };
+    public void Initialize();
 
-        screens = new Screen[]{
-                new MainMenuScreen(d),
-                new SettingsScreen(d),
-                new GameplayScreen(d),
-                new GameplayScreen(d)};
+    public void Render();
 
-        CurrentScreen = screens[0];
-    }
-
-    private void switchScreens(int val) {
-        CurrentScreen = screens[val];
-        delegate.change(1);
-    }
-
-    public void Initialize() {
-        CurrentScreen.Initialize();
-    }
-
-    public void Render() {
-        CurrentScreen.Render();
-    }
-
-    public void Update() {
-        CurrentScreen.Update();
-    }
-
+    public void Update();
 
 }

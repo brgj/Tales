@@ -1,12 +1,11 @@
 package screens;
 
-import environment.Background;
 import display.Camera;
 import display.HUD;
+import environment.Background;
 import environment.Light;
 import environment.Model;
 import helpers.Delegate;
-import network.Chat;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.glu.GLU;
@@ -67,10 +66,8 @@ public class GameplayScreen extends Screen {
     Camera cam;
     Model model;
     HUD hud;
-    Chat chat;
     Background background;
     Light l;
-    private boolean chatting = false;
 
     public GameplayScreen(Delegate d) {
         super(d);
@@ -106,7 +103,6 @@ public class GameplayScreen extends Screen {
         model = new Model("data/Arwing/finalarwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, -10.0f, -10.0f, 0.0f);
 
         //TODO: implement huds for individual players
-        chat = new Chat();
         hud = new HUD();
     }
 
@@ -146,10 +142,7 @@ public class GameplayScreen extends Screen {
         glPushAttrib(GL_TEXTURE_BIT);
         {
             //region 2D stuff
-            if (chatting)
-                chat.render();
-            else
-                hud.render();
+            hud.render();
             //endregion
         }
         glPopAttrib();
@@ -158,42 +151,26 @@ public class GameplayScreen extends Screen {
     public void Update() {
 
         if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
-            chat.disconnect();
-            chat = null;
-            delegate.change(0);
+            Exit();
             return;
         }
-        boolean keyPressed = Keyboard.next();
-        if (!chatting) {
-            if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-                cam.move(0.2f, 90);
-            }
-            if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-                cam.move(0.2f, 270);
-            }
-            if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-                cam.move(0.2f, 0);
-                cam.moveUp(0.2f, 0);
-            }
-            if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-                cam.move(0.2f, 180);
-                cam.moveUp(0.2f, 180);
-            }
-            if (Keyboard.isKeyDown(Keyboard.KEY_C)) {
-                chatting = true;
-            }
-        } else if (keyPressed && Keyboard.getEventKeyState()) {
-            int key = Keyboard.getEventKey();
-            if (key == Keyboard.KEY_RETURN) {
-                if (!chat.sendMessage())
-                    chatting = false;
-            } else if (key == Keyboard.KEY_BACK) {
-                chat.removeChar();
-            } else {
-                char c = Keyboard.getEventCharacter();
-                if (Character.isLetterOrDigit(c) || c == ' ')
-                    chat.addChar(c);
-            }
+        if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+            cam.move(0.2f, 90);
         }
+        if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+            cam.move(0.2f, 270);
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+            cam.move(0.2f, 0);
+            cam.moveUp(0.2f, 0);
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+            cam.move(0.2f, 180);
+            cam.moveUp(0.2f, 180);
+        }
+    }
+
+    protected void Exit() {
+        delegate.change(0);
     }
 }
