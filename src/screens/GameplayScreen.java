@@ -100,10 +100,10 @@ public class GameplayScreen extends Screen {
         //Create Background
         background = new Background();
         //load the model
-        model2 = new Model("data/Arwing/finalarwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, -10.0f, -10.0f, 0.0f);
-        model = new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, -10.0f, -10.0f, 0.0f);
+        model = new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f);
+        model2 = new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, -10.0f, -10.0f, 0.0f);
 
-        terrain = new Model("data/terrain/WS free terrain 014.obj", 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        terrain = new Model("data/terrain/WS free terrain 014.obj", 20.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
         //TODO: implement huds for individual players
         hud = new HUD();
     }
@@ -121,7 +121,7 @@ public class GameplayScreen extends Screen {
             // Specify the size of the viewport and create a 3D projection matrix
             glViewport(0, 0, Display.getWidth(), Display.getHeight());
             glLoadIdentity();
-            GLU.gluPerspective(45.0f, (float) Display.getWidth() / (float) Display.getHeight(), 1f, 5000f);
+            GLU.gluPerspective(45.0f, (float) Display.getWidth() / (float) Display.getHeight(), .1f, 5000f);
             glMatrixMode(GL_MODELVIEW);
 
             // Rotate camera
@@ -131,10 +131,13 @@ public class GameplayScreen extends Screen {
             glPushAttrib(GL_TEXTURE_BIT);
             {
                 background.drawSkybox(50.0f);
+                glPushMatrix();
+                glLoadIdentity();
+                model.render();
+                glPopMatrix();
                 cam.moveCamera();
             }
             glPopAttrib();
-            model.render();
             model2.render();
             terrain.render();
             glMatrixMode(GL_PROJECTION);
