@@ -198,7 +198,6 @@ public class GLModel {
             mtl.apply();
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, mtl.textureHandle);
 
-            // draw triangles until material changes
             GL11.glBegin(GL11.GL_TRIANGLES);
             for ( ; i < m.triangles.length && (t=m.triangles[i])!=null && currMtl == t.materialID; i++) {
                 GL11.glTexCoord2f(t.uvw1.x, t.uvw1.y);
