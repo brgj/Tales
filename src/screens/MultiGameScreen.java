@@ -7,6 +7,7 @@ import org.lwjgl.input.Keyboard;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
+import java.util.regex.Pattern;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -84,7 +85,7 @@ public class MultiGameScreen extends GameplayScreen {
                 chat.removeChar();
             } else {
                 char c = Keyboard.getEventCharacter();
-                if (Character.isLetterOrDigit(c) || c == ' ')
+                if (Pattern.matches("[a-zA-Z0-9\\s\\p{P}]", new String(new char[]{c})))
                     chat.addChar(c);
             }
         }

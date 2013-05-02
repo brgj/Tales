@@ -30,7 +30,12 @@ public class MultiMenuScreen extends MenuScreen {
         this.MenuOptions = new ArrayList<String>();
         this.MenuOptions.add("Return to Main Menu");
         this.MenuOptions.add("Create Game");
-        this.MenuOptions.add(ipBuffer.toString() + "<type IP address>");
+        String joinOption;
+        if (ipBuffer.length() == minLength)
+            joinOption = ipBuffer.toString() + "<type IP address>";
+        else
+            joinOption = ipBuffer.toString();
+        this.MenuOptions.add(joinOption);
     }
 
     @Override
@@ -60,16 +65,16 @@ public class MultiMenuScreen extends MenuScreen {
     }
 
     @Override
-    protected int updateOptions(){
-        if(Keyboard.next() && Keyboard.getEventKeyState()) {
+    protected int updateOptions() {
+        if (Keyboard.next() && Keyboard.getEventKeyState()) {
             int key = Keyboard.getEventKey();
             if (key == Keyboard.KEY_RETURN) {
                 return selectedIndex;
             } else if (key == Keyboard.KEY_UP) {
                 selectedIndex = ((selectedIndex + MenuOptions.size()) - 1) % MenuOptions.size();
             } else if (key == Keyboard.KEY_DOWN) {
-                selectedIndex = (selectedIndex + 1) %  MenuOptions.size();
-            } else if(key == Keyboard.KEY_BACK) {
+                selectedIndex = (selectedIndex + 1) % MenuOptions.size();
+            } else if (key == Keyboard.KEY_BACK) {
                 removeChar();
             } else {
                 char c = Keyboard.getEventCharacter();
