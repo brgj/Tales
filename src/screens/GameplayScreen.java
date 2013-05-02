@@ -64,7 +64,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class GameplayScreen extends Screen {
     Camera cam;
-    Model model,model2;
+    Model model,model2,terrain;
     HUD hud;
     Background background;
     Light l;
@@ -102,6 +102,8 @@ public class GameplayScreen extends Screen {
         //load the model
         model2 = new Model("data/Arwing/finalarwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, -10.0f, -10.0f, 0.0f);
         model = new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, -10.0f, -10.0f, 0.0f);
+
+        terrain = new Model("data/terrain/WS free terrain 014.obj", 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
         //TODO: implement huds for individual players
         hud = new HUD();
     }
@@ -134,7 +136,7 @@ public class GameplayScreen extends Screen {
             glPopAttrib();
             model.render();
             model2.render();
-
+            terrain.render();
             glMatrixMode(GL_PROJECTION);
             //endregion
         }

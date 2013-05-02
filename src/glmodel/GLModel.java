@@ -196,11 +196,10 @@ public class GLModel {
             currMtl = t.materialID;
             mtl = (materials != null && materials.length>0 && currMtl >= 0)? materials[currMtl] : defaultMtl;
             mtl.apply();
-            //GL11.glBindTexture(GL11.GL_TEXTURE_2D, mtl.textureHandle);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, mtl.textureHandle);
 
             // draw triangles until material changes
             GL11.glBegin(GL11.GL_TRIANGLES);
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, mtl.textureHandle);
             for ( ; i < m.triangles.length && (t=m.triangles[i])!=null && currMtl == t.materialID; i++) {
                 GL11.glTexCoord2f(t.uvw1.x, t.uvw1.y);
                 GL11.glNormal3f(t.norm1.x, t.norm1.y, t.norm1.z);
@@ -215,8 +214,8 @@ public class GLModel {
                 GL11.glVertex3f( (float)t.p3.pos.x, (float)t.p3.pos.y, (float)t.p3.pos.z);
             }
             GL11.glEnd();
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
         }
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
     }
 
     public void renderMeshNormals()

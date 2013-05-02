@@ -1,0 +1,19 @@
+# Exported from Bryce 6.0
+
+newmtl material_1
+    Ns 196
+    d 1.000000
+    illum 2
+    #bump_amt 0.239216
+    #refl_amt 0.000000
+    #amb_amt 0.078431
+    #dif_amt 1.000000
+    #spec_amt 0.266667
+    Ka 0.078431 0.078431 0.078431
+    Kd 1.000000 1.000000 1.000000
+    Ks 0.266667 0.266667 0.266667
+    Tf 1.000000 1.000000 1.000000
+    map_Ka WS free terrain 014_mtl1_ambicol.bmp
+    map_Kd WS free terrain 014_mtl1_diffcol.bmp
+    map_Ks WS free terrain 014_mtl1_speccol.bmp
+    map_Bump WS free terrain 014_mtl1_bumpamt.bmp
