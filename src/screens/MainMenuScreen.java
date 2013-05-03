@@ -35,7 +35,8 @@ public class MainMenuScreen extends MenuScreen {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        audio.playAsMusic(1.0f, 1.0f, true);
+        if(audioOn)
+            audio.playAsMusic(1.0f, 1.0f, true);
 
         // Setup blending function
         // Blending eq: (A * Src) + ((1 - A) * Dst)

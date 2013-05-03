@@ -22,7 +22,7 @@ public class SettingsScreen extends MenuScreen {
     public void Initialize() {
         MenuOptions = new ArrayList<String>();
         MenuOptions.add("Return to Main Menu");
-        MenuOptions.add("Option 1");
+        MenuOptions.add("Music On/Off");
         MenuOptions.add("Option 2");
         MenuOptions.add("Option 3");
     }
@@ -45,8 +45,16 @@ public class SettingsScreen extends MenuScreen {
     }
 
     public void Update() {
-        if(updateOptions() == 0)
+        int option = updateOptions();
+        if(option == 0)
             delegate.change(0);
+        else if(option == 1) {
+            audioOn = !audioOn;
+            if(audioOn)
+                audio.playAsMusic(1.0f, 1.0f, true);
+            else
+                audio.stop();
+        }
     }
 
     private void drawSettings() {

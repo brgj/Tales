@@ -58,7 +58,8 @@ public class GameplayScreen extends Screen {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        audio.playAsMusic(1.0f, 1.0f, true);
+        if(audioOn)
+            audio.playAsMusic(1.0f, 1.0f, true);
 
         //Create Background
         background = new Background();
