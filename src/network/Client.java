@@ -2,8 +2,7 @@ package network;
 
 import java.io.IOException;
 import java.net.*;
-import java.util.ArrayDeque;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,18 +12,25 @@ import java.util.Queue;
  * To change this template use File | Settings | File Templates.
  */
 public class Client {
-    InetAddress ia;
-    Sender sender;
-    ReceiverThread receiver;
-    Queue<String> messageQueue;
+    public final String host;
+    public final int port;
+    // Strictly deals with messages sent between players
+    private final Queue<String> messageQueue;
+    // Maps specific actions and their owners to an array of bytes representing details of those actions
+    private final Map<Byte, byte[]> actionMap;
+    private Sender sender;
+    private ReceiverThread receiver;
 
-    public Client(String host, int clientPort) {
+    public Client(String h, int p) {
         messageQueue = new ArrayDeque<String>();
+        actionMap = new HashMap<Byte, byte[]>();
+        host = h;
+        port = p;
         try {
             // Get IP of host according to hostname
-            ia = InetAddress.getByName(host);
+            InetAddress ia = InetAddress.getByName(host);
             // Creates a Sender object based on IP and port
-            sender = new Sender(ia, clientPort);
+            sender = new Sender(ia, port);
         } catch (UnknownHostException e) {
             e.printStackTrace();
             return;
@@ -33,7 +39,7 @@ public class Client {
             return;
         }
         // Creates a Receiver object based on the DatagramSocket created in the sender
-        receiver = new ReceiverThread(sender.getSocket(), messageQueue);
+        receiver = new ReceiverThread(sender.getSocket(), messageQueue, actionMap);
         // Sends an initial message to the server announcing client's arrival
         sendMessage("A new player has entered the room");
         // Start polling the server for messages
@@ -42,6 +48,7 @@ public class Client {
 
     /**
      * Checks the message queue for any unread messages
+     *
      * @return
      */
     public String receiveMessage() {
@@ -49,12 +56,33 @@ public class Client {
     }
 
     /**
-     * Sends a message to the server
+     * Checks the actionMap for any changes in other players state
+     * @return
+     */
+    public Set<Map.Entry<Byte, byte[]>> receiveActions() {
+        Set<Map.Entry<Byte, byte[]>> actions = new HashSet<Map.Entry<Byte, byte[]>>(actionMap.entrySet());
+        actionMap.clear();
+        return actions;
+    }
+
+    /**
+     * Sends a text message to the server
+     *
      * @param message
      */
     public void sendMessage(String message) {
         sender.sendMessage(message);
     }
+
+    public void sendData(byte[] data) {
+        try {
+            sender.sendData(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     /**
      * Stops all client activity and disconnects from the server
@@ -87,6 +115,7 @@ class Sender {
 
     /**
      * Returns the DatagramSocket used for sending and receiving messages
+     *
      * @return
      */
     public DatagramSocket getSocket() {
@@ -102,26 +131,37 @@ class Sender {
 
     /**
      * Sends a packet to the server based on the string passed in
+     *
      * @param clientMessage
      */
     public void sendMessage(String clientMessage) {
         try {
-            byte[] data = clientMessage.getBytes();
-            DatagramPacket sendPacket = new DatagramPacket(data, data.length, serverIPAddress, serverPort);
-            clientSocket.send(sendPacket);
+            byte[] data = new byte[clientMessage.length() + 1];
+            // Encode as a text message
+            data[0] = 0;
+            // Copy data from string to byte array
+            System.arraycopy(clientMessage.getBytes("UTF-8"), 0, data, 1, data.length - 1);
+            sendData(data);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendData(byte[] data) throws IOException {
+        DatagramPacket sendPacket = new DatagramPacket(data, data.length, serverIPAddress, serverPort);
+        clientSocket.send(sendPacket);
     }
 }
 
 class ReceiverThread extends Thread {
     private DatagramSocket clientSocket;
     private Queue<String> messageQueue;
+    private Map<Byte, byte[]> actionMap;
 
-    public ReceiverThread(DatagramSocket ds, Queue<String> queue) {
+    public ReceiverThread(DatagramSocket ds, Queue<String> queue, Map<Byte, byte[]> map) {
         clientSocket = ds;
         messageQueue = queue;
+        actionMap = map;
     }
 
     /**
@@ -135,7 +175,7 @@ class ReceiverThread extends Thread {
      * Constantly polls the server, requesting more messages, and adds them to the messageQueue
      */
     public void run() {
-        byte[] receiveData = new byte[1024];
+        byte[] receiveData = new byte[256];
         // Loops until a problem occurs or halt is called
         while (true) {
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -144,9 +184,18 @@ class ReceiverThread extends Thread {
                 // Blocks until message received or interrupt issued
                 clientSocket.receive(receivePacket);
 
-                String serverReply = new String(receivePacket.getData(), 0, receivePacket.getLength());
+                int length = receivePacket.getLength();
 
-                messageQueue.add(serverReply);
+                // If the message is a chat message, add to message queue
+                if ((receiveData[0] & 0xF0) == 0) {
+                    String serverReply = (receiveData[0] & 0x0F) + ": " + new String(receiveData, 1, length);
+                    messageQueue.add(serverReply);
+                } else {
+                    byte[] temp = new byte[length - 1];
+                    System.arraycopy(receiveData, 1, temp, 0, length - 1);
+                    actionMap.put(receiveData[0], temp);
+                }
+
                 Thread.yield();
             } catch (SocketException e) {
                 System.err.println("Socket closed! Killing receiver");

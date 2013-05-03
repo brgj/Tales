@@ -124,19 +124,27 @@ public class GameplayScreen extends Screen {
             return;
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-            cam.move(0.2f, 90);
+            move(0.2f, 90);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-            cam.move(0.2f, 270);
+            move(0.2f, 270);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-            cam.move(0.2f, 0);
-            cam.moveUp(0.2f, 0);
+            move(0.2f, 0);
+            moveUp(0.2f, 0);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-            cam.move(0.2f, 180);
-            cam.moveUp(0.2f, 180);
+            move(0.2f, 180);
+            moveUp(0.2f, 180);
         }
+    }
+
+    protected void move(float units, int dir) {
+        cam.move(units, dir);
+    }
+
+    protected void moveUp(float units, int dir) {
+        cam.moveUp(units, dir);
     }
 
     protected void Exit() {

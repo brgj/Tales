@@ -27,18 +27,14 @@ public class Chat {
     private StringBuffer messageToSend;
     private Client client;
 
-    public Chat(String host) {
+    public Chat(Client c) {
         log = new ArrayList<String>();
         messageToSend = new StringBuffer();
 
-        //TODO: change constants to user entered values
-        int clientPort = 7777;
-
-        // Create a client using the hostname and port
-        client = new Client(host, clientPort);
+        client = c;
 
         // First message on screen lets client know where they've connected
-        log.add("Client connecting to " + host + " using port " + clientPort);
+        log.add("Client connected to " + client.host + " using port " + client.port);
 
         // Create font, push Texture to avoid messing with model texture
         Font font = new Font("Courier New", Font.PLAIN, 13);
@@ -89,7 +85,8 @@ public class Chat {
      * @param c
      */
     public void addChar(char c) {
-        messageToSend.append(c);
+        if(messageToSend.length() < 255)
+            messageToSend.append(c);
     }
 
     /**
@@ -120,7 +117,7 @@ public class Chat {
         String rec = client.receiveMessage();
 
         if (rec != null) {
-            addMessageToLog("Stranger: " + rec);
+            addMessageToLog(rec);
         }
     }
 
