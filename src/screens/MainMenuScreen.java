@@ -23,10 +23,10 @@ public class MainMenuScreen extends MenuScreen {
     }
 
     public void Initialize() {
-        this.MenuOptions = new ArrayList<String>();
-        this.MenuOptions.add("Settings");
-        this.MenuOptions.add("Single Player");
-        this.MenuOptions.add("Multi Player");
+        MenuOptions = new ArrayList<String>();
+        MenuOptions.add("Settings");
+        MenuOptions.add("Single Player");
+        MenuOptions.add("Multi Player");
 
         //Start Menu screen music
         killAudio();
@@ -62,7 +62,7 @@ public class MainMenuScreen extends MenuScreen {
 
     public void Update() {
         if (updateOptions() != -1)
-            delegate.change(super.selectedIndex + 1);
+            delegate.change(selectedIndex + 1);
     }
 
     private void drawMenu() {

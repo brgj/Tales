@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import static org.lwjgl.opengl.GL11.glPopAttrib;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Brad
@@ -57,9 +55,9 @@ public class MultiGameScreen extends GameplayScreen {
             }
             new Thread(server).start();
             // TODO: get rid of this
-            enemies.put((byte) 1, model);
+            enemies.put((byte) 1, model2);
         } else {
-            enemies.put((byte) 0, model);
+            enemies.put((byte) 0, model2);
         }
 
         client = new Client(ip.val, PORT);
@@ -72,7 +70,6 @@ public class MultiGameScreen extends GameplayScreen {
 
         if (chatting)
             chat.render();
-        glPopAttrib();
     }
 
     @Override

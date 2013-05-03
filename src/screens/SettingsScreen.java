@@ -20,11 +20,11 @@ public class SettingsScreen extends MenuScreen {
     }
 
     public void Initialize() {
-        this.MenuOptions = new ArrayList<String>();
-        this.MenuOptions.add("Return to Main Menu");
-        this.MenuOptions.add("Option 1");
-        this.MenuOptions.add("Option 2");
-        this.MenuOptions.add("Option 2");
+        MenuOptions = new ArrayList<String>();
+        MenuOptions.add("Return to Main Menu");
+        MenuOptions.add("Option 1");
+        MenuOptions.add("Option 2");
+        MenuOptions.add("Option 3");
     }
 
     public void Render() {

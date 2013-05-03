@@ -34,7 +34,7 @@ public class GameplayScreen extends Screen {
 
     public GameplayScreen(Delegate d) {
         super(d);
-        cam = new Camera(new Vector3f(0, 0, -10));
+        cam = new Camera(new Vector3f(0, 0, 0));
     }
 
     public void Initialize() {
@@ -63,10 +63,10 @@ public class GameplayScreen extends Screen {
         //Create Background
         background = new Background();
         //load the model
-        model = new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f);
-        model2 = new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, -10.0f, -10.0f, 0.0f);
+        model = new Model("data/Arwing/arwing.obj", 1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f);
+        model2 = new Model("data/DarkFighter/dark_fighter.obj", 1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 
-        terrain = new Model("data/terrain/WS free terrain 014.obj", 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        terrain = new Model("data/terrain/WS free terrain 014.obj", 20.0f, 0.0f, 0.0f, 0.0f, 0.0f, -2.0f, 0.0f);
 
         //TODO: implement huds for individual players
         hud = new HUD();
@@ -102,8 +102,13 @@ public class GameplayScreen extends Screen {
 
             cam.moveCamera();
 
+            //TODO: Figure out a better solution to models stealing each others transformations
             //Draw other 3d models not focused by the camera
-            model2.render();
+            glPushMatrix();
+            {
+                model2.render();
+            }
+            glPopMatrix();
             terrain.render();
             glMatrixMode(GL_PROJECTION);
             //endregion

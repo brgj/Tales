@@ -20,6 +20,7 @@ public class MenuManager implements ScreenManager {
     @Override
     public void initScreens() {
 
+        // Create delegate that will be invoked by screens that allows screen switching
         Delegate d = new Delegate() {
             @Override
             public void change(int val) {

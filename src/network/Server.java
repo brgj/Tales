@@ -113,7 +113,6 @@ public class Server implements Runnable {
                     InetAddress ip = addressMap.get(port);
                     // Create DatagramPacket to send to other client
                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ip, port);
-                    System.out.println("Sending message to " + ip + ":" + port);
                     try {
                         serverSocket.send(sendPacket);
                     } catch (IOException e) {
@@ -122,7 +121,6 @@ public class Server implements Runnable {
                     }
                 }
             }
-            System.out.println();
         }
     }
 }

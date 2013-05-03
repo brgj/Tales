@@ -11,50 +11,49 @@ import org.lwjgl.opengl.GL11;
  * To change this template use File | Settings | File Templates.
  */
 public class Model {
-    GLModel model;
-    float scaleratio = 1.0f, rotx = 0.0f, roty = 0.0f, rotz = 0.0f,
-            transx = 0.0f, transy = 0.0f, transz = 0.0f;
+    private float scaleRatio = 1.0f;
+    private float rotX = 0.0f, rotY = 0.0f, rotZ = 0.0f;
+    private float transX = 0.0f, transY = 0.0f, transZ = 0.0f;
+    private GLModel model;
 
     public Model(String filename) {
         model = new GLModel(filename);
         model.regenerateNormals();
-
-
     }
 
-    public Model(String filename, float scaleratio, float rotx, float roty, float rotz,
-                 float transx, float transy, float transz) {
+    public Model(String filename, float scaleRatio, float rotX, float rotY, float rotZ,
+                 float transX, float transY, float transZ) {
         model = new GLModel(filename);
-        this.scaleratio = scaleratio;
-        this.rotx = rotx;
-        this.roty = roty;
-        this.rotz = rotz;
-        this.transx = transx;
-        this.transy = transy;
-        this.transz = transz;
+        this.scaleRatio = scaleRatio;
+        this.rotX = rotX;
+        this.rotY = rotY;
+        this.rotZ = rotZ;
+        this.transX = transX;
+        this.transY = transY;
+        this.transZ = transZ;
         model.regenerateNormals();
 
 
     }
 
     public void render() {
-        GL11.glScalef(scaleratio, scaleratio, scaleratio);
-        GL11.glRotatef(rotx, 1, 0, 0);
-        GL11.glRotatef(roty, 0, 1, 0);
-        GL11.glRotatef(rotz, 0, 0, 1);
-        GL11.glTranslatef(transx, transy, transz);
+        GL11.glScalef(scaleRatio, scaleRatio, scaleRatio);
+        GL11.glRotatef(rotX, 1, 0, 0);
+        GL11.glRotatef(rotY, 0, 1, 0);
+        GL11.glRotatef(rotZ, 0, 0, 1);
+        GL11.glTranslatef(transX / scaleRatio, transY / scaleRatio, transZ / scaleRatio);
         model.render();
     }
 
-    public void updatePosition(float transx, float transy, float transz) {
-        this.transx = transx;
-        this.transy = transy;
-        this.transz = transz;
+    public void updatePosition(float transX, float transY, float transZ) {
+        this.transX = transX;
+        this.transY = transY;
+        this.transZ = transZ;
     }
 
-    public void updateRotation(float rotx, float roty, float rotz) {
-        this.rotx = rotx;
-        this.roty = roty;
-        this.rotz = rotz;
+    public void updateRotation(float rotX, float rotY, float rotZ) {
+        this.rotX = rotX;
+        this.rotY = rotY;
+        this.rotZ = rotZ;
     }
 }

@@ -37,8 +37,10 @@ public abstract class MenuScreen extends Screen {
     }
 
     protected void drawBackground(){
+        // Set the filter colour to nothing and bind the background texture to GL_TEXTURE_2D
         glColor3f(1.0f,1.0f,1.0f);
         background.bind();
+        // Map texture coordinates to 2D vertex coordinates
         glBegin(GL_QUADS);
         {
             glTexCoord2f(0, 0);         glVertex2f(0, 0);
@@ -50,6 +52,7 @@ public abstract class MenuScreen extends Screen {
     }
 
     protected int updateOptions(){
+        // Make sure that there is a new key in the queue, and that it is being pressed rather than released
         if(Keyboard.next() && Keyboard.getEventKeyState()) {
             int key = Keyboard.getEventKey();
             if (key == Keyboard.KEY_RETURN) {
@@ -64,6 +67,7 @@ public abstract class MenuScreen extends Screen {
     }
 
     protected void drawOptions(String title){
+        // Draw the menu options and colour the selected index yellow
         glEnable(GL_BLEND);
         {
             Color current;

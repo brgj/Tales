@@ -57,6 +57,7 @@ public class Client {
 
     /**
      * Checks the actionMap for any changes in other players state
+     *
      * @return
      */
     public Set<Map.Entry<Byte, byte[]>> receiveActions() {
@@ -75,14 +76,8 @@ public class Client {
     }
 
     public void sendData(byte[] data) {
-        try {
-            sender.sendData(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        sender.sendData(data);
     }
-
-
 
     /**
      * Stops all client activity and disconnects from the server
@@ -147,9 +142,13 @@ class Sender {
         }
     }
 
-    public void sendData(byte[] data) throws IOException {
+    public void sendData(byte[] data) {
         DatagramPacket sendPacket = new DatagramPacket(data, data.length, serverIPAddress, serverPort);
-        clientSocket.send(sendPacket);
+        try {
+            clientSocket.send(sendPacket);
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 }
 

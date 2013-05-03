@@ -44,10 +44,11 @@ public class MultiplayerManager extends Screen implements ScreenManager {
     public void switchScreens(int val) {
         CurrentScreen = screens[val];
 
-        if (val == 0)
+
+        if (val == 0) // If attempting to go back to any menu, show the actual main menu rather than multimenu
             delegate.change(0);
-        else if(val == 2)
-            ph.val = ((MultiMenuScreen)screens[0]).getIP();
+        else if (val == 2) // Set the String inside of the placeholder so the Client knows which IP to connect to
+            ph.val = ((MultiMenuScreen) screens[0]).getIP();
 
         CurrentScreen.Initialize();
     }
@@ -67,6 +68,7 @@ public class MultiplayerManager extends Screen implements ScreenManager {
         CurrentScreen.Update();
     }
 }
+
 class IPPlaceHolder {
     public String val;
 }

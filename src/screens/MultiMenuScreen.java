@@ -27,10 +27,11 @@ public class MultiMenuScreen extends MenuScreen {
 
     @Override
     public void Initialize() {
-        this.MenuOptions = new ArrayList<String>();
-        this.MenuOptions.add("Return to Main Menu");
-        this.MenuOptions.add("Create Game");
+        MenuOptions = new ArrayList<String>();
+        MenuOptions.add("Return to Main Menu");
+        MenuOptions.add("Create Game");
         String joinOption;
+        // If the ipBuffer is empty, print a prompt for the ip address
         if (ipBuffer.length() == minLength)
             joinOption = ipBuffer.toString() + "<type IP address>";
         else
@@ -76,7 +77,7 @@ public class MultiMenuScreen extends MenuScreen {
                 selectedIndex = (selectedIndex + 1) % MenuOptions.size();
             } else if (key == Keyboard.KEY_BACK) {
                 removeChar();
-            } else {
+            } else { // If not navigating the menu, put characters into ipBuffer
                 char c = Keyboard.getEventCharacter();
                 if (Character.isDigit(c) || c == '.')
                     addChar(c);
