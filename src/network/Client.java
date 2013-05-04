@@ -187,7 +187,7 @@ class ReceiverThread extends Thread {
 
                 // If the message is a chat message, add to message queue
                 if ((receiveData[0] & 0xF0) == 0) {
-                    String serverReply = (receiveData[0] & 0x0F) + ": " + new String(receiveData, 1, length);
+                    String serverReply = (receiveData[0] & 0x0F) + ": " + new String(receiveData, 1, length - 1);
                     messageQueue.add(serverReply);
                 } else {
                     byte[] temp = new byte[length - 1];

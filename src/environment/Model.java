@@ -32,16 +32,14 @@ public class Model {
         this.transY = transY;
         this.transZ = transZ;
         model.regenerateNormals();
-
-
     }
 
     public void render() {
+        GL11.glTranslatef(transX, transY, transZ);
         GL11.glScalef(scaleRatio, scaleRatio, scaleRatio);
         GL11.glRotatef(rotX, 1, 0, 0);
         GL11.glRotatef(rotY, 0, 1, 0);
         GL11.glRotatef(rotZ, 0, 0, 1);
-        GL11.glTranslatef(transX / scaleRatio, transY / scaleRatio, transZ / scaleRatio);
         model.render();
     }
 

@@ -38,7 +38,23 @@ public class Camera {
      */
 
     //Changes the cameras view based on the yaw, and pitch
-    public void setCameraView(float mouseSpeed, HUD hud) {
+    public void setCameraView() {
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        //Sets the cameras X rotation
+        glRotatef(pitch, 1.0f, 0.0f, 0.0f);
+        //Sets the cameras Y rotation
+        glRotatef(yaw, 0.0f, 1.0f, 0.0f);
+        //Sets the cameras Z rotation
+        glRotatef(roll, 0.0f, 0.0f, 1.0f);
+    }
+
+    public void getWorldTransform() {
+        //Sets the camera to a position
+        glTranslatef(position.x, position.y, position.z);
+    }
+
+    public void rotate(float mouseSpeed, HUD hud) {
         if (Mouse.isInsideWindow()) {
 
             int midX = Display.getWidth() / 2;
@@ -70,19 +86,6 @@ public class Camera {
         } else {
             Mouse.setGrabbed(false);
         }
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        //Sets the cameras X rotation
-        glRotatef(pitch, 1.0f, 0.0f, 0.0f);
-        //Sets the cameras Y rotation
-        glRotatef(yaw, 0.0f, 1.0f, 0.0f);
-        //Sets the cameras Z rotation
-        glRotatef(roll, 0.0f, 0.0f, 1.0f);
-    }
-
-    public void moveCamera() {
-        //Sets the camera to a position
-        glTranslatef(position.x, position.y, position.z);
     }
 
     public void move(float units, int dir) {

@@ -27,7 +27,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class GameplayScreen extends Screen {
     Camera cam;
-    Model model,model2,terrain;
+    Model model, model2, terrain;
     HUD hud;
     Background background;
     Light l;
@@ -58,7 +58,7 @@ public class GameplayScreen extends Screen {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(audioOn)
+        if (audioOn)
             audio.playAsMusic(1.0f, 1.0f, true);
 
         //Create Background
@@ -89,7 +89,7 @@ public class GameplayScreen extends Screen {
             glMatrixMode(GL_MODELVIEW);
 
             // Rotate camera
-            cam.setCameraView(0.2f, hud);
+            cam.setCameraView();
 
             background.drawSkybox(50.0f);
 
@@ -101,9 +101,8 @@ public class GameplayScreen extends Screen {
             }
             glPopMatrix();
 
-            cam.moveCamera();
+            cam.getWorldTransform();
 
-            //TODO: Figure out a better solution to models stealing each others transformations
             //Draw other 3d models not focused by the camera
             glPushMatrix();
             {
@@ -124,32 +123,36 @@ public class GameplayScreen extends Screen {
     }
 
     public void Update() {
+        rotate(0.2f, hud);
 
         if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             Exit();
             return;
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-            move(0.2f, 90);
+            moveXZ(0.2f, 90);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-            move(0.2f, 270);
+            moveXZ(0.2f, 270);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-            move(0.2f, 0);
-            moveUp(0.2f, 0);
+            moveXYZ(0.2f, 0);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-            move(0.2f, 180);
-            moveUp(0.2f, 180);
+            moveXYZ(0.2f, 180);
         }
     }
 
-    protected void move(float units, int dir) {
+    protected void rotate(float mouseSpeed, HUD hud) {
+        cam.rotate(mouseSpeed, hud);
+    }
+
+    protected void moveXZ(float units, int dir) {
         cam.move(units, dir);
     }
 
-    protected void moveUp(float units, int dir) {
+    protected void moveXYZ(float units, int dir) {
+        cam.move(units, dir);
         cam.moveUp(units, dir);
     }
 

@@ -82,6 +82,7 @@ public class MultiGameScreen extends GameplayScreen {
         boolean keyPressed = Keyboard.next();
         if (!chatting) {
             super.Update();
+            broadcastMove();
             if (Keyboard.isKeyDown(Keyboard.KEY_C)) {
                 chatting = true;
             }
@@ -103,26 +104,42 @@ public class MultiGameScreen extends GameplayScreen {
         updateEnemies(client.receiveActions());
     }
 
-    @Override
-    protected void move(float units, int dir) {
-        super.move(units, dir);
+//    @Override
+//    protected void moveXZ(float units, int dir) {
+//        super.moveXZ(units, dir);
+//        broadcastMove();
+//    }
+//
+//    @Override
+//    protected void moveXYZ(float units, int dir) {
+//        super.moveXYZ(units, dir);
+//        broadcastMove();
+//    }
 
+    private void broadcastMove() {
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         DataOutputStream dataStream = new DataOutputStream(byteStream);
         Vector3f vec = cam.getPosition();
+        float pitch = cam.getPitch();
+        float yaw = cam.getYaw();
+        float roll = cam.getRoll();
+
         try {
             dataStream.writeFloat(-vec.getX());
             dataStream.writeFloat(-vec.getY());
             dataStream.writeFloat(-vec.getZ());
+            dataStream.writeFloat(-pitch);
+            dataStream.writeFloat(-yaw);
+            dataStream.writeFloat(-roll);
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
-        byte[] data = new byte[3 * 4 + 2];
+        byte[] data = new byte[6 * 4 + 2];
         // Set the option byte to 1
         data[0] = 1 << 4;
-        // 12 bytes are sent for updating position
-        data[1] = 3 * 4;
+        // 24 bytes are sent for updating position and rotation
+        data[1] = 6 * 4;
 
         System.arraycopy(byteStream.toByteArray(), 0, data, 2, data.length - 2);
 
@@ -153,6 +170,7 @@ public class MultiGameScreen extends GameplayScreen {
         }
 
         enemies.get(id).updatePosition(fArr[0], fArr[1], fArr[2]);
+        enemies.get(id).updateRotation(fArr[3], fArr[4], fArr[5]);
     }
 
     @Override
