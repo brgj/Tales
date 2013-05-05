@@ -44,10 +44,10 @@ public class GameplayScreen extends Screen {
         glEnable(GL_DEPTH_TEST);
 
         // Create a light
-        float lightDirection[] = {-2f, 2f, 2f, 0f}; //direction/position
-        float diffuse[] = {1f, 1f, 1f, 1f};
-        float ambient[] = {.6f, .6f, .9f, 1f};
-        float specular[] = {1f, 1f, 1f, 1f};
+        float lightDirection[] = {-2f, 12f, 2f, 0f}; //direction/position
+        float diffuse[] = {16f, 16f, 16f, 16f};
+        float ambient[] = {56.6f, 56.6f, 56.9f, 57f};
+        float specular[] = {6f, 6f, 6f, 6f};
         l = new Light(lightDirection, diffuse, ambient, specular);
         l.setLight();
 
@@ -64,10 +64,9 @@ public class GameplayScreen extends Screen {
         //Create Background
         background = new Background();
         //load the model
-        model = new Model("data/Arwing/arwing.obj", 1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f);
-        model2 = new Model("data/DarkFighter/dark_fighter.obj", 1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-
-        terrain = new Model("data/terrain/WS free terrain 014.obj", 20.0f, 0.0f, 0.0f, 0.0f, 0.0f, -2.0f, 0.0f);
+        model = new Model("data/Arwing/finalarwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        model2 = new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        terrain = new Model("data/terrain/terrain.obj", 20.0f, 0.0f, 0.0f, 0.0f, 0.0f, -3.0f, -10.0f);
 
         //TODO: implement huds for individual players
         hud = new HUD();
