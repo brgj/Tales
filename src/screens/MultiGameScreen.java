@@ -143,7 +143,12 @@ public class MultiGameScreen extends GameplayScreen {
 
         System.arraycopy(byteStream.toByteArray(), 0, data, 2, data.length - 2);
 
-        client.sendData(data);
+        try {
+            client.sendData(data);
+        } catch(IOException e) {
+            e.printStackTrace();
+            Exit();
+        }
     }
 
     private void updateEnemies(Set<Map.Entry<Byte, byte[]>> actionSet) {

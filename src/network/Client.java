@@ -75,7 +75,7 @@ public class Client {
         sender.sendMessage(message);
     }
 
-    public void sendData(byte[] data) {
+    public void sendData(byte[] data) throws IOException{
         sender.sendData(data);
     }
 
@@ -142,13 +142,9 @@ class Sender {
         }
     }
 
-    public void sendData(byte[] data) {
+    public void sendData(byte[] data) throws IOException {
         DatagramPacket sendPacket = new DatagramPacket(data, data.length, serverIPAddress, serverPort);
-        try {
-            clientSocket.send(sendPacket);
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        clientSocket.send(sendPacket);
     }
 }
 
