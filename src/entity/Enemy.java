@@ -1,5 +1,7 @@
 package entity;
 
+import environment.Model;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Owner
@@ -9,9 +11,9 @@ package entity;
  */
 public class Enemy extends Entity {
 
-    public Enemy()
+    public Enemy(Model model)
     {
-
+        super(model);
     }
 
     public void Render()

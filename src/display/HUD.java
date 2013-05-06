@@ -95,11 +95,27 @@ public class HUD {
         if (crosshairPos.x <= Display.getWidth() / 2 - TARGETX - BUFFER && crosshairPos.x >= -Display.getWidth() / 2 + TARGETX + BUFFER) {
             crosshairPos.x += i * 5;
         }
+        if(crosshairPos.x > Display.getWidth() / 2 - TARGETX - BUFFER)
+        {
+            crosshairPos.x = Display.getWidth() / 2 - TARGETX - BUFFER;
+        }
+        else if(crosshairPos.x < -Display.getWidth() / 2 + TARGETX + BUFFER)
+        {
+            crosshairPos.x = -Display.getWidth() / 2 + TARGETX + BUFFER;
+        }
     }
 
     public void setCrosshairY(int i) {
         if (crosshairPos.y <= Display.getHeight() / 2 - TARGETY - BUFFER && crosshairPos.y >= -Display.getHeight() / 2 + TARGETY + BUFFER) {
             crosshairPos.y += i * 5;
+        }
+        if(crosshairPos.y > Display.getHeight() / 2 - TARGETY - BUFFER)
+        {
+            crosshairPos.y = Display.getHeight() / 2 - TARGETY - BUFFER;
+        }
+        else if(crosshairPos.y < -Display.getHeight() / 2 + TARGETY + BUFFER)
+        {
+            crosshairPos.y = -Display.getHeight() / 2 + TARGETY + BUFFER;
         }
     }
 }

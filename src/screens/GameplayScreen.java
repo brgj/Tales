@@ -2,6 +2,7 @@ package screens;
 
 import display.Camera;
 import display.HUD;
+import entity.Player;
 import environment.Background;
 import environment.Light;
 import environment.Model;
@@ -28,7 +29,7 @@ import static org.lwjgl.opengl.GL11.*;
 public class GameplayScreen extends Screen {
     Camera cam;
     Model model, model2, terrain;
-    HUD hud;
+    Player player;
     Background background;
     Light l;
 
@@ -64,12 +65,9 @@ public class GameplayScreen extends Screen {
         //Create Background
         background = new Background();
         //load the model
-        model = new Model("data/Arwing/finalarwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f));
         model2 = new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
         terrain = new Model("data/terrain/terrain.obj", 20.0f, 0.0f, 0.0f, 0.0f, 0.0f, -3.0f, -10.0f);
-
-        //TODO: implement huds for individual players
-        hud = new HUD();
     }
 
     public void Render() {
@@ -96,7 +94,8 @@ public class GameplayScreen extends Screen {
             glPushMatrix();
             {
                 glLoadIdentity();
-                model.render();
+                player.Update();
+                player.Render();
             }
             glPopMatrix();
 
@@ -116,13 +115,13 @@ public class GameplayScreen extends Screen {
 
 
         //region 2D stuff
-        hud.render();
+        player.hud.render();
         //endregion
 
     }
 
     public void Update() {
-        rotate(0.2f, hud);
+        rotate(0.2f, player.hud);
 
         if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             Exit();

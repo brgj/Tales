@@ -15,14 +15,14 @@ public abstract class Entity {
     Vector3f position;
     Model model;
 
-    public Entity()
+    public Entity(Model model)
     {
-
+        this.model = model;
     }
 
     public void Render()
     {
-
+        model.render();
     }
 
     public void Update()

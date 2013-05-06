@@ -1,5 +1,8 @@
 package entity;
 
+import display.HUD;
+import environment.Model;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Owner
@@ -9,19 +12,22 @@ package entity;
  */
 public class Player extends Entity {
 
-    public Player()
-    {
+    public HUD hud;
 
+    public Player(Model model)
+    {
+        super(model);
+        hud = new HUD();
     }
 
     public void Render()
     {
-
+        super.Render();
     }
 
     public void Update()
     {
-
+        model.updateRotation(-hud.crosshairPos.y * .1f, -hud.crosshairPos.x * .1f, -hud.crosshairPos.x * .1f);
     }
 
     public void Initialize()
