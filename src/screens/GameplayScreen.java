@@ -164,12 +164,6 @@ public class GameplayScreen extends Screen {
         if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
             moveXYZ(0.2f, 180);
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-            moveY(0.2f, 90);
-        }
-        if(Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-            moveY(0.2f, 270);
-        }
     }
 
     protected void rotate(float mouseSpeed, HUD hud) {
