@@ -13,7 +13,7 @@ import org.lwjgl.util.vector.Vector3f;
 public abstract class Entity {
 
     Vector3f position;
-    Model model;
+    public Model model;
 
     public Entity(Model model)
     {

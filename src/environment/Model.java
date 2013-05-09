@@ -1,7 +1,9 @@
 package environment;
 
 import glmodel.GLModel;
+import glmodel.GL_Vector;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector3f;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,8 +38,7 @@ public class Model {
 
     public void render() {
         GL11.glTranslatef(transX, transY, transZ);
-        if(scaleRatio !=0)
-        {
+        if (scaleRatio != 0) {
             GL11.glScalef(scaleRatio, scaleRatio, scaleRatio);
         }
         GL11.glRotatef(rotX, 1, 0, 0);
@@ -48,9 +49,8 @@ public class Model {
         GL11.glRotatef(-rotZ, 0, 0, 1);
         GL11.glRotatef(-rotY, 0, 1, 0);
         GL11.glRotatef(-rotX, 1, 0, 0);
-        if(scaleRatio !=0)
-        {
-            GL11.glScalef(1/scaleRatio, 1/scaleRatio, 1/scaleRatio);
+        if (scaleRatio != 0) {
+            GL11.glScalef(1 / scaleRatio, 1 / scaleRatio, 1 / scaleRatio);
         }
     }
 
@@ -64,5 +64,37 @@ public class Model {
         this.rotX = rotX;
         this.rotY = rotY;
         this.rotZ = rotZ;
+    }
+
+    public Vector3f getTranslation() {
+        return new Vector3f(transX, transY, transZ);
+    }
+
+    public float getPitch() {
+        return rotX;
+    }
+
+    public float getYaw() {
+        return rotY;
+    }
+
+    public float getRoll() {
+        return rotZ;
+    }
+
+    public float getScaleRatio() {
+        return scaleRatio;
+    }
+
+    public Vector3f getCenter() {
+        GL_Vector center = model.mesh.getCenter();
+
+        return new Vector3f(center.x, center.y, center.z);
+    }
+
+    public float getRadius() {
+        GL_Vector dim = model.mesh.getDimension();
+
+        return (float) Math.sqrt(Math.pow(dim.x / 2, 2) + Math.pow(dim.y / 2, 2) + Math.pow(dim.z / 2, 2));
     }
 }

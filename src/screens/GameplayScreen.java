@@ -2,19 +2,29 @@ package screens;
 
 import display.Camera;
 import display.HUD;
+import display.Ray;
 import entity.Player;
 import environment.Background;
 import environment.Light;
 import environment.Model;
+import glmodel.GLModel;
+import glmodel.GL_Vector;
 import helpers.Delegate;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.glu.GLU;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -35,7 +45,7 @@ public class GameplayScreen extends Screen {
 
     public GameplayScreen(Delegate d) {
         super(d);
-        cam = new Camera(new Vector3f(0, 0, 0));
+        cam = new Camera(new Vector3f(0, 0, -20));
     }
 
     public void Initialize() {
@@ -76,6 +86,7 @@ public class GameplayScreen extends Screen {
 
         glMatrixMode(GL_PROJECTION);
 
+        boolean a;
         // Push the 2D projection to stack
         glPushMatrix();
         {
@@ -101,10 +112,24 @@ public class GameplayScreen extends Screen {
 
             cam.getWorldTransform();
 
+            float[] view = new float[16];
+
+            ByteBuffer bytes = ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder());
+
+            glGetFloat(GL_MODELVIEW_MATRIX, (FloatBuffer) bytes.asFloatBuffer().put(view).flip());
+            bytes.asFloatBuffer().get(view);
+
             //Draw other 3d models not focused by the camera
             glPushMatrix();
             {
                 model2.render();
+
+                Vector2f chPos = player.hud.crosshairPos;
+
+                a = CheckPickingRay(chPos.x + Display.getWidth() / 2, -chPos.y + Display.getHeight() / 2, view);
+//                a = CheckPickingRay(Mouse.getX(), Mouse.getY());
+//                System.out.println("mouse= " + Mouse.getX() + ", " + Mouse.getY());
+//                System.out.println("hud= " + (chPos.x + Display.getWidth() / 2) + ", " + (-chPos.y + Display.getHeight() / 2));
             }
             glPopMatrix();
             terrain.render();
@@ -115,7 +140,7 @@ public class GameplayScreen extends Screen {
 
 
         //region 2D stuff
-        player.hud.render();
+        player.hud.render(a);
         //endregion
 
     }
@@ -139,6 +164,12 @@ public class GameplayScreen extends Screen {
         if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
             moveXYZ(0.2f, 180);
         }
+        if(Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+            moveY(0.2f, 90);
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+            moveY(0.2f, 270);
+        }
     }
 
     protected void rotate(float mouseSpeed, HUD hud) {
@@ -154,7 +185,151 @@ public class GameplayScreen extends Screen {
         cam.moveUp(units, dir);
     }
 
+    protected void moveY(float units, int dir) {
+        cam.moveUp(units, dir);
+    }
+
     protected void Exit() {
         delegate.change(0);
+    }
+
+    private boolean CheckPickingRay(float x, float y, float[] view) {
+        Ray ray = CalcPickingRay(x, y);
+
+        Matrix4f mat = getMatrix4f(view);
+
+        mat.invert();
+
+        TransformRay(ray, mat);
+
+        return CheckCollision(ray, model2);
+    }
+
+    private Matrix4f getMatrix4f(float[] array) {
+        Matrix4f mat = new Matrix4f();
+        mat.m00 = array[0];
+        mat.m01 = array[1];
+        mat.m02 = array[2];
+        mat.m03 = array[3];
+        mat.m10 = array[4];
+        mat.m11 = array[5];
+        mat.m12 = array[6];
+        mat.m13 = array[7];
+        mat.m20 = array[8];
+        mat.m21 = array[9];
+        mat.m22 = array[10];
+        mat.m23 = array[11];
+        mat.m30 = array[12];
+        mat.m31 = array[13];
+        mat.m32 = -array[14];
+        mat.m33 = array[15];
+        return mat;
+    }
+
+    private Ray CalcPickingRay(float x, float y) {
+        float px = 0.0f;
+        float py = 0.0f;
+
+        float[] proj = new float[16];
+
+        ByteBuffer bytes = ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder());
+
+        glGetFloat(GL_PROJECTION_MATRIX, (FloatBuffer) bytes.asFloatBuffer().put(proj).flip());
+        bytes.asFloatBuffer().get(proj);
+
+        px = (((2.0f * x) / Display.getWidth()) - 1.0f) / proj[0];
+        py = (((-2.0f * y) / Display.getHeight()) + 1.0f) / proj[5];
+
+        Ray ray = new Ray();
+        ray.origin = new Vector4f(0, 0, 0, 1);
+        ray.direction = new Vector4f(px, py, 1, 0);
+
+        return ray;
+    }
+
+    //TODO: Fix the -translation issue
+    private boolean CheckCollision(Ray ray, Model model) {
+        Matrix4f world = new Matrix4f();
+        world.setIdentity();
+
+        world.translate(model.getTranslation());
+        world.rotate(model.getPitch(), new Vector3f(1, 0, 0));
+        world.rotate(model.getYaw(), new Vector3f(0, 1, 0));
+
+        world.invert();
+
+        TransformRay(ray, world);
+
+        return RaySphereIntTest(ray, model);
+    }
+
+    private boolean RaySphereIntTest(Ray ray, Model model) {
+        // TODO: Associate bounding sphere with player class
+        Vector3f center = model.getCenter();
+        float radius = model.getRadius();
+
+        radius *= 3.0f/4.0f;
+
+        radius *= model.getScaleRatio();
+
+        renderSphere(center, radius);
+
+        Vector3f v = new Vector3f(ray.origin.x - center.x, ray.origin.y - center.y, ray.origin.z - center.z);
+
+        float b = 2.0f * Vector3f.dot(new Vector3f(ray.direction.x, ray.direction.y, ray.direction.z), v);
+        float c = Vector3f.dot(v, v) - (radius * radius);
+
+        double discriminant = (b * b) - (4 * c);
+
+        if (discriminant < 0.0)
+            return false;
+
+        discriminant = Math.sqrt(discriminant);
+
+        double s0 = (-b + discriminant) / 2.0;
+        double s1 = (-b - discriminant) / 2.0;
+
+        return (s0 >= 0.0 || s1 >= 0.0);
+    }
+
+    public void renderSphere(Vector3f center, float radius) {
+//        glPushMatrix();
+//        glLoadIdentity();
+//        glPushAttrib(GL_ALL_ATTRIB_BITS);
+//        glDisable(GL_LIGHT1);
+//        glDisable(GL_LIGHTING);
+//        glDisable(GL_BLEND);
+//        glDisable(GL_TEXTURE_2D);
+//        glDisable(GL_DEPTH_TEST);
+
+        Vector3f vec = model2.getTranslation();
+        vec.scale(model2.getScaleRatio());
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glBegin(GL_LINE_LOOP);
+        {
+            for (int i = 0; i < 360; i++) {
+                double degInRad = i * Math.PI / 180;
+                glVertex3f((float) (vec.x + center.x + Math.cos(degInRad) * radius), (float) (vec.y + center.y + Math.sin(degInRad) * radius), vec.z + center.z);
+            }
+        }
+        glEnd();
+
+        glBegin(GL_LINE_LOOP);
+        {
+            for (int i = 0; i < 360; i++) {
+                double degInRad = i * Math.PI / 180;
+                glVertex3f(vec.x + center.x, (float) (vec.y + center.y + Math.cos(degInRad) * radius), (float) (vec.z + center.z + Math.sin(degInRad) * radius));
+            }
+        }
+        glEnd();
+//        glPopAttrib();
+//        glPopMatrix();
+    }
+
+    private void TransformRay(Ray ray, Matrix4f mat) {
+        Matrix4f.transform(mat, ray.origin, ray.origin);
+        Matrix4f.transform(mat, ray.direction, ray.direction);
+
+        ray.direction.normalise();
     }
 }

@@ -27,7 +27,7 @@ public class HUD {
         crosshairPos = new Vector2f(0, 0);
     }
 
-    public void render() {
+    public void render(boolean enemyInTarget) {
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 //        glTranslatef(0.375f, 0.375f, 0.0f);
@@ -40,15 +40,19 @@ public class HUD {
             glDisable(GL_LIGHTING); // Lighting is turned off for 2D
 
             //Call HUD functions
-            drawCrossHair();
+            drawCrossHair(enemyInTarget);
         }
         glPopAttrib();
     }
 
-    public void drawCrossHair() {
+    public void drawCrossHair(boolean enemyInTarget) {
         //Sets the line width of the crosshair
         glLineWidth(5);
-        glColor3f(0.0f, 1.0f, 0.0f);
+
+        if(enemyInTarget)
+            glColor3f(1.0f, 0.0f, 0.0f);
+        else
+            glColor3f(0.0f, 1.0f, 0.0f);
         //Draw crosshair
         glBegin(GL_LINES);
         {
