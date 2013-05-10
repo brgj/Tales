@@ -70,6 +70,10 @@ public class Model {
         return new Vector3f(transX, transY, transZ);
     }
 
+    public Vector3f getInverseTranslation() {
+        return new Vector3f(transX, transY, -transZ);
+    }
+
     public float getPitch() {
         return rotX;
     }

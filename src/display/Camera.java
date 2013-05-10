@@ -49,7 +49,7 @@ public class Camera {
         glRotatef(roll, 0.0f, 0.0f, 1.0f);
     }
 
-    public void getWorldTransform() {
+    public void setCameraPosition() {
         //Sets the camera to a position
         glTranslatef(position.x, position.y, position.z);
     }

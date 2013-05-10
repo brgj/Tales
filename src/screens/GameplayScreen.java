@@ -7,11 +7,9 @@ import entity.Player;
 import environment.Background;
 import environment.Light;
 import environment.Model;
-import glmodel.GLModel;
-import glmodel.GL_Vector;
 import helpers.Delegate;
+import helpers.GLHelper;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Matrix4f;
@@ -22,9 +20,6 @@ import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -38,7 +33,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class GameplayScreen extends Screen {
     Camera cam;
-    Model model, model2, terrain;
+    Model enemy, terrain;
     Player player;
     Background background;
     Light l;
@@ -76,7 +71,7 @@ public class GameplayScreen extends Screen {
         background = new Background();
         //load the model
         player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f));
-        model2 = new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        enemy = new Model("data/DarkFighter/dark_fighter.obj", 1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f);
         terrain = new Model("data/terrain/terrain.obj", 20.0f, 0.0f, 0.0f, 0.0f, 0.0f, -3.0f, -10.0f);
     }
 
@@ -86,7 +81,8 @@ public class GameplayScreen extends Screen {
 
         glMatrixMode(GL_PROJECTION);
 
-        boolean a;
+        // true if enemy is in crosshairs
+        boolean enemyInTarget;
         // Push the 2D projection to stack
         glPushMatrix();
         {
@@ -110,26 +106,17 @@ public class GameplayScreen extends Screen {
             }
             glPopMatrix();
 
-            cam.getWorldTransform();
+            cam.setCameraPosition();
 
-            float[] view = new float[16];
+            Matrix4f view = GLHelper.getInverseViewMatrix();
+            Vector2f chPos = player.hud.crosshairPos;
 
-            ByteBuffer bytes = ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder());
-
-            glGetFloat(GL_MODELVIEW_MATRIX, (FloatBuffer) bytes.asFloatBuffer().put(view).flip());
-            bytes.asFloatBuffer().get(view);
-
-            //Draw other 3d models not focused by the camera
+            //Draw other 3d models not focused by the camera and check for intersection with crosshairs
             glPushMatrix();
             {
-                model2.render();
-
-                Vector2f chPos = player.hud.crosshairPos;
-
-                a = CheckPickingRay(chPos.x + Display.getWidth() / 2, -chPos.y + Display.getHeight() / 2, view);
-//                a = CheckPickingRay(Mouse.getX(), Mouse.getY());
-//                System.out.println("mouse= " + Mouse.getX() + ", " + Mouse.getY());
-//                System.out.println("hud= " + (chPos.x + Display.getWidth() / 2) + ", " + (-chPos.y + Display.getHeight() / 2));
+                enemy.render();
+                enemyInTarget = CheckPickingRay(chPos.x + Display.getWidth() / 2, -chPos.y + Display.getHeight() / 2,
+                        enemy, view);
             }
             glPopMatrix();
             terrain.render();
@@ -140,7 +127,7 @@ public class GameplayScreen extends Screen {
 
 
         //region 2D stuff
-        player.hud.render(a);
+        player.hud.render(enemyInTarget);
         //endregion
 
     }
@@ -179,57 +166,25 @@ public class GameplayScreen extends Screen {
         cam.moveUp(units, dir);
     }
 
-    protected void moveY(float units, int dir) {
-        cam.moveUp(units, dir);
-    }
-
     protected void Exit() {
         delegate.change(0);
     }
 
-    private boolean CheckPickingRay(float x, float y, float[] view) {
+    private boolean CheckPickingRay(float x, float y, Model enemy, Matrix4f view) {
         Ray ray = CalcPickingRay(x, y);
 
-        Matrix4f mat = getMatrix4f(view);
+        TransformRay(ray, view);
 
-        mat.invert();
-
-        TransformRay(ray, mat);
-
-        return CheckCollision(ray, model2);
-    }
-
-    private Matrix4f getMatrix4f(float[] array) {
-        Matrix4f mat = new Matrix4f();
-        mat.m00 = array[0];
-        mat.m01 = array[1];
-        mat.m02 = array[2];
-        mat.m03 = array[3];
-        mat.m10 = array[4];
-        mat.m11 = array[5];
-        mat.m12 = array[6];
-        mat.m13 = array[7];
-        mat.m20 = array[8];
-        mat.m21 = array[9];
-        mat.m22 = array[10];
-        mat.m23 = array[11];
-        mat.m30 = array[12];
-        mat.m31 = array[13];
-        mat.m32 = -array[14];
-        mat.m33 = array[15];
-        return mat;
+        return CheckCollision(ray, enemy);
     }
 
     private Ray CalcPickingRay(float x, float y) {
-        float px = 0.0f;
-        float py = 0.0f;
+        float px;
+        float py;
 
         float[] proj = new float[16];
 
-        ByteBuffer bytes = ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder());
-
-        glGetFloat(GL_PROJECTION_MATRIX, (FloatBuffer) bytes.asFloatBuffer().put(proj).flip());
-        bytes.asFloatBuffer().get(proj);
+        GLHelper.glGetFloatv(GL_PROJECTION_MATRIX, proj);
 
         px = (((2.0f * x) / Display.getWidth()) - 1.0f) / proj[0];
         py = (((-2.0f * y) / Display.getHeight()) + 1.0f) / proj[5];
@@ -241,7 +196,7 @@ public class GameplayScreen extends Screen {
         return ray;
     }
 
-    //TODO: Fix the -translation issue
+    //TODO: Fix the model pos issues
     private boolean CheckCollision(Ray ray, Model model) {
         Matrix4f world = new Matrix4f();
         world.setIdentity();
@@ -249,6 +204,7 @@ public class GameplayScreen extends Screen {
         world.translate(model.getTranslation());
         world.rotate(model.getPitch(), new Vector3f(1, 0, 0));
         world.rotate(model.getYaw(), new Vector3f(0, 1, 0));
+        world.rotate(model.getRoll(), new Vector3f(0, 0, 1));
 
         world.invert();
 
@@ -262,7 +218,7 @@ public class GameplayScreen extends Screen {
         Vector3f center = model.getCenter();
         float radius = model.getRadius();
 
-        radius *= 3.0f/4.0f;
+        radius *= 3.0f / 4.0f;
 
         radius *= model.getScaleRatio();
 
@@ -287,17 +243,8 @@ public class GameplayScreen extends Screen {
     }
 
     public void renderSphere(Vector3f center, float radius) {
-//        glPushMatrix();
-//        glLoadIdentity();
-//        glPushAttrib(GL_ALL_ATTRIB_BITS);
-//        glDisable(GL_LIGHT1);
-//        glDisable(GL_LIGHTING);
-//        glDisable(GL_BLEND);
-//        glDisable(GL_TEXTURE_2D);
-//        glDisable(GL_DEPTH_TEST);
-
-        Vector3f vec = model2.getTranslation();
-        vec.scale(model2.getScaleRatio());
+        Vector3f vec = enemy.getTranslation();
+        vec.scale(enemy.getScaleRatio());
         glColor3f(1.0f, 1.0f, 1.0f);
         glBegin(GL_LINE_LOOP);
         {
@@ -316,8 +263,6 @@ public class GameplayScreen extends Screen {
             }
         }
         glEnd();
-//        glPopAttrib();
-//        glPopMatrix();
     }
 
     private void TransformRay(Ray ray, Matrix4f mat) {

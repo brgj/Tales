@@ -1,6 +1,6 @@
 package environment;
 
-import helpers.TextureHelper;
+import helpers.GLHelper;
 import org.newdawn.slick.opengl.Texture;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -23,12 +23,12 @@ public class Background {
 
     public Background() {
         skybox = new Texture[6];
-        skybox[SKY_LEFT] = TextureHelper.LoadTexture("png", "images/left.png");
-        skybox[SKY_BACK] = TextureHelper.LoadTexture("png", "images/back.png");
-        skybox[SKY_RIGHT] = TextureHelper.LoadTexture("png", "images/right.png");
-        skybox[SKY_FRONT] = TextureHelper.LoadTexture("png", "images/front.png");
-        skybox[SKY_TOP] = TextureHelper.LoadTexture("png", "images/top.png");
-        skybox[SKY_BOTTOM] = TextureHelper.LoadTexture("png", "images/bottom.png");
+        skybox[SKY_LEFT] = GLHelper.LoadTexture("png", "images/left.png");
+        skybox[SKY_BACK] = GLHelper.LoadTexture("png", "images/back.png");
+        skybox[SKY_RIGHT] = GLHelper.LoadTexture("png", "images/right.png");
+        skybox[SKY_FRONT] = GLHelper.LoadTexture("png", "images/front.png");
+        skybox[SKY_TOP] = GLHelper.LoadTexture("png", "images/top.png");
+        skybox[SKY_BOTTOM] = GLHelper.LoadTexture("png", "images/bottom.png");
     }
 
     public void drawSkybox(float size) {

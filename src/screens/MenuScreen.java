@@ -1,7 +1,7 @@
 package screens;
 
 import helpers.Delegate;
-import helpers.TextureHelper;
+import helpers.GLHelper;
 import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
@@ -32,7 +32,7 @@ public abstract class MenuScreen extends Screen {
         titleFont = new TrueTypeFont(fnt, true);
         font = new TrueTypeFont(awtFont, false);
         selectedIndex = 0;
-        background = TextureHelper.LoadTexture("jpg", "images/menuScreenBackground.jpg");
+        background = GLHelper.LoadTexture("jpg", "images/menuScreenBackground.jpg");
 
     }
 
