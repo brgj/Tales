@@ -7,6 +7,8 @@ import entity.Player;
 import environment.Background;
 import environment.Light;
 import environment.Model;
+import environment.Laser;
+import environment.LaserBeam;
 import helpers.Delegate;
 import helpers.GLHelper;
 import org.lwjgl.input.Keyboard;
@@ -20,6 +22,7 @@ import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -37,7 +40,8 @@ public class GameplayScreen extends Screen {
     Player player;
     Background background;
     Light l;
-
+    Laser laser1 ;
+    ArrayList<LaserBeam> beam;
     public GameplayScreen(Delegate d) {
         super(d);
         cam = new Camera(new Vector3f(0, 0, -20));
@@ -73,6 +77,8 @@ public class GameplayScreen extends Screen {
         player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f));
         enemy = new Model("data/DarkFighter/dark_fighter.obj", 1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f);
         terrain = new Model("data/terrain/terrain.obj", 20.0f, 0.0f, 0.0f, 0.0f, 0.0f, -3.0f, -10.0f);
+        laser1 = new Laser(cam);
+        beam = new ArrayList<LaserBeam>();
     }
 
     public void Render() {
@@ -103,9 +109,23 @@ public class GameplayScreen extends Screen {
                 glLoadIdentity();
                 player.Update();
                 player.Render();
+                laser1.render();
             }
             glPopMatrix();
+            glPushMatrix();
+            {
 
+                if(beam.size() !=0)
+                {
+                    for(int i = 0 ; i<beam.size();i++)
+                    {
+                        beam.get(i).renderLeft();
+                        beam.get(i).renderRight();
+                    }
+
+                }
+            }
+            glPopMatrix();
             cam.setCameraPosition();
 
             Matrix4f view = GLHelper.getInverseViewMatrix();
@@ -119,7 +139,7 @@ public class GameplayScreen extends Screen {
                         enemy, view);
             }
             glPopMatrix();
-            terrain.render();
+            //terrain.render();
             glMatrixMode(GL_PROJECTION);
             //endregion
         }
@@ -138,6 +158,11 @@ public class GameplayScreen extends Screen {
         if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             Exit();
             return;
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+            LaserBeam temp = new LaserBeam(cam);
+            beam.add(temp);
+
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
             moveXZ(0.2f, 90);
