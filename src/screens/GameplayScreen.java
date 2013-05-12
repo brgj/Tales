@@ -75,7 +75,7 @@ public class GameplayScreen extends Screen {
         background = new Background();
         //load the model
         player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f));
-        enemy = new Model("data/DarkFighter/dark_fighter.obj", 1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f);
+        enemy = new Model("data/DarkFighter/dark_fighter.obj", 1f, 0.0f, 0.0f, 0.0f, 10.0f, 20.0f, -10.0f);
         terrain = new Model("data/terrain/terrain.obj", 20.0f, 0.0f, 0.0f, 0.0f, 0.0f, -3.0f, -10.0f);
         laser1 = new Laser(cam);
         beam = new ArrayList<LaserBeam>();
@@ -128,7 +128,7 @@ public class GameplayScreen extends Screen {
             glPopMatrix();
             cam.setCameraPosition();
 
-            Matrix4f view = GLHelper.getInverseViewMatrix();
+            Matrix4f view = GLHelper.getInverseModelViewMatrix();
             Vector2f chPos = player.hud.crosshairPos;
 
             //Draw other 3d models not focused by the camera and check for intersection with crosshairs
@@ -136,7 +136,7 @@ public class GameplayScreen extends Screen {
             {
                 enemy.render();
                 enemyInTarget = CheckPickingRay(chPos.x + Display.getWidth() / 2, -chPos.y + Display.getHeight() / 2,
-                        enemy, view);
+                        enemy);
             }
             glPopMatrix();
             //terrain.render();
@@ -195,10 +195,8 @@ public class GameplayScreen extends Screen {
         delegate.change(0);
     }
 
-    private boolean CheckPickingRay(float x, float y, Model enemy, Matrix4f view) {
+    private boolean CheckPickingRay(float x, float y, Model enemy) {
         Ray ray = CalcPickingRay(x, y);
-
-        TransformRay(ray, view);
 
         return CheckCollision(ray, enemy);
     }
@@ -221,17 +219,8 @@ public class GameplayScreen extends Screen {
         return ray;
     }
 
-    //TODO: Fix the model pos issues
     private boolean CheckCollision(Ray ray, Model model) {
-        Matrix4f world = new Matrix4f();
-        world.setIdentity();
-
-        world.translate(model.getTranslation());
-        world.rotate(model.getPitch(), new Vector3f(1, 0, 0));
-        world.rotate(model.getYaw(), new Vector3f(0, 1, 0));
-        world.rotate(model.getRoll(), new Vector3f(0, 0, 1));
-
-        world.invert();
+        Matrix4f world = GLHelper.getInverseModelViewMatrix();
 
         TransformRay(ray, world);
 
@@ -247,7 +236,7 @@ public class GameplayScreen extends Screen {
 
         radius *= model.getScaleRatio();
 
-        renderSphere(center, radius);
+        GLHelper.renderSphere(center, radius);
 
         Vector3f v = new Vector3f(ray.origin.x - center.x, ray.origin.y - center.y, ray.origin.z - center.z);
 
@@ -267,33 +256,9 @@ public class GameplayScreen extends Screen {
         return (s0 >= 0.0 || s1 >= 0.0);
     }
 
-    public void renderSphere(Vector3f center, float radius) {
-        Vector3f vec = enemy.getTranslation();
-        vec.scale(enemy.getScaleRatio());
-        glColor3f(1.0f, 1.0f, 1.0f);
-        glBegin(GL_LINE_LOOP);
-        {
-            for (int i = 0; i < 360; i++) {
-                double degInRad = i * Math.PI / 180;
-                glVertex3f((float) (vec.x + center.x + Math.cos(degInRad) * radius), (float) (vec.y + center.y + Math.sin(degInRad) * radius), vec.z + center.z);
-            }
-        }
-        glEnd();
-
-        glBegin(GL_LINE_LOOP);
-        {
-            for (int i = 0; i < 360; i++) {
-                double degInRad = i * Math.PI / 180;
-                glVertex3f(vec.x + center.x, (float) (vec.y + center.y + Math.cos(degInRad) * radius), (float) (vec.z + center.z + Math.sin(degInRad) * radius));
-            }
-        }
-        glEnd();
-    }
-
     private void TransformRay(Ray ray, Matrix4f mat) {
         Matrix4f.transform(mat, ray.origin, ray.origin);
         Matrix4f.transform(mat, ray.direction, ray.direction);
-
         ray.direction.normalise();
     }
 }
