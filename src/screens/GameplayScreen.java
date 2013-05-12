@@ -3,6 +3,7 @@ package screens;
 import display.Camera;
 import display.HUD;
 import display.Ray;
+import entity.Enemy;
 import entity.Player;
 import environment.Background;
 import environment.Light;
@@ -36,12 +37,14 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class GameplayScreen extends Screen {
     Camera cam;
-    Model enemy, terrain;
+    Model tempModel, terrain;
     Player player;
     Background background;
     Light l;
     Laser laser1 ;
     ArrayList<LaserBeam> beam;
+    Enemy enemy; //Todo: change this to an array of enemies later.
+
     public GameplayScreen(Delegate d) {
         super(d);
         cam = new Camera(new Vector3f(0, 0, -20));
@@ -75,10 +78,12 @@ public class GameplayScreen extends Screen {
         background = new Background();
         //load the model
         player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f));
-        enemy = new Model("data/DarkFighter/dark_fighter.obj", 1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f);
+        tempModel = new Model("data/DarkFighter/dark_fighter.obj", 1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f);
         terrain = new Model("data/terrain/terrain.obj", 20.0f, 0.0f, 0.0f, 0.0f, 0.0f, -3.0f, -10.0f);
         laser1 = new Laser(cam);
         beam = new ArrayList<LaserBeam>();
+        enemy = new Enemy(new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+        enemy.Initialize();
     }
 
     public void Render() {
@@ -87,7 +92,7 @@ public class GameplayScreen extends Screen {
 
         glMatrixMode(GL_PROJECTION);
 
-        // true if enemy is in crosshairs
+        // true if tempModel is in crosshairs
         boolean enemyInTarget;
         // Push the 2D projection to stack
         glPushMatrix();
@@ -134,12 +139,15 @@ public class GameplayScreen extends Screen {
             //Draw other 3d models not focused by the camera and check for intersection with crosshairs
             glPushMatrix();
             {
-                enemy.render();
+                tempModel.render();
                 enemyInTarget = CheckPickingRay(chPos.x + Display.getWidth() / 2, -chPos.y + Display.getHeight() / 2,
-                        enemy, view);
+                        tempModel, view);
+                enemy.setTarget(cam.getPosition());
+                enemy.Update();
+                enemy.Render();
             }
             glPopMatrix();
-            //terrain.render();
+            terrain.render();
             glMatrixMode(GL_PROJECTION);
             //endregion
         }
@@ -154,7 +162,8 @@ public class GameplayScreen extends Screen {
 
     public void Update() {
         rotate(0.2f, player.hud);
-
+        //tempModel.setTarget(cam.getPosition());
+        //tempModel.Update();
         if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             Exit();
             return;
@@ -268,8 +277,8 @@ public class GameplayScreen extends Screen {
     }
 
     public void renderSphere(Vector3f center, float radius) {
-        Vector3f vec = enemy.getTranslation();
-        vec.scale(enemy.getScaleRatio());
+        Vector3f vec = tempModel.getTranslation();
+        vec.scale(tempModel.getScaleRatio());
         glColor3f(1.0f, 1.0f, 1.0f);
         glBegin(GL_LINE_LOOP);
         {

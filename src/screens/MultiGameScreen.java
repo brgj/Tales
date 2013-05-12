@@ -55,9 +55,9 @@ public class MultiGameScreen extends GameplayScreen {
             }
             new Thread(server).start();
             // TODO: get rid of this
-            enemies.put((byte) 1, enemy);
+            enemies.put((byte) 1, tempModel);
         } else {
-            enemies.put((byte) 0, enemy);
+            enemies.put((byte) 0, tempModel);
         }
 
         client = new Client(ip.val, PORT);
