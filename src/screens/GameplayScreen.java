@@ -109,12 +109,32 @@ public class GameplayScreen extends Screen {
                 glLoadIdentity();
                 player.Update();
                 player.Render();
-                laser1.render();
+            }
+            glPopMatrix();
+            cam.setCameraPosition();
+
+            Matrix4f view = GLHelper.getInverseModelViewMatrix();
+            Vector2f chPos = player.hud.crosshairPos;
+
+            //Draw other 3d models not focused by the camera and check for intersection with crosshairs
+            glPushMatrix();
+            {
+                terrain.render();
             }
             glPopMatrix();
             glPushMatrix();
             {
+                enemy.render();
+                enemyInTarget = CheckPickingRay(chPos.x + Display.getWidth() / 2, -chPos.y + Display.getHeight() / 2,
+                        enemy);
+            }
+            glPopMatrix();
 
+            glPushMatrix();
+            {
+                glLoadIdentity();
+                player.Update();
+                laser1.render();
                 if(beam.size() !=0)
                 {
                     for(int i = 0 ; i<beam.size();i++)
@@ -126,20 +146,6 @@ public class GameplayScreen extends Screen {
                 }
             }
             glPopMatrix();
-            cam.setCameraPosition();
-
-            Matrix4f view = GLHelper.getInverseModelViewMatrix();
-            Vector2f chPos = player.hud.crosshairPos;
-
-            //Draw other 3d models not focused by the camera and check for intersection with crosshairs
-            glPushMatrix();
-            {
-                enemy.render();
-                enemyInTarget = CheckPickingRay(chPos.x + Display.getWidth() / 2, -chPos.y + Display.getHeight() / 2,
-                        enemy);
-            }
-            glPopMatrix();
-            //terrain.render();
             glMatrixMode(GL_PROJECTION);
             //endregion
         }
