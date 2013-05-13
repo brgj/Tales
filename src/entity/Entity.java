@@ -12,30 +12,26 @@ import org.lwjgl.util.vector.Vector3f;
  */
 public abstract class Entity {
 
-    Vector3f position;
+    public Vector3f position;
     public Model model;
+    public float radius;
+    public Vector3f center;
 
     public Entity(Model model)
     {
+        position = new Vector3f();
+        center = new Vector3f();
         this.model = model;
-    }
-
-    public void Render()
-    {
-        model.render();
-    }
-
-    public void Update()
-    {
-
+        Initialize();
     }
 
     public void Initialize()
     {
-
+        radius = model.getRadius() * model.getScaleRatio();
     }
 
+    abstract void Render();
 
-
+    abstract void Update();
 
 }

@@ -50,9 +50,9 @@ public class LaserBeam {
     public void renderLeft()
     {
 
-        float x = this.origin.getX();
-        float y = this.origin.getY();
-        float z = this.origin.getZ();
+        float x = -this.origin.getX();
+        float y = -this.origin.getY();
+        float z = -this.origin.getZ();
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         material.bind();
@@ -61,16 +61,16 @@ public class LaserBeam {
         {
 
             glTexCoord2f(1,0);
-            glVertex3f(x,y-0.1f,-movement);
+            glVertex3f(x,y-0.1f,z-movement);
 
             glTexCoord2f(0,0);
-            glVertex3f(x-0.1f,y-0.1f,-movement);
+            glVertex3f(x-0.1f,y-0.1f,z-movement);
 
             glTexCoord2f(0,1);
-            glVertex3f(x-0.1f,y-0.1f,1.0f-movement);
+            glVertex3f(x-0.1f,y-0.1f,z-1.0f-movement);
 
             glTexCoord2f(1,1);
-            glVertex3f(x,y-0.1f,1.0f-movement);
+            glVertex3f(x,y-0.1f,z-1.0f-movement);
 
 
 
@@ -84,9 +84,9 @@ public class LaserBeam {
     public void renderRight()
     {
 
-        float x = this.origin.getX();
-        float y = this.origin.getY();
-        float z = this.origin.getZ();
+        float x = -this.origin.getX();
+        float y = -this.origin.getY();
+        float z = -this.origin.getZ();
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         material.bind();
@@ -95,16 +95,16 @@ public class LaserBeam {
         {
 
             glTexCoord2f(1,0);
-            glVertex3f(x+0.1f,y-0.1f,-movement);
+            glVertex3f(x+0.1f,y-0.1f,z-movement);
 
             glTexCoord2f(0,0);
-            glVertex3f(x,y-0.1f,-movement);
+            glVertex3f(x,y-0.1f,z-movement);
 
             glTexCoord2f(0,1);
-            glVertex3f(x,y-0.1f,1.0f-movement);
+            glVertex3f(x,y-0.1f,z-1.0f-movement);
 
             glTexCoord2f(1,1);
-            glVertex3f(x+0.1f,y-0.1f,1.0f-movement);
+            glVertex3f(x+0.1f,y-0.1f,z-1.0f-movement);
 
 
 

@@ -1,7 +1,10 @@
 package entity;
 
+import display.Camera;
 import display.HUD;
 import environment.Model;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,7 +25,7 @@ public class Player extends Entity {
 
     public void Render()
     {
-        super.Render();
+        model.render();
     }
 
     public void Update()
@@ -32,6 +35,25 @@ public class Player extends Entity {
 
     public void Initialize()
     {
-
+        super.Initialize();
     }
+
+    //TODO: Find better way of passing camera information
+    public void setWorldPosition(Camera cam)
+    {
+        Matrix4f origin = new Matrix4f();
+        origin.setZero();
+
+        //Account for initial model movement, may have to adjust others values in the future
+        origin.m02 = -model.getTranslation().z;
+        origin.m03 = 1;
+
+        origin.rotate((float)Math.toRadians(cam.getPitch()), new Vector3f(1.0f, 0.0f, 0.0f), origin, origin);
+        origin.rotate((float)Math.toRadians(cam.getYaw()), new Vector3f(0.0f, 1.0f, 0.0f), origin, origin);
+
+        position.x = origin.m00 - cam.getPosition().x;
+        position.y = origin.m01 - cam.getPosition().y;
+        position.z = -origin.m02 - cam.getPosition().z;
+    }
+
 }

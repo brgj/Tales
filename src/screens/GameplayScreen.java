@@ -4,12 +4,9 @@ import display.Camera;
 import display.HUD;
 import display.Ray;
 import entity.Enemy;
+import entity.Entity;
 import entity.Player;
-import environment.Background;
-import environment.Light;
-import environment.Model;
-import environment.Laser;
-import environment.LaserBeam;
+import environment.*;
 import helpers.Delegate;
 import helpers.GLHelper;
 import org.lwjgl.input.Keyboard;
@@ -43,7 +40,9 @@ public class GameplayScreen extends Screen {
     Light l;
     Laser laser1 ;
     ArrayList<LaserBeam> beam;
+    ArrayList<Entity> entities;
     Enemy enemy; //Todo: change this to an array of enemies later.
+    Explosion ex;
 
     public GameplayScreen(Delegate d) {
         super(d);
@@ -81,9 +80,15 @@ public class GameplayScreen extends Screen {
         tempModel = new Model("data/DarkFighter/dark_fighter.obj", 1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f);
         terrain = new Model("data/terrain/terrain.obj", 20.0f, 0.0f, 0.0f, 0.0f, 0.0f, -3.0f, -10.0f);
         laser1 = new Laser(cam);
-        beam = new ArrayList<LaserBeam>();
         enemy = new Enemy(new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f));
-        enemy.Initialize();
+
+        beam = new ArrayList<LaserBeam>();
+        entities = new ArrayList<Entity>();
+
+        //DELETE LATER
+        entities.add(enemy);
+        ex = new Explosion();
+
     }
 
     public void Render() {
@@ -112,9 +117,11 @@ public class GameplayScreen extends Screen {
             glPushMatrix();
             {
                 glLoadIdentity();
+                player.setWorldPosition(cam);
                 player.Update();
                 player.Render();
             }
+
             glPopMatrix();
             cam.setCameraPosition();
 
@@ -127,8 +134,10 @@ public class GameplayScreen extends Screen {
                 terrain.render();
             }
             glPopMatrix();
+
             glPushMatrix();
             {
+                GLHelper.renderSphere(player.position, player.radius);
                 tempModel.render();
                 enemyInTarget = CheckPickingRay(chPos.x + Display.getWidth() / 2, -chPos.y + Display.getHeight() / 2,
                         tempModel);
@@ -144,8 +153,6 @@ public class GameplayScreen extends Screen {
 
             glPushMatrix();
             {
-                glLoadIdentity();
-                player.Update();
                 laser1.render();
                 if(beam.size() !=0)
                 {
@@ -166,6 +173,15 @@ public class GameplayScreen extends Screen {
 
         //region 2D stuff
         player.hud.render(enemyInTarget);
+        //Check collisions
+        for(Entity e : entities ){
+            if(CheckCollision(player, e))
+            {
+                //DO STUFF
+                //ex.drawExplosion();
+                System.out.print("Hello!");
+            }
+        }
         //endregion
 
     }
@@ -275,31 +291,20 @@ public class GameplayScreen extends Screen {
         return (s0 >= 0.0 || s1 >= 0.0);
     }
 
-    public void renderSphere(Vector3f center, float radius) {
-        Vector3f vec = tempModel.getTranslation();
-        vec.scale(tempModel.getScaleRatio());
-        glColor3f(1.0f, 1.0f, 1.0f);
-        glBegin(GL_LINE_LOOP);
-        {
-            for (int i = 0; i < 360; i++) {
-                double degInRad = i * Math.PI / 180;
-                glVertex3f((float) (vec.x + center.x + Math.cos(degInRad) * radius), (float) (vec.y + center.y + Math.sin(degInRad) * radius), vec.z + center.z);
-            }
-        }
-        glEnd();
-
-        glBegin(GL_LINE_LOOP);
-        {
-            for (int i = 0; i < 360; i++) {
-                double degInRad = i * Math.PI / 180;
-                glVertex3f(vec.x + center.x, (float) (vec.y + center.y + Math.cos(degInRad) * radius), (float) (vec.z + center.z + Math.sin(degInRad) * radius));
-            }
-        }
-        glEnd();
-    }
     private void TransformRay(Ray ray, Matrix4f mat) {
         Matrix4f.transform(mat, ray.origin, ray.origin);
         Matrix4f.transform(mat, ray.direction, ray.direction);
         ray.direction.normalise();
     }
+
+    //Simple bounding sphere test
+    private boolean CheckCollision(Entity player, Entity object)
+    {
+        Vector3f position = new Vector3f();
+        position = Vector3f.sub(player.position, object.position, position);
+        float dist = position.x * position.x + position.y * position.y + position.z * position.z;
+        float minDist = player.radius + object.radius;
+        return dist <= minDist * minDist;
+    }
+
 }

@@ -30,12 +30,13 @@ public class Enemy extends Entity {
     public Enemy(Model model)
     {
         super(model);
+        this.Initialize();
     }
 
     public void Render()
     {
-            setWorldPosition();
-            super.Render();
+        model.render();
+        setWorldPosition();
     }
 
     public void Update()
