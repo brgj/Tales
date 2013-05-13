@@ -4,6 +4,7 @@ import display.Camera;
 import glapp.GLApp;
 import helpers.GLHelper;
 import org.lwjgl.Sys;
+import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
 
@@ -18,6 +19,7 @@ import static org.lwjgl.opengl.GL11.*;
  */
 public class LaserBeam {
     public Vector3f origin;
+    public Vector3f initialDir = new Vector3f(0.0f,0.0f,1.0f);
     public Texture material  = GLHelper.LoadTexture("png", "images/glow/laser.png");
     public float movement;
     public float initial;
@@ -61,16 +63,16 @@ public class LaserBeam {
         {
 
             glTexCoord2f(1,0);
-            glVertex3f(x,y-0.1f,z-movement);
+            glVertex3f(x,y+0.2f-0.1f,z-movement);
 
             glTexCoord2f(0,0);
-            glVertex3f(x-0.1f,y-0.1f,z-movement);
+            glVertex3f(x-0.1f,y+0.2f-0.1f,z-movement);
 
             glTexCoord2f(0,1);
-            glVertex3f(x-0.1f,y-0.1f,z-1.0f-movement);
+            glVertex3f(x-0.1f,y+0.2f-0.1f,z-1.0f-movement);
 
             glTexCoord2f(1,1);
-            glVertex3f(x,y-0.1f,z-1.0f-movement);
+            glVertex3f(x,y+0.2f-0.1f,z-1.0f-movement);
 
 
 
@@ -95,16 +97,16 @@ public class LaserBeam {
         {
 
             glTexCoord2f(1,0);
-            glVertex3f(x+0.1f,y-0.1f,z-movement);
+            glVertex3f(x+0.1f,y+0.2f-0.1f,z-movement);
 
             glTexCoord2f(0,0);
-            glVertex3f(x,y-0.1f,z-movement);
+            glVertex3f(x,y+0.2f-0.1f,z-movement);
 
             glTexCoord2f(0,1);
-            glVertex3f(x,y-0.1f,z-1.0f-movement);
+            glVertex3f(x,y+0.2f-0.1f,z-1.0f-movement);
 
             glTexCoord2f(1,1);
-            glVertex3f(x+0.1f,y-0.1f,z-1.0f-movement);
+            glVertex3f(x+0.1f,y+0.2f-0.1f,z-1.0f-movement);
 
 
 
@@ -114,5 +116,17 @@ public class LaserBeam {
         glColor4f(0.0f, 1.0f, 0.0f, 0.8f);
         glEnd();
         glDisable(GL_BLEND);
+    }
+    public void calDir(Camera cam)
+    {
+        float x = cam.getPosition().getX();
+        float y = cam.getPosition().getY();
+        float z = cam.getPosition().getZ()+5.0f;
+        Matrix4f dir ;
+        Matrix4f temp;
+        if(cam.getYaw()!=0)
+        {
+        }
+
     }
 }

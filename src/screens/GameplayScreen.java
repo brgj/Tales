@@ -153,7 +153,7 @@ public class GameplayScreen extends Screen {
 
             glPushMatrix();
             {
-                laser1.render();
+               // laser1.render();
                 if(beam.size() !=0)
                 {
                     for(int i = 0 ; i<beam.size();i++)
