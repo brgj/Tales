@@ -114,12 +114,39 @@ public class GameplayScreen extends Screen {
                 glLoadIdentity();
                 player.Update();
                 player.Render();
-                laser1.render();
+            }
+            glPopMatrix();
+            cam.setCameraPosition();
+
+            Matrix4f view = GLHelper.getInverseModelViewMatrix();
+            Vector2f chPos = player.hud.crosshairPos;
+
+            //Draw other 3d models not focused by the camera and check for intersection with crosshairs
+            glPushMatrix();
+            {
+                terrain.render();
             }
             glPopMatrix();
             glPushMatrix();
             {
+                tempModel.render();
+                enemyInTarget = CheckPickingRay(chPos.x + Display.getWidth() / 2, -chPos.y + Display.getHeight() / 2,
+                        tempModel);
+            }
+            glPopMatrix();
 
+            glPushMatrix();{
+                enemy.setTarget(cam.getPosition());
+                enemy.Update();
+                enemy.Render();
+            }
+            glPopMatrix();
+
+            glPushMatrix();
+            {
+                glLoadIdentity();
+                player.Update();
+                laser1.render();
                 if(beam.size() !=0)
                 {
                     for(int i = 0 ; i<beam.size();i++)
@@ -131,23 +158,6 @@ public class GameplayScreen extends Screen {
                 }
             }
             glPopMatrix();
-            cam.setCameraPosition();
-
-            Matrix4f view = GLHelper.getInverseViewMatrix();
-            Vector2f chPos = player.hud.crosshairPos;
-
-            //Draw other 3d models not focused by the camera and check for intersection with crosshairs
-            glPushMatrix();
-            {
-                tempModel.render();
-                enemyInTarget = CheckPickingRay(chPos.x + Display.getWidth() / 2, -chPos.y + Display.getHeight() / 2,
-                        tempModel, view);
-                enemy.setTarget(cam.getPosition());
-                enemy.Update();
-                enemy.Render();
-            }
-            glPopMatrix();
-            terrain.render();
             glMatrixMode(GL_PROJECTION);
             //endregion
         }
@@ -204,10 +214,8 @@ public class GameplayScreen extends Screen {
         delegate.change(0);
     }
 
-    private boolean CheckPickingRay(float x, float y, Model enemy, Matrix4f view) {
+    private boolean CheckPickingRay(float x, float y, Model enemy) {
         Ray ray = CalcPickingRay(x, y);
-
-        TransformRay(ray, view);
 
         return CheckCollision(ray, enemy);
     }
@@ -230,17 +238,8 @@ public class GameplayScreen extends Screen {
         return ray;
     }
 
-    //TODO: Fix the model pos issues
     private boolean CheckCollision(Ray ray, Model model) {
-        Matrix4f world = new Matrix4f();
-        world.setIdentity();
-
-        world.translate(model.getTranslation());
-        world.rotate(model.getPitch(), new Vector3f(1, 0, 0));
-        world.rotate(model.getYaw(), new Vector3f(0, 1, 0));
-        world.rotate(model.getRoll(), new Vector3f(0, 0, 1));
-
-        world.invert();
+        Matrix4f world = GLHelper.getInverseModelViewMatrix();
 
         TransformRay(ray, world);
 
@@ -256,7 +255,7 @@ public class GameplayScreen extends Screen {
 
         radius *= model.getScaleRatio();
 
-        renderSphere(center, radius);
+        GLHelper.renderSphere(center, radius);
 
         Vector3f v = new Vector3f(ray.origin.x - center.x, ray.origin.y - center.y, ray.origin.z - center.z);
 
@@ -298,11 +297,9 @@ public class GameplayScreen extends Screen {
         }
         glEnd();
     }
-
     private void TransformRay(Ray ray, Matrix4f mat) {
         Matrix4f.transform(mat, ray.origin, ray.origin);
         Matrix4f.transform(mat, ray.direction, ray.direction);
-
         ray.direction.normalise();
     }
 }

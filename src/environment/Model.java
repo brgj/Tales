@@ -45,13 +45,6 @@ public class Model {
         GL11.glRotatef(rotY, 0, 1, 0);
         GL11.glRotatef(rotZ, 0, 0, 1);
         model.render();
-        GL11.glTranslatef(-transX, -transY, -transZ);
-        GL11.glRotatef(-rotZ, 0, 0, 1);
-        GL11.glRotatef(-rotY, 0, 1, 0);
-        GL11.glRotatef(-rotX, 1, 0, 0);
-        if (scaleRatio != 0) {
-            GL11.glScalef(1 / scaleRatio, 1 / scaleRatio, 1 / scaleRatio);
-        }
     }
 
     public void updatePosition(float transX, float transY, float transZ) {

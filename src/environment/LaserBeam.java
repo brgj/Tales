@@ -16,15 +16,15 @@ import static org.lwjgl.opengl.GL11.*;
  * Time: 9:53 PM
  * To change this template use File | Settings | File Templates.
  */
-public class LaserBeam {public Vector3f position;
-
+public class LaserBeam {
+    public Vector3f origin;
     public Texture material  = GLHelper.LoadTexture("png", "images/glow/laser.png");
     public float movement;
     public float initial;
     public int timecounter;
     public LaserBeam(Camera cam)
     {
-        this.position = cam.getPosition();
+        this.origin = cam.getPosition();
         movement = 0.0f;
         initial = Sys.getTime();
         timecounter = 0;
@@ -41,18 +41,18 @@ public class LaserBeam {public Vector3f position;
         this.timecounter = (int)((Sys.getTime()-this.initial)/1000);
     }
     public Vector3f getPosition() {
-        return position;
+        return origin;
     }
 
     public void setPosition(Vector3f position) {
-        this.position = position;
+        this.origin = position;
     }
     public void renderLeft()
     {
 
-        float x = this.position.getX();
-        float y = this.position.getY();
-        float z = this.position.getZ();
+        float x = this.origin.getX();
+        float y = this.origin.getY();
+        float z = this.origin.getZ();
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         material.bind();
@@ -60,17 +60,17 @@ public class LaserBeam {public Vector3f position;
         glBegin(GL_QUADS);
         {
 
-                glTexCoord2f(1,0);
-                glVertex3f(x,y-0.1f,-movement);
+            glTexCoord2f(1,0);
+            glVertex3f(x,y-0.1f,-movement);
 
-                glTexCoord2f(0,0);
-                glVertex3f(x-0.1f,y-0.1f,-movement);
+            glTexCoord2f(0,0);
+            glVertex3f(x-0.1f,y-0.1f,-movement);
 
-                glTexCoord2f(0,1);
-                glVertex3f(x-0.1f,y-0.1f,1.0f-movement);
+            glTexCoord2f(0,1);
+            glVertex3f(x-0.1f,y-0.1f,1.0f-movement);
 
-                glTexCoord2f(1,1);
-                glVertex3f(x,y-0.1f,1.0f-movement);
+            glTexCoord2f(1,1);
+            glVertex3f(x,y-0.1f,1.0f-movement);
 
 
 
@@ -84,9 +84,9 @@ public class LaserBeam {public Vector3f position;
     public void renderRight()
     {
 
-        float x = this.position.getX();
-        float y = this.position.getY();
-        float z = this.position.getZ();
+        float x = this.origin.getX();
+        float y = this.origin.getY();
+        float z = this.origin.getZ();
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         material.bind();
