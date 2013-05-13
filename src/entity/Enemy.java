@@ -45,18 +45,16 @@ public class Enemy extends Entity {
         Vector3f ET = new Vector3f(target.getX() - this.position.getX(),
                 target.getY() - this.position.getY(),
                 target.getZ() - this.position.getZ());
-        // calculate the pitch and yaw
-        float yawToTarget = calculateVectorAngle(ET, new Vector3f(ET.getX(), ET.getY(), 0));
-        float pitchToTarget = calculateVectorAngle(ET, new Vector3f(0, ET.getY(), 0));
+        // calculate the new pitch and yaw
+        pitch = (float)Math.toDegrees(calculatePitch(ET));
+        yaw = (float)Math.toDegrees(calculateYaw(ET));
 
-        // Todo: decide weather its negative or positive
-        // turn towards target by 30% each fame
-        pitch -= pitchToTarget * 0.3f;
-        yaw -= yawToTarget * 0.3f;
-        // Updating position
-        this.position.setX(this.position.getX() - (speed * (float)Math.sin(yaw)));
-        this.position.setZ(this.position.getZ() + (speed * (float) Math.cos(yaw)));
-        this.position.setY(this.position.getY() + (speed * (float)Math.sin(pitch)));
+        //double radPitch = Math.toRadians(pitch);
+        //double radYaw = Math.toRadians(yaw);
+        //position.setX(position.getX() + (speed * (float)Math.sin(radYaw)));
+        //position.setY(position.getY() - (speed * (float)Math.sin(radPitch)));
+        //position.setZ(position.getZ() - (speed * (float)Math.cos(radYaw)));
+
     }
 
     public void Initialize()
@@ -65,7 +63,7 @@ public class Enemy extends Entity {
         this.position = new Vector3f(0.0f,0.0f,0.0f);
         pitch = 0;
         yaw = 0;
-        roll = 0;
+        roll = 180;
         speed = 0.1f;
     }
 
@@ -75,30 +73,19 @@ public class Enemy extends Entity {
     public void setWorldPosition(){
             glMatrixMode(GL_MODELVIEW);
             //Sets the cameras X rotation
-            glRotatef(pitch, 1.0f, 0.0f, 0.0f);
+            glRotatef(-pitch, 1.0f, 0.0f, 0.0f);
             //Sets the cameras Y rotation
-            glRotatef(yaw, 0.0f, 1.0f, 0.0f);
+            glRotatef(-yaw, 0.0f, 1.0f, 0.0f);
             //Sets the cameras Z rotation
             glRotatef(roll, 0.0f, 0.0f, 1.0f);
             glTranslatef(this.position.getX(), this.position.getY(),this.position.getZ());
     }
 
-    private float calculateVectorAngle(Vector3f a, Vector3f b){
-        float magA = pythag3(a);
-        float magB = pythag3(b);
-        float dp = dotProduct(a, b);
-        float res1 = (float)Math.acos(dp/(magA* magB));
-        return (magA* magB) == 0 ? 0.0f : res1;
-        //return (magA* magB) == 0 ? (float)Math.acos(0) : (float)Math.acos(dp/(magA* magB));
+    private float calculatePitch(Vector3f v){
+        return (float)Math.atan2(v.getY(), v.getZ());
     }
 
-    private float dotProduct(Vector3f a, Vector3f b){
-        return (a.getX()*b.getX()) + (a.getY() + b.getY()) + (a.getZ() + b.getZ());
-    }
-    private float pythag3(float x, float y, float z){
-        return (float)Math.sqrt((Math.pow(x,2)+ Math.pow(y,2)+ Math.pow(z,2)));
-    }
-    private float pythag3(Vector3f v){
-        return pythag3(v.getX(),v.getY(),v.getZ());
+    private float calculateYaw(Vector3f v){
+        return (float)Math.atan2(v.getX(), v.getZ());
     }
 }
