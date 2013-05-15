@@ -5,6 +5,7 @@ import display.HUD;
 import display.Ray;
 import entity.Enemy;
 import entity.Entity;
+import entity.LaserBeam;
 import entity.Player;
 import environment.*;
 import helpers.Delegate;
@@ -38,7 +39,7 @@ public class GameplayScreen extends Screen {
     Player player;
     Background background;
     Light l;
-    Laser laser1 ;
+    Laser laser1;
     ArrayList<LaserBeam> beam;
     ArrayList<Entity> entities;
     Enemy enemy; //Todo: change this to an array of enemies later.
@@ -111,6 +112,7 @@ public class GameplayScreen extends Screen {
             // Rotate camera
             cam.setCameraView();
 
+            //Render Background
             background.drawSkybox(50.0f);
 
             //Render the model the camera is focusing
@@ -118,11 +120,11 @@ public class GameplayScreen extends Screen {
             {
                 glLoadIdentity();
                 player.setWorldPosition(cam);
-                player.Update();
                 player.Render();
             }
-
             glPopMatrix();
+
+            //Translate camera
             cam.setCameraPosition();
 
             Matrix4f view = GLHelper.getInverseModelViewMatrix();
@@ -144,27 +146,15 @@ public class GameplayScreen extends Screen {
             }
             glPopMatrix();
 
-            glPushMatrix();{
-                enemy.setTarget(cam.getPosition());
-                enemy.Update();
-                enemy.Render();
-            }
-            glPopMatrix();
 
-            glPushMatrix();
-            {
-               // laser1.render();
-                if(beam.size() !=0)
-                {
-                    for(int i = 0 ; i<beam.size();i++)
-                    {
-                        beam.get(i).renderLeft();
-                        beam.get(i).renderRight();
-                    }
+            enemy.setTarget(cam.getPosition());
 
-                }
+            for (Entity ex : entities) {
+                glPushMatrix();
+                ex.Render();
+                glPopMatrix();
             }
-            glPopMatrix();
+
             glMatrixMode(GL_PROJECTION);
             //endregion
         }
@@ -174,9 +164,8 @@ public class GameplayScreen extends Screen {
         //region 2D stuff
         player.hud.render(enemyInTarget);
         //Check collisions
-        for(Entity e : entities ){
-            if(CheckCollision(player, e))
-            {
+        for (Entity e : entities) {
+            if (CheckCollision(player, e)) {
                 //DO STUFF
                 //ex.drawExplosion();
                 System.out.print("Hello!");
@@ -187,6 +176,12 @@ public class GameplayScreen extends Screen {
     }
 
     public void Update() {
+        //Update entities
+        for (Entity ex : entities) {
+            ex.Update();
+        }
+        player.Update();
+
         rotate(0.2f, player.hud);
         //tempModel.setTarget(cam.getPosition());
         //tempModel.Update();
@@ -197,6 +192,7 @@ public class GameplayScreen extends Screen {
         if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
             LaserBeam temp = new LaserBeam(cam);
             beam.add(temp);
+            entities.add(temp);
 
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
@@ -298,8 +294,7 @@ public class GameplayScreen extends Screen {
     }
 
     //Simple bounding sphere test
-    private boolean CheckCollision(Entity player, Entity object)
-    {
+    private boolean CheckCollision(Entity player, Entity object) {
         Vector3f position = new Vector3f();
         position = Vector3f.sub(player.position, object.position, position);
         float dist = position.x * position.x + position.y * position.y + position.z * position.z;

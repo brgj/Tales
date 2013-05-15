@@ -25,13 +25,18 @@ public abstract class Entity {
         Initialize();
     }
 
+    public Entity()
+    {
+
+    }
+
     public void Initialize()
     {
         radius = model.getRadius() * model.getScaleRatio();
     }
 
-    abstract void Render();
+    abstract public void Render();
 
-    abstract void Update();
+    abstract public void Update();
 
 }
