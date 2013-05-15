@@ -122,17 +122,7 @@ public class GameplayScreen extends Screen {
             {
                 glLoadIdentity();
                 player.Render();
-                laser1.render();
-            }
-            glPopMatrix();
-            glPushMatrix();
-            {
-                if (beam.size() != 0) {
-                    for (int i = 0; i < beam.size(); i++) {
-                        beam.get(i).renderLeft();
-                        beam.get(i).renderRight();
-                    }
-                }
+                //laser1.render();
             }
             glPopMatrix();
 
@@ -159,6 +149,17 @@ public class GameplayScreen extends Screen {
                 }
                 glPopMatrix();
             }
+            glPushMatrix();
+            {
+                if (beam.size() != 0) {
+                    for (int i = 0; i < beam.size(); i++) {
+                       // beam.get(i).getcurPosition(cam);
+                        beam.get(i).renderLeft();
+                        beam.get(i).renderRight();
+                    }
+                }
+            }
+            glPopMatrix();
             //terrain.render();
             glMatrixMode(GL_PROJECTION);
             //endregion
