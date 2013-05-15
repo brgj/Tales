@@ -21,6 +21,7 @@ import static org.lwjgl.opengl.GL11.*;
 public class LaserBeam extends Entity {
     public Vector3f origin;
     public Vector3f initialDir = new Vector3f(0.0f, 0.0f, 1.0f);
+    public Vector3f position;
     public Texture material = GLHelper.LoadTexture("png", "images/glow/laser.png");
     public float movement;
     public float initial;

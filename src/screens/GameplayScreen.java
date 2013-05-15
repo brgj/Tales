@@ -22,6 +22,7 @@ import org.newdawn.slick.util.ResourceLoader;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -35,15 +36,15 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class GameplayScreen extends Screen {
     Camera cam;
-    Model tempModel, terrain;
+    Model terrain;
     Player player;
     Background background;
     Light l;
     Laser laser1;
     ArrayList<LaserBeam> beam;
     ArrayList<Entity> entities;
-    Enemy enemy; //Todo: change this to an array of enemies later.
     Explosion ex;
+    HashMap<Byte, Enemy> enemies = new HashMap<Byte, Enemy>();
 
     public GameplayScreen(Delegate d) {
         super(d);
@@ -78,18 +79,19 @@ public class GameplayScreen extends Screen {
         background = new Background();
         //load the model
         player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f));
-        tempModel = new Model("data/DarkFighter/dark_fighter.obj", 1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f);
+        enemies = new HashMap<Byte, Enemy>();
+        enemies.put((byte) -1, new Enemy(new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), new Vector3f(0, 0, 0)));
         terrain = new Model("data/terrain/terrain.obj", 20.0f, 0.0f, 0.0f, 0.0f, 0.0f, -3.0f, -10.0f);
         laser1 = new Laser(cam);
-        enemy = new Enemy(new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f));
 
         beam = new ArrayList<LaserBeam>();
         entities = new ArrayList<Entity>();
 
-        //DELETE LATER
-        entities.add(enemy);
-        ex = new Explosion();
+        enemies.get((byte) -1).Initialize();
 
+        //DELETE LATER
+        entities.add(enemies.get((byte) -1));
+        ex = new Explosion();
     }
 
     public void Render() {
@@ -98,8 +100,8 @@ public class GameplayScreen extends Screen {
 
         glMatrixMode(GL_PROJECTION);
 
-        // true if tempModel is in crosshairs
-        boolean enemyInTarget;
+        // true if enemy is in crosshairs
+        boolean enemyInTarget = false;
         // Push the 2D projection to stack
         glPushMatrix();
         {
@@ -119,81 +121,85 @@ public class GameplayScreen extends Screen {
             glPushMatrix();
             {
                 glLoadIdentity();
-                player.setWorldPosition(cam);
                 player.Render();
+                laser1.render();
+            }
+            glPopMatrix();
+            glPushMatrix();
+            {
+                if (beam.size() != 0) {
+                    for (int i = 0; i < beam.size(); i++) {
+                        beam.get(i).renderLeft();
+                        beam.get(i).renderRight();
+                    }
+                }
             }
             glPopMatrix();
 
             //Translate camera
             cam.setCameraPosition();
 
-            Matrix4f view = GLHelper.getInverseModelViewMatrix();
-            Vector2f chPos = player.hud.crosshairPos;
-
-            //Draw other 3d models not focused by the camera and check for intersection with crosshairs
             glPushMatrix();
             {
+                terrain.transform();
                 terrain.render();
             }
             glPopMatrix();
 
-            glPushMatrix();
-            {
-                GLHelper.renderSphere(player.position, player.radius);
-                tempModel.render();
-                enemyInTarget = CheckPickingRay(chPos.x + Display.getWidth() / 2, -chPos.y + Display.getHeight() / 2,
-                        tempModel);
-            }
-            glPopMatrix();
+            Vector2f chPos = player.hud.crosshairPos;
 
-
-            enemy.setTarget(cam.getPosition());
-
-            for (Entity ex : entities) {
+            //Draw other 3d models not focused by the camera and check for intersection with crosshairs
+            for (Enemy enemy : enemies.values()) {
                 glPushMatrix();
-                ex.Render();
+                {
+                    enemy.Render();
+                    if (!enemyInTarget)
+                        enemyInTarget = CheckPickingRay(chPos.x + Display.getWidth() / 2, chPos.y + Display.getHeight() / 2, enemy);
+                    enemy.setTarget(cam.getPosition());
+                }
                 glPopMatrix();
             }
-
+            //terrain.render();
             glMatrixMode(GL_PROJECTION);
             //endregion
         }
         glPopMatrix();
 
-
-        //region 2D stuff
         player.hud.render(enemyInTarget);
+
+        glMatrixMode(GL_MODELVIEW);
         //Check collisions
         for (Entity e : entities) {
-            if (CheckCollision(player, e)) {
+            glLoadIdentity();
+            if (CheckCollision(e)) {
                 //DO STUFF
                 //ex.drawExplosion();
                 System.out.print("Hello!");
             }
         }
-        //endregion
 
     }
 
     public void Update() {
+        rotate(0.2f, player.hud);
+        player.Update();
+        player.setPlayerOffset(cam.getYaw(), cam.getPitch());
+
         //Update entities
         for (Entity ex : entities) {
             ex.Update();
         }
-        player.Update();
+        for (Enemy enemy : enemies.values()) {
+            enemy.Update();
+        }
 
-        rotate(0.2f, player.hud);
-        //tempModel.setTarget(cam.getPosition());
-        //tempModel.Update();
-        if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             Exit();
             return;
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
             LaserBeam temp = new LaserBeam(cam);
             beam.add(temp);
-            entities.add(temp);
-
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
             moveXZ(0.2f, 90);
@@ -206,6 +212,13 @@ public class GameplayScreen extends Screen {
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
             moveXYZ(0.2f, 180);
+        }
+        if (Keyboard.next()) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
+                cam.move(10, 0);
+                cam.moveUp(10, 270);
+                cam.setPitch(90);
+            }
         }
     }
 
@@ -226,79 +239,114 @@ public class GameplayScreen extends Screen {
         delegate.change(0);
     }
 
-    private boolean CheckPickingRay(float x, float y, Model enemy) {
+    /**
+     * Calculate a picking ray and check if it intersects with an enemy
+     *
+     * @param x
+     * @param y
+     * @param enemy
+     * @return
+     */
+    private boolean CheckPickingRay(float x, float y, Enemy enemy) {
         Ray ray = CalcPickingRay(x, y);
 
-        return CheckCollision(ray, enemy);
+        return RaySphereIntTest(ray, enemy);
     }
 
+    /**
+     * Calculate the picking ray based on x and y screen coordinates
+     *
+     * @param x
+     * @param y
+     * @return
+     */
     private Ray CalcPickingRay(float x, float y) {
         float px;
         float py;
 
+        // Retrieve the projection matrix from OpenGL
         float[] proj = new float[16];
-
         GLHelper.glGetFloatv(GL_PROJECTION_MATRIX, proj);
 
+        // Use the scaling in the projection matrix to adjust the x and y positions
         px = (((2.0f * x) / Display.getWidth()) - 1.0f) / proj[0];
         py = (((-2.0f * y) / Display.getHeight()) + 1.0f) / proj[5];
 
+        // Create the Ray with an initial position of 0 and the direction of the mouse click
         Ray ray = new Ray();
         ray.origin = new Vector4f(0, 0, 0, 1);
         ray.direction = new Vector4f(px, py, 1, 0);
 
+        // Get the current camera coords + enemy coords and invert them
+        Matrix4f world = GLHelper.getInverseModelViewMatrix();
+
+        // Transform the ray by the inverse of the absolute world coords of the enemy
+        TransformRay(ray, world);
+
         return ray;
     }
 
-    private boolean CheckCollision(Ray ray, Model model) {
-        Matrix4f world = GLHelper.getInverseModelViewMatrix();
+    /**
+     * Check if ray is intersecting with an enemy's hitsphere
+     *
+     * @param ray
+     * @param enemy
+     * @return
+     */
+    private boolean RaySphereIntTest(Ray ray, Enemy enemy) {
+        // Create a vector from the center of the enemy to the origin of the ray
+        Vector3f v = new Vector3f(ray.origin.x - enemy.center.x, ray.origin.y - enemy.center.y, ray.origin.z - enemy.center.z);
 
-        TransformRay(ray, world);
+        // Form the quadratic equation, leaving out A because u is normalized, so A = u * u = 1
+        float b = 2.0f * Vector3f.dot(new Vector3f(ray.direction.x, ray.direction.y, ray.direction.z), v); // B=2*(u.v)
+        float c = Vector3f.dot(v, v) - (enemy.radius * enemy.radius); // C=v.v-r^2
 
-        return RaySphereIntTest(ray, model);
-    }
-
-    private boolean RaySphereIntTest(Ray ray, Model model) {
-        // TODO: Associate bounding sphere with player class
-        Vector3f center = model.getCenter();
-        float radius = model.getRadius();
-
-        radius *= 3.0f / 4.0f;
-
-        radius *= model.getScaleRatio();
-
-        GLHelper.renderSphere(center, radius);
-
-        Vector3f v = new Vector3f(ray.origin.x - center.x, ray.origin.y - center.y, ray.origin.z - center.z);
-
-        float b = 2.0f * Vector3f.dot(new Vector3f(ray.direction.x, ray.direction.y, ray.direction.z), v);
-        float c = Vector3f.dot(v, v) - (radius * radius);
-
+        // calc the discriminant of the quadratic
         double discriminant = (b * b) - (4 * c);
 
+        // If we are trying to sqrt a negative, i.e. number is imaginary, return false
         if (discriminant < 0.0)
             return false;
 
         discriminant = Math.sqrt(discriminant);
 
+        // Find both solutions to the quadratic
         double s0 = (-b + discriminant) / 2.0;
         double s1 = (-b - discriminant) / 2.0;
 
+        // If at least one is positive, intersection has occurred
         return (s0 >= 0.0 || s1 >= 0.0);
     }
 
+    /**
+     * Transform the ray origin and direction by a matrix and normalize the result
+     *
+     * @param ray
+     * @param mat
+     */
     private void TransformRay(Ray ray, Matrix4f mat) {
         Matrix4f.transform(mat, ray.origin, ray.origin);
         Matrix4f.transform(mat, ray.direction, ray.direction);
         ray.direction.normalise();
     }
 
-    //Simple bounding sphere test
-    private boolean CheckCollision(Entity player, Entity object) {
-        Vector3f position = new Vector3f();
-        position = Vector3f.sub(player.position, object.position, position);
-        float dist = position.x * position.x + position.y * position.y + position.z * position.z;
-        float minDist = player.radius + object.radius;
+    /**
+     * Check if current player is colliding with another entity
+     */
+    private boolean CheckCollision(Entity entity) {
+        // Get the position of the player and entity and create a vector from the player to the entity
+        Vector3f entityPos = entity.getPosition();
+
+        Vector3f playerPos = new Vector3f();
+        Vector3f.sub(player.offset, cam.getPosition(), playerPos);
+
+        Vector3f v = new Vector3f();
+        Vector3f.sub(playerPos, entityPos, v);
+
+        // Calculate the magnitude of vector v as the distance and create a minimum acceptable distance for collision
+        float dist = v.x * v.x + v.y * v.y + v.z * v.z;
+        float minDist = player.radius + entity.radius;
+
         return dist <= minDist * minDist;
     }
 

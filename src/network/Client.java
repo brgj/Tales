@@ -16,7 +16,11 @@ public class Client {
     public final int port;
     // Strictly deals with messages sent between players
     private final Queue<String> messageQueue;
-    // Maps specific actions and their owners to an array of bytes representing details of those actions
+    /**
+     * Maps specific actions and their owners to an array of bytes representing details of those actions
+     * 0: Chat message
+     * 1: ID message
+     */
     private final Map<Byte, byte[]> actionMap;
     private Sender sender;
     private ReceiverThread receiver;
@@ -61,9 +65,11 @@ public class Client {
      * @return
      */
     public Set<Map.Entry<Byte, byte[]>> receiveActions() {
-        Set<Map.Entry<Byte, byte[]>> actions = new HashSet<Map.Entry<Byte, byte[]>>(actionMap.entrySet());
-        actionMap.clear();
-        return actions;
+        synchronized (actionMap) {
+            Set<Map.Entry<Byte, byte[]>> actions = new HashSet<Map.Entry<Byte, byte[]>>(actionMap.entrySet());
+            actionMap.clear();
+            return actions;
+        }
     }
 
     /**
@@ -75,7 +81,7 @@ public class Client {
         sender.sendMessage(message);
     }
 
-    public void sendData(byte[] data) throws IOException{
+    public void sendData(byte[] data) throws IOException {
         sender.sendData(data);
     }
 
@@ -149,9 +155,9 @@ class Sender {
 }
 
 class ReceiverThread extends Thread {
+    private final Map<Byte, byte[]> actionMap;
     private DatagramSocket clientSocket;
     private Queue<String> messageQueue;
-    private Map<Byte, byte[]> actionMap;
 
     public ReceiverThread(DatagramSocket ds, Queue<String> queue, Map<Byte, byte[]> map) {
         clientSocket = ds;
@@ -188,7 +194,9 @@ class ReceiverThread extends Thread {
                 } else {
                     byte[] temp = new byte[length - 1];
                     System.arraycopy(receiveData, 1, temp, 0, length - 1);
-                    actionMap.put(receiveData[0], temp);
+                    synchronized (actionMap) {
+                        actionMap.put(receiveData[0], temp);
+                    }
                 }
 
                 Thread.yield();

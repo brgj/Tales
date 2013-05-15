@@ -14,8 +14,8 @@ import org.lwjgl.util.vector.Vector3f;
  */
 public class Model {
     private float scaleRatio = 1.0f;
-    private float rotX = 0.0f, rotY = 0.0f, rotZ = 0.0f;
-    private float transX = 0.0f, transY = 0.0f, transZ = 0.0f;
+    public float pitch = 0.0f, yaw = 0.0f, roll = 0.0f;
+    public float transX = 0.0f, transY = 0.0f, transZ = 0.0f;
     private GLModel model;
 
     public Model(String filename) {
@@ -27,23 +27,26 @@ public class Model {
                  float transX, float transY, float transZ) {
         model = new GLModel(filename);
         this.scaleRatio = scaleRatio;
-        this.rotX = rotX;
-        this.rotY = rotY;
-        this.rotZ = rotZ;
+        this.pitch = rotX;
+        this.yaw = rotY;
+        this.roll = rotZ;
         this.transX = transX;
         this.transY = transY;
         this.transZ = transZ;
         model.regenerateNormals();
     }
 
-    public void render() {
+    public void transform() {
         GL11.glTranslatef(transX, transY, transZ);
         if (scaleRatio != 0) {
             GL11.glScalef(scaleRatio, scaleRatio, scaleRatio);
         }
-        GL11.glRotatef(rotX, 1, 0, 0);
-        GL11.glRotatef(rotY, 0, 1, 0);
-        GL11.glRotatef(rotZ, 0, 0, 1);
+        GL11.glRotatef(pitch, 1, 0, 0);
+        GL11.glRotatef(yaw, 0, 1, 0);
+        GL11.glRotatef(roll, 0, 0, 1);
+    }
+
+    public void render() {
         model.render();
     }
 
@@ -53,30 +56,14 @@ public class Model {
         this.transZ = transZ;
     }
 
-    public void updateRotation(float rotX, float rotY, float rotZ) {
-        this.rotX = rotX;
-        this.rotY = rotY;
-        this.rotZ = rotZ;
+    public void updateRotation(float pitch, float yaw, float roll) {
+        this.pitch = pitch;
+        this.yaw = yaw;
+        this.roll = roll;
     }
 
-    public Vector3f getTranslation() {
+    public Vector3f getPosition() {
         return new Vector3f(transX, transY, transZ);
-    }
-
-    public Vector3f getInverseTranslation() {
-        return new Vector3f(transX, transY, -transZ);
-    }
-
-    public float getPitch() {
-        return rotX;
-    }
-
-    public float getYaw() {
-        return rotY;
-    }
-
-    public float getRoll() {
-        return rotZ;
     }
 
     public float getScaleRatio() {

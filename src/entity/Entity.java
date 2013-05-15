@@ -12,15 +12,15 @@ import org.lwjgl.util.vector.Vector3f;
  */
 public abstract class Entity {
 
-    public Vector3f position;
     public Model model;
     public float radius;
     public Vector3f center;
+    public Vector3f offset;
 
     public Entity(Model model)
     {
-        position = new Vector3f();
         center = new Vector3f();
+        offset = new Vector3f();
         this.model = model;
         Initialize();
     }
@@ -30,12 +30,20 @@ public abstract class Entity {
 
     }
 
+    public void Render()
+    {
+        model.transform();
+        model.render();
+    }
+
     public void Initialize()
     {
         radius = model.getRadius() * model.getScaleRatio();
     }
 
-    abstract public void Render();
+    public Vector3f getPosition() {
+        return model.getPosition();
+    }
 
     abstract public void Update();
 

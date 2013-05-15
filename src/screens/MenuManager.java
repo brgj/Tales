@@ -46,6 +46,7 @@ public class MenuManager implements ScreenManager {
     @Override
     public void Initialize() {
         CurrentScreen.Initialize();
+        CurrentScreen.Update();
     }
 
     @Override

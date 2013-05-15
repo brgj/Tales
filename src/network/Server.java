@@ -20,7 +20,6 @@ public class Server implements Runnable {
     private HashMap<Integer, InetAddress> addressMap;
     private HashMap<Integer, Byte> idMap;
     private int serverPort;
-    private byte curID = 0;
 
     public Server(int port) {
         addressMap = new HashMap<Integer, InetAddress>();
@@ -65,7 +64,10 @@ public class Server implements Runnable {
             int clientPort = receivePacket.getPort();
             if (!addressMap.containsKey(clientPort)) {
                 addressMap.put(clientPort, clientIP);
-                idMap.put(clientPort, curID++);
+                byte id = 0;
+                while(idMap.containsValue(id))
+                    id++;
+                idMap.put(clientPort, id);
             }
 
             byte option = receiveData[0];

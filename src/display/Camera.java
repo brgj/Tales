@@ -23,7 +23,6 @@ public class Camera {
     private float pitch;
     //Rotation around Z axis
     private float roll;
-    private boolean upsidedown = false;
 
     //Constructor that takes a vector
     public Camera(Vector3f initialPosition) {
@@ -32,10 +31,6 @@ public class Camera {
         pitch = 0.0f;
         roll = 0.0f;
     }
-
-    /*
-    TODO: Implement following of the player. This will have to be implemented when we figure out how the camera will transform as it follows the ship
-     */
 
     //Changes the cameras view based on the yaw, and pitch
     public void setCameraView() {
@@ -69,11 +64,14 @@ public class Camera {
             int dY = (midY - Mouse.getY());
 
             pitch += mouseSpeed * dY;
-            pitch %= 360;
 
-            upsidedown = pitch > 90 || pitch < -90;
+            if(pitch < -60) {
+                pitch = -60;
+            } else if(pitch > 60) {
+                pitch = 60;
+            }
 
-            yaw -= upsidedown ? -1 * mouseSpeed * dX : mouseSpeed * dX;
+            yaw -= mouseSpeed * dX;
             yaw %= 360;
 
             hud.setCrosshairX(-dX / 5);
@@ -89,9 +87,6 @@ public class Camera {
     }
 
     public void move(float units, int dir) {
-        if (dir % 180 == 0 && upsidedown) {
-            units = -units;
-        }
         double rad = Math.toRadians(yaw + dir);
         position.x -= units * (float) Math.sin(rad);
         position.z += units * (float) Math.cos(rad);
@@ -111,10 +106,6 @@ public class Camera {
 
     public void setPosition(Vector3f position) {
         this.position = position;
-    }
-
-    public void setY(float units) {
-        this.position.y += units;
     }
 
     public float getYaw() {

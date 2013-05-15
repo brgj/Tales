@@ -1,9 +1,11 @@
 package screens;
 
+import entity.Enemy;
 import environment.Model;
 import helpers.Delegate;
 import network.Chat;
 import network.Client;
+import network.MessageType;
 import network.Server;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
@@ -11,7 +13,6 @@ import org.lwjgl.util.vector.Vector3f;
 import java.io.*;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -29,7 +30,6 @@ public class MultiGameScreen extends GameplayScreen {
     Server server;
     Client client;
     Chat chat;
-    HashMap<Byte, Model> enemies = new HashMap<Byte, Model>();
     private boolean chatting = false;
 
     public MultiGameScreen(Delegate d) {
@@ -47,17 +47,8 @@ public class MultiGameScreen extends GameplayScreen {
         if (ip == null) {
             server = new Server(PORT);
             ip = new IPPlaceHolder();
-            try {
-                ip.val = Inet4Address.getLocalHost().getHostAddress();
-            } catch (UnknownHostException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                return;
-            }
+            ip.val = "127.0.0.1";
             new Thread(server).start();
-            // TODO: get rid of this
-            enemies.put((byte) 1, tempModel);
-        } else {
-            enemies.put((byte) 0, tempModel);
         }
 
         client = new Client(ip.val, PORT);
@@ -104,18 +95,6 @@ public class MultiGameScreen extends GameplayScreen {
         updateEnemies(client.receiveActions());
     }
 
-//    @Override
-//    protected void moveXZ(float units, int dir) {
-//        super.moveXZ(units, dir);
-//        broadcastMove();
-//    }
-//
-//    @Override
-//    protected void moveXYZ(float units, int dir) {
-//        super.moveXYZ(units, dir);
-//        broadcastMove();
-//    }
-
     private void broadcastMove() {
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         DataOutputStream dataStream = new DataOutputStream(byteStream);
@@ -136,8 +115,8 @@ public class MultiGameScreen extends GameplayScreen {
             return;
         }
         byte[] data = new byte[6 * 4 + 2];
-        // Set the option byte to 1
-        data[0] = 1 << 4;
+        // Set the option byte to Movement
+        data[0] = (byte) (MessageType.Movement.ordinal() << 4);
         // 24 bytes are sent for updating position and rotation
         data[1] = 6 * 4;
 
@@ -145,7 +124,7 @@ public class MultiGameScreen extends GameplayScreen {
 
         try {
             client.sendData(data);
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Exit();
         }
@@ -153,10 +132,17 @@ public class MultiGameScreen extends GameplayScreen {
 
     private void updateEnemies(Set<Map.Entry<Byte, byte[]>> actionSet) {
         for (Map.Entry<Byte, byte[]> entry : actionSet) {
-            switch (entry.getKey() >> 4 & 0x0F) {
-                // Movement
-                case 1:
-                    moveEnemy((byte) (entry.getKey() & 0x0F), entry.getValue());
+            byte key = entry.getKey();
+            byte id = (byte) (key & 0x0F);
+            MessageType option = MessageType.values()[key >> 4 & 0x0F];
+
+            if (!enemies.containsKey(id))
+                enemies.put(id, new Enemy(new Model("data/DarkFighter/dark_fighter_2.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), new Vector3f(0, 0, -5)));
+
+            switch (option) {
+                case Movement:
+                    moveEnemy(id, entry.getValue());
+                    break;
             }
         }
     }
@@ -165,8 +151,7 @@ public class MultiGameScreen extends GameplayScreen {
         ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
         DataInputStream dataStream = new DataInputStream(byteStream);
         float[] fArr = new float[data.length / 4];  // 4 bytes per float
-        for (int i = 0; i < fArr.length; i++)
-        {
+        for (int i = 0; i < fArr.length; i++) {
             try {
                 fArr[i] = dataStream.readFloat();
             } catch (IOException e) {
@@ -174,8 +159,8 @@ public class MultiGameScreen extends GameplayScreen {
             }
         }
 
-        enemies.get(id).updatePosition(fArr[0], fArr[1], fArr[2]);
-        enemies.get(id).updateRotation(fArr[3], fArr[4], fArr[5]);
+        enemies.get(id).model.updatePosition(fArr[0], fArr[1], fArr[2]);
+        enemies.get(id).model.updateRotation(fArr[3], fArr[4], fArr[5]);
     }
 
     @Override

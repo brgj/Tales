@@ -1,6 +1,6 @@
 package environment;
+
 import display.Camera;
-import entity.Player;
 import helpers.GLHelper;
 import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
@@ -41,7 +41,7 @@ public class Laser  {
         float x = this.position.getX();
         float y = this.position.getY();
         float z = this.position.getZ();
-        glColor4f(1.0f,0.0f,0.0f,0.5f);
+        glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
         glBlendFunc( GL_SRC_ALPHA, GL_ONE);
         glEnable( GL_BLEND );
         glDisable(GL_DEPTH_TEST);

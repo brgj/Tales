@@ -1,10 +1,8 @@
 package entity;
 
 import environment.Model;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.glRotatef;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,78 +13,67 @@ import static org.lwjgl.opengl.GL11.glRotatef;
  */
 public class Enemy extends Entity {
 
-    private float pitch;
-    private float yaw;
-    private float roll;
+    public Vector3f center;
+    public float radius;
     private Vector3f target;
     private float speed;
-    public void setSpeed(float s){
-        speed = s;
+
+    public Enemy(Model model, Vector3f offset) {
+        super(model);
+        center = model.getCenter();
+        radius = model.getRadius() * 0.75f;
+        this.offset = offset;
     }
-    public float getSpeed(){
+
+    public float getSpeed() {
         return speed;
     }
 
-    public Enemy(Model model)
-    {
-        super(model);
-        this.Initialize();
+    public void setSpeed(float s) {
+        speed = s;
     }
 
-    public void Render()
-    {
+    public void Render() {
+        model.transform();
+        GL11.glTranslatef(offset.x / model.getScaleRatio(), offset.y / model.getScaleRatio(), offset.z / model.getScaleRatio());
         model.render();
-        setWorldPosition();
     }
 
-    public void Update()
-    {
+    public void Update() {
+        
         // Note: target must be set before calling update.
         // calculate ET
-        Vector3f ET = new Vector3f(target.getX() - this.position.getX(),
-                target.getY() - this.position.getY(),
-                target.getZ() - this.position.getZ());
+        Vector3f position = getPosition();
+        Vector3f ET = new Vector3f(target.getX() - position.getX(),
+                target.getY() - position.getY(),
+                target.getZ() - position.getZ());
         // calculate the new pitch and yaw
-        pitch = (float)Math.toDegrees(calculatePitch(ET));
-        yaw = (float)Math.toDegrees(calculateYaw(ET));
+        model.pitch = (float) Math.toDegrees(calculatePitch(ET));
+        model.yaw = (float) Math.toDegrees(calculateYaw(ET));
 
-        //double radPitch = Math.toRadians(pitch);
-        //double radYaw = Math.toRadians(yaw);
-        //position.setX(position.getX() + (speed * (float)Math.sin(radYaw)));
-        //position.setY(position.getY() - (speed * (float)Math.sin(radPitch)));
-        //position.setZ(position.getZ() - (speed * (float)Math.cos(radYaw)));
+        double radPitch = Math.toRadians(model.pitch);
+        double radYaw = Math.toRadians(model.yaw);
+        position.setX(position.getX() + (speed * (float)Math.sin(radYaw)));
+        position.setY(position.getY() - (speed * (float)Math.sin(radPitch)));
+        position.setZ(position.getZ() - (speed * (float)Math.cos(radYaw)));
 
     }
 
-    public void Initialize()
-    {
-        target = new Vector3f(0.0f,0.0f,0.0f);
-        this.position = new Vector3f(0.0f,0.0f,0.0f);
-        pitch = 0;
-        yaw = 0;
-        roll = 180;
+    public void Initialize() {
+        super.Initialize();
+        target = new Vector3f(0.0f, 0.0f, 0.0f);
         speed = 0.1f;
     }
 
-    public void setTarget(Vector3f t){
+    public void setTarget(Vector3f t) {
         this.target = t;
     }
-    public void setWorldPosition(){
-            glMatrixMode(GL_MODELVIEW);
-            //Sets the cameras X rotation
-            glRotatef(-pitch, 1.0f, 0.0f, 0.0f);
-            //Sets the cameras Y rotation
-            glRotatef(-yaw, 0.0f, 1.0f, 0.0f);
-            //Sets the cameras Z rotation
-            glRotatef(roll, 0.0f, 0.0f, 1.0f);
-            glTranslatef(this.position.getX(), this.position.getY(),this.position.getZ());
+
+    private float calculatePitch(Vector3f v) {
+        return (float) Math.atan2(v.getY(), v.getZ());
     }
 
-    private float calculatePitch(Vector3f v){
-        return (float)Math.atan2(v.getY(), v.getZ());
-    }
-
-    private float calculateYaw(Vector3f v){
-        return (float)Math.atan2(v.getX(), v.getZ());
+    private float calculateYaw(Vector3f v) {
+        return (float) Math.atan2(v.getX(), v.getZ());
     }
 }

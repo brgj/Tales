@@ -1,9 +1,9 @@
 package core;
 
-import screens.MenuManager;
-import screens.Screen;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import screens.MenuManager;
+import screens.Screen;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.util.glu.GLU.gluOrtho2D;
