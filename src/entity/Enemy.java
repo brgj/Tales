@@ -34,8 +34,8 @@ public class Enemy extends Entity {
     }
 
     public void Render() {
-        GL11.glTranslatef(offset.x / model.getScaleRatio(), offset.y / model.getScaleRatio(), offset.z / model.getScaleRatio());
         model.transform();
+        GL11.glTranslatef(offset.x / model.getScaleRatio(), offset.y / model.getScaleRatio(), offset.z / model.getScaleRatio());
         model.render();
     }
 
@@ -53,12 +53,10 @@ public class Enemy extends Entity {
 
         double radPitch = Math.toRadians(model.pitch);
         double radYaw = Math.toRadians(model.yaw);
-//        position.setX(position.getX() + (speed * (float)Math.sin(radYaw)));
-//        position.setY(position.getY() - (speed * (float)Math.sin(radPitch)));
-//        position.setZ(position.getZ() - (speed * (float)Math.cos(radYaw)));
-        model.updatePosition(model.getPosition().getX() + (speed * (float)Math.sin(radPitch) * (float)Math.sin(radYaw)),
-                model.getPosition().getY() - (speed * (float)Math.sin(radPitch) * (float)Math.sin(radYaw)),
-                model.getPosition().getZ() - (speed * (float)Math.cos(radPitch)));
+        position.setX(position.getX() + (speed * (float)Math.sin(radYaw)));
+        position.setY(position.getY() - (speed * (float)Math.sin(radPitch)));
+        position.setZ(position.getZ() - (speed * (float)Math.cos(radYaw)));
+
     }
 
     public void Initialize() {
