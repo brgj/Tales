@@ -63,6 +63,7 @@ public class Enemy extends Entity {
         super.Initialize();
         target = new Vector3f(0.0f, 0.0f, 0.0f);
         speed = 0.1f;
+        model.roll = 180;
     }
 
     public void setTarget(Vector3f t) {
@@ -70,10 +71,10 @@ public class Enemy extends Entity {
     }
 
     private float calculatePitch(Vector3f v) {
-        return (float) Math.atan2(v.getY(), v.getZ());
+        return 0 - (float)Math.atan2(v.getY(), v.getZ());
     }
 
     private float calculateYaw(Vector3f v) {
-        return (float) Math.atan2(v.getX(), v.getZ());
+        return  0 - (float)Math.atan2(v.getX(), v.getZ());
     }
 }
