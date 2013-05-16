@@ -27,7 +27,7 @@ public class HUD {
         crosshairPos = new Vector2f(0, 0);
     }
 
-    public void render(boolean enemyInTarget) {
+    public void render(boolean enemyInTarget, float health) {
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 //        glTranslatef(0.375f, 0.375f, 0.0f);
@@ -41,6 +41,7 @@ public class HUD {
 
             //Call HUD functions
             drawCrossHair(enemyInTarget);
+            drawHealth(health);
         }
         glPopAttrib();
     }
@@ -75,6 +76,17 @@ public class HUD {
             //glVertex2d(Display.getWidth() / 2 + crosshairPos.x -40, Display.getHeight() / 2 + crosshairPos.y - 25);
             //glVertex2d(Display.getWidth() / 2 + crosshairPos.x - 15, Display.getHeight() / 2 );
         }
+        glEnd();
+    }
+
+    public void drawHealth(float health)
+    {
+        glBegin(GL_QUADS);
+        glColor3f(1 - health, health, .2f);
+        glVertex2d(BUFFER, BUFFER);
+        glVertex2d(BUFFER + health * 500, BUFFER);
+        glVertex2d(BUFFER + health * 500, BUFFER + 50);
+        glVertex2d(BUFFER, BUFFER + 50);
         glEnd();
     }
 

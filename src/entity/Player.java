@@ -16,6 +16,7 @@ import org.lwjgl.util.vector.Vector4f;
 public class Player extends Entity {
 
     public HUD hud;
+    public float health;
 
     public Player(Model model)
     {
@@ -36,6 +37,7 @@ public class Player extends Entity {
     public void Initialize()
     {
         super.Initialize();
+        health = 1f;
     }
 
     public void setPlayerOffset(float yaw, float pitch) {

@@ -23,6 +23,7 @@ import org.newdawn.slick.util.ResourceLoader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -41,7 +42,7 @@ public class GameplayScreen extends Screen {
     Background background;
     Light l;
     Laser laser1;
-    ArrayList<LaserBeam> beam;
+    ArrayList<LaserBeam> lasers;
     ArrayList<Entity> entities;
     Explosion ex;
     HashMap<Byte, Enemy> enemies = new HashMap<Byte, Enemy>();
@@ -84,7 +85,7 @@ public class GameplayScreen extends Screen {
         terrain = new Terrain("data/terrain/terrain.obj", 20, 0.0f, 0.0f, 0.0f, 12.0f, -4, 2.0f);
         laser1 = new Laser(cam);
 
-        beam = new ArrayList<LaserBeam>();
+        lasers = new ArrayList<LaserBeam>();
         entities = new ArrayList<Entity>();
 
         enemies.get((byte) -1).Initialize();
@@ -127,9 +128,9 @@ public class GameplayScreen extends Screen {
                 glLoadIdentity();
                 player.Render();
                 Vector3f vec;
-                if(tempEnemyCollide) {
+                if (tempEnemyCollide) {
                     vec = new Vector3f(0.0f, 1.0f, 0.0f);
-                } else if(tempTerrainCollide) {
+                } else if (tempTerrainCollide) {
                     vec = new Vector3f(0.0f, 0.0f, 1.0f);
                 } else {
                     vec = new Vector3f(1.0f, 1.0f, 1.0f);
@@ -151,6 +152,10 @@ public class GameplayScreen extends Screen {
 
             Vector2f chPos = player.hud.crosshairPos;
 
+            for (LaserBeam e : lasers) {
+                //GLHelper.renderSphere(e.getPosition(), e.radius, new Vector3f(1, 1, 1));
+            }
+
             //Draw other 3d models not focused by the camera and check for intersection with crosshairs
             for (Enemy enemy : enemies.values()) {
                 glPushMatrix();
@@ -164,11 +169,12 @@ public class GameplayScreen extends Screen {
             }
             glPushMatrix();
             {
-                if (beam.size() != 0) {
-                    for (int i = 0; i < beam.size(); i++) {
-                       // beam.get(i).getcurPosition(cam);
-                        beam.get(i).renderLeft();
-                        beam.get(i).renderRight();
+                for (Iterator<LaserBeam> i = lasers.iterator(); i.hasNext(); ) {
+                    LaserBeam laser = i.next();
+                    if (laser.isExpired) {
+                        i.remove();
+                    } else {
+                        laser.Render();
                     }
                 }
             }
@@ -179,51 +185,68 @@ public class GameplayScreen extends Screen {
         }
         glPopMatrix();
 
-        player.hud.render(enemyInTarget);
+        player.hud.render(enemyInTarget, player.health);
 
         glMatrixMode(GL_MODELVIEW);
+
+
         //Check collisions
         for (Entity e : entities) {
-            glLoadIdentity();
+            //glLoadIdentity();
             if (CheckCollision(e)) {
                 //DO STUFF
                 //ex.drawExplosion();
                 tempEnemyCollide = true;
+                if (player.health > 0) {
+                    player.health -= .01f;
+                }
+                else if(player.health < 0)
+                {
+                    player.health = 0;
+                }
             } else {
                 tempEnemyCollide = false;
             }
         }
 
+        //Laser collision TESTING WITH ENEMY
+        for (LaserBeam e : lasers) {
+            if (CheckCollision2(e, enemies.get((byte) -1))) {
+                System.out.print("HIT!");
+            }
+        }
+
         Vector3f playerPos = new Vector3f();
         Vector3f.sub(player.offset, cam.getPosition(), playerPos);
-        if(terrain.checkHeightMap(playerPos, player.radius)) {
+        if (terrain.checkHeightMap(playerPos, player.radius)) {
             tempTerrainCollide = true;
         } else {
             tempTerrainCollide = false;
         }
-
     }
+
 
     public void Update() {
         rotate(0.2f, player.hud);
         player.Update();
         player.setPlayerOffset(cam.getYaw(), cam.getPitch());
 
-        //Update entities
-        for (Entity ex : entities) {
-            ex.Update();
+        //Update Lasers
+        for (LaserBeam laser : lasers) {
+            laser.Update();
         }
+        //Update Enemies
         for (Enemy enemy : enemies.values()) {
             enemy.Update();
         }
 
-            if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             Exit();
             return;
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
-            LaserBeam temp = new LaserBeam(cam);
-            beam.add(temp);
+            LaserBeam temp = new LaserBeam(cam, player.offset, player.hud);
+            lasers.add(temp);
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
             moveXZ(0.2f, 90);
@@ -286,23 +309,23 @@ public class GameplayScreen extends Screen {
         float px;
         float py;
 
-        // Retrieve the projection matrix from OpenGL
+// Retrieve the projection matrix from OpenGL
         float[] proj = new float[16];
         GLHelper.glGetFloatv(GL_PROJECTION_MATRIX, proj);
 
-        // Use the scaling in the projection matrix to adjust the x and y positions
+// Use the scaling in the projection matrix to adjust the x and y positions
         px = (((2.0f * x) / Display.getWidth()) - 1.0f) / proj[0];
         py = (((-2.0f * y) / Display.getHeight()) + 1.0f) / proj[5];
 
-        // Create the Ray with an initial position of 0 and the direction of the mouse click
+// Create the Ray with an initial position of 0 and the direction of the mouse click
         Ray ray = new Ray();
         ray.origin = new Vector4f(0, 0, 0, 1);
         ray.direction = new Vector4f(px, py, 1, 0);
 
-        // Get the current camera coords + enemy coords and invert them
+// Get the current camera coords + enemy coords and invert them
         Matrix4f world = GLHelper.getInverseModelViewMatrix();
 
-        // Transform the ray by the inverse of the absolute world coords of the enemy
+// Transform the ray by the inverse of the absolute world coords of the enemy
         TransformRay(ray, world);
 
         return ray;
@@ -319,24 +342,24 @@ public class GameplayScreen extends Screen {
         // Create a vector from the center of the enemy to the origin of the ray
         Vector3f v = new Vector3f(ray.origin.x - enemy.center.x, ray.origin.y - enemy.center.y, ray.origin.z - enemy.center.z);
 
-        // Form the quadratic equation, leaving out A because u is normalized, so A = u * u = 1
+// Form the quadratic equation, leaving out A because u is normalized, so A = u * u = 1
         float b = 2.0f * Vector3f.dot(new Vector3f(ray.direction.x, ray.direction.y, ray.direction.z), v); // B=2*(u.v)
         float c = Vector3f.dot(v, v) - (enemy.radius * enemy.radius); // C=v.v-r^2
 
-        // calc the discriminant of the quadratic
+// calc the discriminant of the quadratic
         double discriminant = (b * b) - (4 * c);
 
-        // If we are trying to sqrt a negative, i.e. number is imaginary, return false
+// If we are trying to sqrt a negative, i.e. number is imaginary, return false
         if (discriminant < 0.0)
             return false;
 
         discriminant = Math.sqrt(discriminant);
 
-        // Find both solutions to the quadratic
+// Find both solutions to the quadratic
         double s0 = (-b + discriminant) / 2.0;
         double s1 = (-b - discriminant) / 2.0;
 
-        // If at least one is positive, intersection has occurred
+// If at least one is positive, intersection has occurred
         return (s0 >= 0.0 || s1 >= 0.0);
     }
 
@@ -365,9 +388,27 @@ public class GameplayScreen extends Screen {
         Vector3f v = new Vector3f();
         Vector3f.sub(playerPos, entityPos, v);
 
-        // Calculate the magnitude of vector v as the distance and create a minimum acceptable distance for collision
+// Calculate the magnitude of vector v as the distance and create a minimum acceptable distance for collision
         float dist = v.x * v.x + v.y * v.y + v.z * v.z;
         float minDist = player.radius + entity.radius;
+
+        return dist <= minDist * minDist;
+    }
+
+    //TODO: Delete this later, testing
+    private boolean CheckCollision2(Entity entity, Entity entity2) {
+        // Get the position of the player and entity and create a vector from the player to the entity
+        Vector3f entityPos = entity.getPosition();
+
+        Vector3f entity2Pos = entity2.getPosition();
+
+
+        Vector3f v = new Vector3f();
+        Vector3f.sub(entity2Pos, entityPos, v);
+
+// Calculate the magnitude of vector v as the distance and create a minimum acceptable distance for collision
+        float dist = v.x * v.x + v.y * v.y + v.z * v.z;
+        float minDist = entity2.radius + entity.radius;
 
         return dist <= minDist * minDist;
     }
