@@ -62,24 +62,31 @@ public class GLHelper {
         bytes.asFloatBuffer().get(params);
     }
 
-    public static void renderSphere(Vector3f center, float radius) {
-        glColor3f(1.0f, 1.0f, 1.0f);
-        glBegin(GL_LINE_LOOP);
+    public static void renderSphere(Vector3f center, float radius, Vector3f colour) {
+        glPushAttrib(GL_ENABLE_BIT);
         {
-            for (int i = 0; i < 360; i++) {
-                double degInRad = i * Math.PI / 180;
-                glVertex3f((float) (center.x + Math.cos(degInRad) * radius), (float) (center.y + Math.sin(degInRad) * radius), center.z);
+            glDisable(GL_TEXTURE_2D); // Texture 2D is disabled so no textures are incorporated
+            glDisable(GL_LIGHTING); // Lighting is turned off for 2D
+            glBegin(GL_LINE_LOOP);
+            {
+                glColor3f(colour.x, colour.y, colour.z);
+                for (int i = 0; i < 360; i++) {
+                    double degInRad = i * Math.PI / 180;
+                    glVertex3f((float) (center.x + Math.cos(degInRad) * radius), (float) (center.y + Math.sin(degInRad) * radius), center.z);
+                }
             }
-        }
-        glEnd();
+            glEnd();
 
-        glBegin(GL_LINE_LOOP);
-        {
-            for (int i = 0; i < 360; i++) {
-                double degInRad = i * Math.PI / 180;
-                glVertex3f(center.x, (float) (center.y + Math.cos(degInRad) * radius), (float) (center.z + Math.sin(degInRad) * radius));
+            glBegin(GL_LINE_LOOP);
+            {
+                glColor3f(colour.x, colour.y, colour.z);
+                for (int i = 0; i < 360; i++) {
+                    double degInRad = i * Math.PI / 180;
+                    glVertex3f(center.x, (float) (center.y + Math.cos(degInRad) * radius), (float) (center.z + Math.sin(degInRad) * radius));
+                }
             }
+            glEnd();
         }
-        glEnd();
+        glPopAttrib();
     }
 }

@@ -36,7 +36,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class GameplayScreen extends Screen {
     Camera cam;
-    Model terrain;
+    Terrain terrain;
     Player player;
     Background background;
     Light l;
@@ -48,7 +48,7 @@ public class GameplayScreen extends Screen {
 
     public GameplayScreen(Delegate d) {
         super(d);
-        cam = new Camera(new Vector3f(0, 0, -20));
+        cam = new Camera(new Vector3f(-17, 2, -12));
     }
 
     public void Initialize() {
@@ -78,10 +78,10 @@ public class GameplayScreen extends Screen {
         //Create Background
         background = new Background();
         //load the model
-        player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f));
+        player = new Player(new Model("data/Arwing/arwing.obj", 1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f));
         enemies = new HashMap<Byte, Enemy>();
         enemies.put((byte) -1, new Enemy(new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), new Vector3f(0, 0, 0)));
-        terrain = new Model("data/terrain/terrain.obj", 20.0f, 0.0f, 0.0f, 0.0f, 0.0f, -3.0f, -10.0f);
+        terrain = new Terrain("data/terrain/terrain.obj", 20, 0.0f, 0.0f, 0.0f, 12.0f, -4, 2.0f);
         laser1 = new Laser(cam);
 
         beam = new ArrayList<LaserBeam>();
@@ -93,6 +93,10 @@ public class GameplayScreen extends Screen {
         entities.add(enemies.get((byte) -1));
         ex = new Explosion();
     }
+
+    //TODO: get rid of these
+    static boolean tempEnemyCollide = false;
+    static boolean tempTerrainCollide = false;
 
     public void Render() {
         // Clear colour and depth buffers
@@ -122,6 +126,15 @@ public class GameplayScreen extends Screen {
             {
                 glLoadIdentity();
                 player.Render();
+                Vector3f vec;
+                if(tempEnemyCollide) {
+                    vec = new Vector3f(0.0f, 1.0f, 0.0f);
+                } else if(tempTerrainCollide) {
+                    vec = new Vector3f(0.0f, 0.0f, 1.0f);
+                } else {
+                    vec = new Vector3f(1.0f, 1.0f, 1.0f);
+                }
+                GLHelper.renderSphere(player.center, player.radius, vec);
                 //laser1.render();
             }
             glPopMatrix();
@@ -175,8 +188,18 @@ public class GameplayScreen extends Screen {
             if (CheckCollision(e)) {
                 //DO STUFF
                 //ex.drawExplosion();
-                System.out.print("Hello!");
+                tempEnemyCollide = true;
+            } else {
+                tempEnemyCollide = false;
             }
+        }
+
+        Vector3f playerPos = new Vector3f();
+        Vector3f.sub(player.offset, cam.getPosition(), playerPos);
+        if(terrain.checkHeightMap(playerPos, player.radius)) {
+            tempTerrainCollide = true;
+        } else {
+            tempTerrainCollide = false;
         }
 
     }
@@ -216,9 +239,7 @@ public class GameplayScreen extends Screen {
         }
         if (Keyboard.next()) {
             if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
-                cam.move(10, 0);
-                cam.moveUp(10, 270);
-                cam.setPitch(90);
+                cam.moveUp(10, 90);
             }
         }
     }
@@ -288,7 +309,7 @@ public class GameplayScreen extends Screen {
     }
 
     /**
-     * Check if ray is intersecting with an enemy's hitsphere
+     * Check if ray is intersecting with an enemy's hit sphere
      *
      * @param ray
      * @param enemy

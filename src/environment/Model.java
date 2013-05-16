@@ -16,7 +16,7 @@ public class Model {
     private float scaleRatio = 1.0f;
     public float pitch = 0.0f, yaw = 0.0f, roll = 0.0f;
     public float transX = 0.0f, transY = 0.0f, transZ = 0.0f;
-    private GLModel model;
+    protected GLModel model;
 
     public Model(String filename) {
         model = new GLModel(filename);
