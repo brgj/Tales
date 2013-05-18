@@ -153,7 +153,7 @@ public class GameplayScreen extends Screen {
             Vector2f chPos = player.hud.crosshairPos;
 
             for (LaserBeam e : lasers) {
-                //GLHelper.renderSphere(e.getPosition(), e.radius, new Vector3f(1, 1, 1));
+                GLHelper.renderSphere(new Vector3f(-e.getPosition().x, -e.getPosition().y, -e.getPosition().z), e.radius, new Vector3f(1, 1, 1));
             }
 
             //Draw other 3d models not focused by the camera and check for intersection with crosshairs
