@@ -79,7 +79,7 @@ public class GameplayScreen extends Screen {
         //Create Background
         background = new Background();
         //load the model
-        player = new Player(new Model("data/Arwing/arwing.obj", 1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f));
+        player = new Player(new Model("data/Arwing/arwing.obj", 1f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, -10.0f));
         enemies = new HashMap<Byte, Enemy>();
         enemies.put((byte) -1, new Enemy(new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), new Vector3f(0, 0, 0)));
         terrain = new Terrain("data/terrain/terrain.obj", 20, 0.0f, 0.0f, 0.0f, 12.0f, -4, 2.0f);
@@ -153,7 +153,7 @@ public class GameplayScreen extends Screen {
             Vector2f chPos = player.hud.crosshairPos;
 
             for (LaserBeam e : lasers) {
-                GLHelper.renderSphere(new Vector3f(-e.getPosition().x, -e.getPosition().y, -e.getPosition().z), e.radius, new Vector3f(1, 1, 1));
+                GLHelper.renderSphere(new Vector3f(-e.getPosition().x, -e.getPosition().y, -e.getPosition().z), e.radius, new Vector3f(1, 0, 0));
             }
 
             //Draw other 3d models not focused by the camera and check for intersection with crosshairs
