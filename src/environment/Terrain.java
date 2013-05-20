@@ -5,7 +5,6 @@ import glmodel.GL_Vector;
 import org.lwjgl.util.vector.Vector3f;
 
 import java.awt.*;
-import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -17,7 +16,6 @@ import java.util.HashMap;
  */
 public class Terrain extends Model {
     private HashMap<Point, Float> heightMap;
-    //    private Point min, max;
     private float minY;
 
     public Terrain(String filename) {
@@ -35,53 +33,52 @@ public class Terrain extends Model {
 
     public void calcHeightMap() {
         GL_Mesh mesh = model.mesh;
-        if (mesh.numVertices == 0)
+        if (mesh.numTriangles == 0)
             return;
 
-//        float minX = mesh.vertices[0].pos.x * getScaleRatio() + transX;
-//        float maxX = minX;
-//        float minZ = mesh.vertices[0].pos.z * getScaleRatio() + transZ;
-//        float maxZ = minZ;
         minY = mesh.vertices[0].pos.y * getScaleRatio() + transY;
 
-        for (int i = 0; i < mesh.numVertices; i++) {
-            GL_Vector v = mesh.vertices[i].pos;
-
-            float x = v.x * getScaleRatio() + transX;
-            float y = v.y * getScaleRatio() + transY;
-            float z = v.z * getScaleRatio() + transZ;
-
-            Point p = new Point(Math.round(x), Math.round(z));
-            if (!heightMap.containsKey(p) || y > heightMap.get(p)) {
-                heightMap.put(p, y);
-            }
-
-//            if (x < minX) minX = x;
-//            if (z < minZ) minZ = z;
-//            if (x > maxX) maxX = x;
-//            if (z > maxZ) maxZ = z;
-            if (y < minY) minY = y;
+        for (int i = 0; i < mesh.numTriangles; i++) {
+            GL_Vector p1 = mesh.triangles[i].p1.pos;
+            GL_Vector p2 = mesh.triangles[i].p2.pos;
+            GL_Vector p3 = mesh.triangles[i].p3.pos;
+            fillHeightMap(p1, p2);
+            fillHeightMap(p2, p3);
+            fillHeightMap(p1, p3);
         }
-        int[] xs = new int[heightMap.size()];
-        int[] ys = new int[heightMap.size()];
-        int j = 0;
-        for (Point p : heightMap.keySet()) {
-            xs[j] = p.x;
-            ys[j++] = p.y;
-        }
-        Arrays.sort(xs);
-        Arrays.sort(ys);
-        System.out.println("x:");
-        for (int i = 0; i < xs.length; i++) {
-            System.out.println(xs[i]);
-        }
-        System.out.println("y:");
-        for (int i = 0; i < ys.length; i++) {
-            System.out.println(ys[i]);
+    }
+
+    public void fillHeightMap(GL_Vector start, GL_Vector end) {
+        float x0 = start.x * getScaleRatio() + transX;
+        float y0 = start.y * getScaleRatio() + transY;
+        float z0 = start.z * getScaleRatio() + transZ;
+        float x1 = end.x * getScaleRatio() + transX;
+        float y1 = end.y * getScaleRatio() + transY;
+        float z1 = end.z * getScaleRatio() + transZ;
+
+        float dx = x1 - x0;
+        float dy = y1 - y0;
+        float dz = z1 - z0;
+
+        float step = 1 / Math.max(Math.abs(dx), Math.abs(dz));
+
+        for (float t = 0; t <= 1; t += step) {
+            int x = Math.round(dx * t + x0);
+            int z = Math.round(dz * t + z0);
+            float y = y0 + t * dy;
+
+            addPointToMap(x, y, z);
         }
 
-//        min = new Point(Math.round(minX), Math.round(minZ));
-//        max = new Point(Math.round(maxX), Math.round(maxZ));
+        float tempY = Math.min(y0, y1);
+        if (tempY < minY) minY = tempY;
+    }
+
+    public void addPointToMap(int x, float y, int z) {
+        Point p = new Point(x, z);
+        if (!heightMap.containsKey(p) || y > heightMap.get(p)) {
+            heightMap.put(p, y);
+        }
     }
 
     public boolean checkHeightMap(Vector3f vec, float radius) {
@@ -99,15 +96,11 @@ public class Terrain extends Model {
         return heightMap.get(p) > y - radius;
     }
 
-//    private boolean outOfRange(Point p) {
-//        return p.x > max.x || p.x < min.x || p.y > max.y || p.y < min.y;
-//    }
-
     private Point findClosestMatch(Point point, float radius) {
         float diff = Float.MAX_VALUE;
         Point result = point;
         for (Point p : heightMap.keySet()) {
-            float temp = Math.abs(p.x - point.x) + Math.abs(p.y - point.y);
+            float temp = (float) Math.sqrt(Math.pow(p.x - point.x, 2) + Math.pow(p.y - point.y, 2));
             if (temp < diff) {
                 diff = temp;
                 result = p;

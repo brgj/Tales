@@ -2,9 +2,6 @@ package entity;
 
 import display.HUD;
 import environment.Model;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,11 +14,15 @@ public class Player extends Entity {
 
     public HUD hud;
     public float health;
+    private boolean crashed, posTilt;
+    private int crashTilt;
 
     public Player(Model model)
     {
         super(model);
         hud = new HUD();
+        posTilt = false;
+        crashTilt = 0;
     }
 
     public void Render()
@@ -32,30 +33,37 @@ public class Player extends Entity {
     public void Update()
     {
         model.updateRotation(-hud.crosshairPos.y * .1f, -hud.crosshairPos.x * .1f, -hud.crosshairPos.x * .1f);
+        if(crashed)
+            doCrash();
+    }
+
+    public void crash() {
+        crashed = true;
+    }
+
+    private void doCrash() {
+        int maxTilt = 30;
+        int step = 10;
+
+        if(crashTilt == maxTilt)
+            posTilt = false;
+        else if(crashTilt == -maxTilt)
+            posTilt = true;
+
+        crashTilt += posTilt ? step : -step;
+
+        if(posTilt && crashTilt == 0)
+            crashed = false;
+
+        float crashPitch = crashTilt > 0 ? crashTilt : 0;
+
+        model.updateRotation(crashPitch, 0.0f, crashTilt);
     }
 
     public void Initialize()
     {
         super.Initialize();
         health = 1f;
-    }
-
-    public void setPlayerOffset(float yaw, float pitch) {
-        //Account for initial model movement, may have to adjust others values in the future
-        Vector4f position = new Vector4f(0, 0, -model.getPosition().z, 1);
-
-        Matrix4f rotate = new Matrix4f();
-        rotate.setIdentity();
-
-        Matrix4f.rotate((float)Math.toRadians(pitch), new Vector3f(1.0f, 0.0f, 0.0f), rotate, rotate);
-        Matrix4f.transform(rotate, position, position);
-
-        rotate.setIdentity();
-
-        Matrix4f.rotate((float) Math.toRadians(yaw), new Vector3f(0.0f, 1.0f, 0.0f), rotate, rotate);
-        Matrix4f.transform(rotate, position, position);
-
-        offset = new Vector3f(position.x, position.y, -position.z);
     }
 
 }

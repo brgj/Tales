@@ -161,6 +161,18 @@ public class MultiGameScreen extends GameplayScreen {
 
         enemies.get(id).model.updatePosition(fArr[0], fArr[1], fArr[2]);
         enemies.get(id).model.updateRotation(fArr[3], fArr[4], fArr[5]);
+
+        enemies.get(id).offset = new Vector3f(0, 0, -5);
+
+//        enemies.get(id).setOffset(fArr[4], fArr[3], -5);
+
+
+//        System.out.println("x = " + fArr[0]);
+//        System.out.println("y = " + fArr[1]);
+//        System.out.println("z = " + fArr[2]);
+//        System.out.println("pitch = " + fArr[3]);
+//        System.out.println("yaw = " + fArr[4]);
+//        System.out.println("roll = " + fArr[5]);
     }
 
     @Override

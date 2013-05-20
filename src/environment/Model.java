@@ -41,8 +41,8 @@ public class Model {
         if (scaleRatio != 0) {
             GL11.glScalef(scaleRatio, scaleRatio, scaleRatio);
         }
-        GL11.glRotatef(pitch, 1, 0, 0);
         GL11.glRotatef(yaw, 0, 1, 0);
+        GL11.glRotatef(pitch, 1, 0, 0);
         GL11.glRotatef(roll, 0, 0, 1);
     }
 

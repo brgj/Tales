@@ -13,15 +13,11 @@ import org.lwjgl.util.vector.Vector3f;
  */
 public class Enemy extends Entity {
 
-    public Vector3f center;
-    public float radius;
     private Vector3f target;
     private float speed;
 
     public Enemy(Model model, Vector3f offset) {
         super(model);
-        center = model.getCenter();
-        radius = model.getRadius() * 0.75f;
         this.offset = offset;
     }
 
@@ -40,22 +36,22 @@ public class Enemy extends Entity {
     }
 
     public void Update() {
-        
+        //TODO: Set if AI should be used or not... Can't be always on.
         // Note: target must be set before calling update.
         // calculate ET
-        Vector3f position = getPosition();
-        Vector3f ET = new Vector3f(target.getX() - position.getX(),
-                target.getY() - position.getY(),
-                target.getZ() - position.getZ());
+//        Vector3f position = getPosition();
+//        Vector3f ET = new Vector3f(target.getX() - position.getX(),
+//                target.getY() - position.getY(),
+//                target.getZ() - position.getZ());
         // calculate the new pitch and yaw
-        model.pitch = (float) Math.toDegrees(calculatePitch(ET));
-        model.yaw = (float) Math.toDegrees(calculateYaw(ET));
+//        model.pitch = (float) Math.toDegrees(calculatePitch(ET));
+//        model.yaw = (float) Math.toDegrees(calculateYaw(ET));
 
-        double radPitch = Math.toRadians(model.pitch);
-        double radYaw = Math.toRadians(model.yaw);
-        position.setX(position.getX() + (speed * (float)Math.sin(radYaw)));
-        position.setY(position.getY() - (speed * (float)Math.sin(radPitch)));
-        position.setZ(position.getZ() - (speed * (float)Math.cos(radYaw)));
+//        double radPitch = Math.toRadians(model.pitch);
+//        double radYaw = Math.toRadians(model.yaw);
+//        position.setX(position.getX() + (speed * (float)Math.sin(radYaw)));
+//        position.setY(position.getY() - (speed * (float)Math.sin(radPitch)));
+//        position.setZ(position.getZ() - (speed * (float)Math.cos(radYaw)));
 
     }
 

@@ -43,13 +43,12 @@ public class GameplayScreen extends Screen {
     Light l;
     Laser laser1;
     ArrayList<LaserBeam> lasers;
-    ArrayList<Entity> entities;
     Explosion ex;
     HashMap<Byte, Enemy> enemies = new HashMap<Byte, Enemy>();
 
     public GameplayScreen(Delegate d) {
         super(d);
-        cam = new Camera(new Vector3f(-17, 2, -12));
+        cam = new Camera(new Vector3f(0, 0, 0));
     }
 
     public void Initialize() {
@@ -79,19 +78,16 @@ public class GameplayScreen extends Screen {
         //Create Background
         background = new Background();
         //load the model
-        player = new Player(new Model("data/Arwing/arwing.obj", 1f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, -10.0f));
+        player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f));
         enemies = new HashMap<Byte, Enemy>();
         enemies.put((byte) -1, new Enemy(new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), new Vector3f(0, 0, 0)));
-        terrain = new Terrain("data/terrain/terrain.obj", 20, 0.0f, 0.0f, 0.0f, 12.0f, -4, 2.0f);
+        terrain = new Terrain("data/terrain/terrain.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f);
         laser1 = new Laser(cam);
 
         lasers = new ArrayList<LaserBeam>();
-        entities = new ArrayList<Entity>();
 
         enemies.get((byte) -1).Initialize();
 
-        //DELETE LATER
-        entities.add(enemies.get((byte) -1));
         ex = new Explosion();
     }
 
@@ -153,7 +149,7 @@ public class GameplayScreen extends Screen {
             Vector2f chPos = player.hud.crosshairPos;
 
             for (LaserBeam e : lasers) {
-                GLHelper.renderSphere(new Vector3f(-e.getPosition().x, -e.getPosition().y, -e.getPosition().z), e.radius, new Vector3f(1, 0, 0));
+                 GLHelper.renderSphere(new Vector3f(-e.getPosition().x, -e.getPosition().y, -e.getPosition().z), e.radius, new Vector3f(1, 0, 0));
             }
 
             //Draw other 3d models not focused by the camera and check for intersection with crosshairs
@@ -161,9 +157,10 @@ public class GameplayScreen extends Screen {
                 glPushMatrix();
                 {
                     enemy.Render();
+//                    GLHelper.renderSphere(enemy.center, enemy.radius, new Vector3f(1.0f, 1.0f, 1.0f));
                     if (!enemyInTarget)
                         enemyInTarget = CheckPickingRay(chPos.x + Display.getWidth() / 2, chPos.y + Display.getHeight() / 2, enemy);
-                    enemy.setTarget(cam.getPosition());
+//                    enemy.setTarget(cam.getPosition());
                 }
                 glPopMatrix();
             }
@@ -189,14 +186,16 @@ public class GameplayScreen extends Screen {
 
         glMatrixMode(GL_MODELVIEW);
 
+        tempEnemyCollide = false;
 
         //Check collisions
-        for (Entity e : entities) {
+        for (Enemy e : enemies.values()) {
             //glLoadIdentity();
             if (CheckCollision(e)) {
                 //DO STUFF
                 //ex.drawExplosion();
                 tempEnemyCollide = true;
+                crash();
                 if (player.health > 0) {
                     player.health -= .01f;
                 }
@@ -204,8 +203,6 @@ public class GameplayScreen extends Screen {
                 {
                     player.health = 0;
                 }
-            } else {
-                tempEnemyCollide = false;
             }
         }
 
@@ -220,6 +217,7 @@ public class GameplayScreen extends Screen {
         Vector3f.sub(player.offset, cam.getPosition(), playerPos);
         if (terrain.checkHeightMap(playerPos, player.radius)) {
             tempTerrainCollide = true;
+            crash();
         } else {
             tempTerrainCollide = false;
         }
@@ -229,7 +227,7 @@ public class GameplayScreen extends Screen {
     public void Update() {
         rotate(0.2f, player.hud);
         player.Update();
-        player.setPlayerOffset(cam.getYaw(), cam.getPitch());
+        player.setOffset(cam.getYaw(), cam.getPitch(), -player.model.getPosition().z);
 
         //Update Lasers
         for (LaserBeam laser : lasers) {
@@ -278,6 +276,11 @@ public class GameplayScreen extends Screen {
     protected void moveXYZ(float units, int dir) {
         cam.move(units, dir);
         cam.moveUp(units, dir);
+    }
+
+    private void crash() {
+        moveXYZ(5.0f, 180);
+        player.crash();
     }
 
     protected void Exit() {
@@ -380,7 +383,8 @@ public class GameplayScreen extends Screen {
      */
     private boolean CheckCollision(Entity entity) {
         // Get the position of the player and entity and create a vector from the player to the entity
-        Vector3f entityPos = entity.getPosition();
+        Vector3f entityPos = new Vector3f();
+        Vector3f.add(entity.offset, entity.getPosition(), entityPos);
 
         Vector3f playerPos = new Vector3f();
         Vector3f.sub(player.offset, cam.getPosition(), playerPos);
