@@ -36,7 +36,13 @@ public class Explosion {
     }
 
     public void Initialize() {
-
+        alpha = 1.0f;
+        scale = 0.5f;
+    }
+    public void reset()
+    {
+        this.alpha = 1.0f;
+        this.scale = 0.5f;
     }
     public void resetTime()
     {
@@ -52,7 +58,6 @@ public class Explosion {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             texture.bind();
-            System.out.println(alpha);
             if (alpha >= 0) {
                 glPushMatrix();
                 alpha -= 0.01f;

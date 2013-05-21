@@ -176,14 +176,14 @@ public class GameplayScreen extends Screen {
                 }
             }
             glPopMatrix();
-            //tempEnemyCollide = false;
+            tempEnemyCollide = false;
             glPushMatrix();
             {
                 for (Enemy e : enemies.values()) {
                     //glLoadIdentity();
                     if (CheckCollision(e)) {
                         //DO STUFF
-                        //ex.drawExplosion();
+                        ex.drawExplosion();
                         tempEnemyCollide = true;
                         crash();
                         if (player.health > 0) {
@@ -193,6 +193,17 @@ public class GameplayScreen extends Screen {
                         {
                             player.health = 0;
                         }
+                    }
+                }
+            }
+            glPopMatrix();
+            glPushMatrix();
+            {
+                for (LaserBeam e : lasers) {
+                    if (CheckCollision2(e, enemies.get((byte) -1))) {
+                        System.out.print("HIT!");
+                        ex.drawExplosion();
+                        ex.reset();
                     }
                 }
             }
@@ -229,11 +240,11 @@ public class GameplayScreen extends Screen {
         }               */
 
         //Laser collision TESTING WITH ENEMY
-        for (LaserBeam e : lasers) {
+        /*for (LaserBeam e : lasers) {
             if (CheckCollision2(e, enemies.get((byte) -1))) {
                 System.out.print("HIT!");
             }
-        }
+        }  */
 
         Vector3f playerPos = new Vector3f();
         Vector3f.sub(player.offset, cam.getPosition(), playerPos);
