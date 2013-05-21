@@ -44,8 +44,6 @@ public class Client {
         }
         // Creates a Receiver object based on the DatagramSocket created in the sender
         receiver = new ReceiverThread(sender.getSocket(), messageQueue, actionMap);
-        // Sends an initial message to the server announcing client's arrival
-        sendMessage("A new player has entered the room");
         // Start polling the server for messages
         receiver.start();
     }

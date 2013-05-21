@@ -15,7 +15,6 @@ import java.util.HashMap;
  * Time: 12:59 AM
  * To change this template use File | Settings | File Templates.
  */
-//TODO: delete entry from addressMap on disconnect and free up ID
 public class Server implements Runnable {
     private HashMap<Integer, InetAddress> addressMap;
     private HashMap<Integer, Byte> idMap;
@@ -57,9 +56,6 @@ public class Server implements Runnable {
 
             InetAddress clientIP = receivePacket.getAddress();
 
-//            System.out.println("Client IP = " + clientIP);
-//            System.out.println("Hostname = " + clientIP.getHostName());
-
             // Port number that the connection came from
             int clientPort = receivePacket.getPort();
             if (!addressMap.containsKey(clientPort)) {
@@ -82,6 +78,10 @@ public class Server implements Runnable {
                 // Copy the rest of the data in
                 System.arraycopy(receiveData, 2, sendData, 1, sendData.length-1);
 
+                if(((option & 0xF0) >> 4) == MessageType.Disconnect.ordinal()) {
+                    addressMap.remove(clientPort);
+                    idMap.remove(clientPort);
+                }
             } else {
                 // Create string out of received byte array and trim it down
                 String clientMessage;
@@ -92,9 +92,6 @@ public class Server implements Runnable {
                     return;
                 }
 
-                // System.out.println("Message received from socket address " + receivePacket.getSocketAddress());
-                // System.out.println("Message: " + clientMessage);
-
                 // Create a byte buffer of trimmed message size + 1
                 sendData = new byte[clientMessage.length() + 1];
                 // Put the option/ID byte at the start of the buffer
@@ -104,7 +101,7 @@ public class Server implements Runnable {
                     // Copy byte data from message to buffer
                     System.arraycopy(clientMessage.getBytes("UTF-8"), 0, sendData, 1, sendData.length - 1);
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    e.printStackTrace();
                     return;
                 }
             }

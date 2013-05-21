@@ -1,6 +1,7 @@
 package screens;
 
 import entity.Enemy;
+import entity.LaserBeam;
 import environment.Model;
 import helpers.Delegate;
 import network.Chat;
@@ -11,8 +12,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
 import java.io.*;
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -99,9 +98,9 @@ public class MultiGameScreen extends GameplayScreen {
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         DataOutputStream dataStream = new DataOutputStream(byteStream);
         Vector3f vec = cam.getPosition();
-        float pitch = cam.getPitch();
-        float yaw = cam.getYaw();
-        float roll = cam.getRoll();
+        float pitch = cam.getPitch();// - player.model.pitch;
+        float yaw = cam.getYaw();// - player.model.yaw;
+        float roll = cam.getRoll();// - player.model.roll;
 
         try {
             dataStream.writeFloat(-vec.getX());
@@ -130,6 +129,39 @@ public class MultiGameScreen extends GameplayScreen {
         }
     }
 
+    private void broadcastLaser(LaserBeam l) {
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        DataOutputStream dataStream = new DataOutputStream(byteStream);
+        Vector3f origin = l.origin;
+        float yaw = l.yaw;
+        float pitch = l.pitch;
+
+        try {
+            dataStream.writeFloat(origin.getX());
+            dataStream.writeFloat(origin.getY());
+            dataStream.writeFloat(origin.getZ());
+            dataStream.writeFloat(yaw);
+            dataStream.writeFloat(pitch);
+        } catch(IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        byte[] data = new byte[5 * 4 + 2];
+        // Set the option byte to Laser
+        data[0] = (byte) (MessageType.Laser.ordinal() << 4);
+        // 20 bytes are sent for start position and rotation
+        data[1] = 5 * 4;
+
+        System.arraycopy(byteStream.toByteArray(), 0, data, 2, data.length - 2);
+
+        try {
+            client.sendData(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Exit();
+        }
+    }
+
     private void updateEnemies(Set<Map.Entry<Byte, byte[]>> actionSet) {
         for (Map.Entry<Byte, byte[]> entry : actionSet) {
             byte key = entry.getKey();
@@ -142,6 +174,12 @@ public class MultiGameScreen extends GameplayScreen {
             switch (option) {
                 case Movement:
                     moveEnemy(id, entry.getValue());
+                    break;
+                case Laser:
+                    addLaser(id, entry.getValue());
+                    break;
+                case Disconnect:
+                    enemies.remove(id);
                     break;
             }
         }
@@ -162,23 +200,43 @@ public class MultiGameScreen extends GameplayScreen {
         enemies.get(id).model.updatePosition(fArr[0], fArr[1], fArr[2]);
         enemies.get(id).model.updateRotation(fArr[3], fArr[4], fArr[5]);
 
-        enemies.get(id).offset = new Vector3f(0, 0, -5);
+        enemies.get(id).setOffset(-fArr[4], -fArr[3], 5);
+    }
 
-//        enemies.get(id).setOffset(fArr[4], fArr[3], -5);
+    private void addLaser(byte id, byte[] data) {
+        ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
+        DataInputStream dataStream = new DataInputStream(byteStream);
+        float[] fArr = new float[data.length / 4];  // 4 bytes per float
 
+        for (int i = 0; i < fArr.length; i++) {
+            try {
+                fArr[i] = dataStream.readFloat();
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
 
-//        System.out.println("x = " + fArr[0]);
-//        System.out.println("y = " + fArr[1]);
-//        System.out.println("z = " + fArr[2]);
-//        System.out.println("pitch = " + fArr[3]);
-//        System.out.println("yaw = " + fArr[4]);
-//        System.out.println("roll = " + fArr[5]);
+        lasers.add(new LaserBeam(new Vector3f(fArr[0], fArr[1], fArr[2]), fArr[3], fArr[4], id));
+    }
+
+    @Override
+    protected void shootLaser() {
+        LaserBeam temp = new LaserBeam(cam, player.offset, player.hud);
+        lasers.add(temp);
+        broadcastLaser(temp);
     }
 
     @Override
     protected void Exit() {
         chat.disconnect();
         chat = null;
+        try {
+            client.sendData(new byte[]{(byte) (MessageType.Disconnect.ordinal() << 4)});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        client.disconnect();
+        client = null;
         delegate.change(0);
     }
 

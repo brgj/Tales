@@ -21,7 +21,6 @@ public class Chat {
 
     // Defines to what position on the screen the chat will reach from the bottom
     private final float ChatTop = 2.0f * Display.getHeight() / 3;
-
     TrueTypeFont chatFont;
     private List<String> log;
     private StringBuffer messageToSend;
@@ -82,10 +81,11 @@ public class Chat {
 
     /**
      * Add a character to the message buffer
+     *
      * @param c
      */
     public void addChar(char c) {
-        if(messageToSend.length() < 255)
+        if (messageToSend.length() < 255)
             messageToSend.append(c);
     }
 
@@ -99,6 +99,7 @@ public class Chat {
 
     /**
      * Send a message to the client
+     *
      * @return true if message is not empty
      */
     public boolean sendMessage() {
@@ -133,6 +134,7 @@ public class Chat {
 
     /**
      * Add a message to the log
+     *
      * @param message
      */
     private void addMessageToLog(String message) {
@@ -146,7 +148,7 @@ public class Chat {
      * Disconnect from the server
      */
     public void disconnect() {
-        client.disconnect();
+        client.sendMessage("Disconnected");
         client = null;
     }
 }

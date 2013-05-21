@@ -9,5 +9,8 @@ package network;
  */
 public enum MessageType {
     Chat,
-    Movement
+    Movement,
+    Laser,
+    Score,
+    Disconnect
 }

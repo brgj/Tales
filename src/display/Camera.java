@@ -63,7 +63,10 @@ public class Camera {
             int dX = (midX - Mouse.getX());
             int dY = (midY - Mouse.getY());
 
-            pitch += mouseSpeed * dY;
+            hud.setCrosshairX(-dX / 5);
+            hud.setCrosshairY(dY / 5);
+
+            pitch += mouseSpeed * hud.crosshairPos.y;
 
             if(pitch < -60) {
                 pitch = -60;
@@ -71,11 +74,8 @@ public class Camera {
                 pitch = 60;
             }
 
-            yaw -= mouseSpeed * dX;
+            yaw += mouseSpeed * hud.crosshairPos.x;
             yaw %= 360;
-
-            hud.setCrosshairX(-dX / 5);
-            hud.setCrosshairY(dY / 5);
 
             if (Math.abs(dX) < 5 && Math.abs(dY) < 5)
                 hud.crosshairReset();

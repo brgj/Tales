@@ -33,7 +33,7 @@ public class LaserBeam extends Entity {
     public float pitch;
     public float initial;
     public int timecounter;
-    public int ownerID;
+    public byte ownerID;
     public boolean isExpired;
 
     public LaserBeam(Camera cam, Vector3f offset, HUD hud) {
@@ -41,14 +41,29 @@ public class LaserBeam extends Entity {
         movement = 0.0f;
         initial = Sys.getTime();
         timecounter = 0;
-        radius = .1f;
-        speed = .1f;
+        radius = 1f;
+        speed = radius * 2;
         yaw = cam.getYaw();
         pitch = cam.getPitch();
         position = new Vector3f(origin);
         isExpired = false;
         Initialize(hud.crosshairPos);
     }
+
+    public LaserBeam(Vector3f origin, float yaw, float pitch, byte id) {
+        this.origin = origin;
+        movement = 0.0f;
+        initial = Sys.getTime();
+        timecounter = 0;
+        radius = 1f;
+        speed = radius * 2;
+        this.yaw = yaw;
+        this.pitch = pitch;
+        position = new Vector3f(origin);
+        isExpired = false;
+        ownerID = id;
+    }
+
     public void Initialize(Vector2f chPosition) {
         //Account for the crosshair position
         //y field of view (in degrees)

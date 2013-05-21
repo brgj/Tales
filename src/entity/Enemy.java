@@ -30,8 +30,8 @@ public class Enemy extends Entity {
     }
 
     public void Render() {
+        GL11.glTranslatef(offset.x, offset.y, offset.z);
         model.transform();
-        GL11.glTranslatef(offset.x / model.getScaleRatio(), offset.y / model.getScaleRatio(), offset.z / model.getScaleRatio());
         model.render();
     }
 
