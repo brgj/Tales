@@ -26,7 +26,7 @@ public class LaserBeam extends Entity {
     public Vector3f origin;
     public Vector3f initialDir = new Vector3f(0.0f, 0.0f, 1.0f);
     public Vector3f position;
-    public Texture material = GLHelper.LoadTexture("png", "images/glow/laser.png");
+    public Texture material = GLHelper.LoadTexture("png", "images/glow/laser3.png");
     public float movement;
     public float speed;
     public float yaw;
@@ -49,7 +49,6 @@ public class LaserBeam extends Entity {
         isExpired = false;
         Initialize(hud.crosshairPos);
     }
-
     public void Initialize(Vector2f chPosition) {
         //Account for the crosshair position
         //y field of view (in degrees)
@@ -80,7 +79,7 @@ public class LaserBeam extends Entity {
     }
 
     public void Render() {
-        //renderLeft();
+        renderLeft();
         renderRight();
     }
 
@@ -97,6 +96,7 @@ public class LaserBeam extends Entity {
         position.z += speed * (float) Math.cos(rad);
         rad = Math.toRadians(pitch);
         position.y += speed * (float) Math.sin(rad);
+
     }
 
     public void renderLeft() {
@@ -107,7 +107,7 @@ public class LaserBeam extends Entity {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         material.bind();
         movement += 3.0f * GLApp.getSecondsPerFrame();
-        Vector4f[] rot = rotate(x,z,-2.0f);
+        Vector4f[] rot = rotate(x,z,-1.0f,-2.0f);
         glBegin(GL_QUADS);
         {
             /*glTexCoord2f(1, 0);
@@ -148,7 +148,7 @@ public class LaserBeam extends Entity {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         material.bind();
         movement += 3.0f * GLApp.getSecondsPerFrame();
-        Vector4f[] rot = rotate(x,z,2.0f);
+        Vector4f[] rot = rotate(x,z,1.0f,-2.0f);
         glBegin(GL_QUADS);
         {
             /*glTexCoord2f(1, 0);
@@ -169,7 +169,7 @@ public class LaserBeam extends Entity {
             glVertex3f(rot[1].x, y , rot[1].z );
 
             glTexCoord2f(0, 1);
-            glVertex3f(rot[2].x, y , rot[2].z);
+            glVertex3f(rot[2].x, y  , rot[2].z);
 
             glTexCoord2f(1, 1);
             glVertex3f(rot[3].x, y , rot[3].z);
@@ -181,10 +181,10 @@ public class LaserBeam extends Entity {
         glDisable(GL_BLEND);
     }
 
-    public Vector4f[] rotate(float x,float z,float offsetx)
+    public Vector4f[] rotate(float x,float z,float offsetx,float offsetz)
     {
         float x2 = x+offsetx;
-        float z2 = z-2.0f;
+        float z2 = z-offsetz;
         Vector4f point1 = new Vector4f(x2,0,z, 1);
         Vector4f point2 = new Vector4f(x,0,z, 1);
         Vector4f point3 = new Vector4f(x,0,z2, 1);
@@ -192,19 +192,19 @@ public class LaserBeam extends Entity {
 
         Matrix4f trans1 = new Matrix4f();
         trans1.setIdentity();
-        Matrix4f.translate(new Vector3f(-(x + offsetx/2), position.y, -(z - 1.0f)), trans1, trans1);
+        Matrix4f.translate(new Vector3f(-(x), -position.y, -(z )), trans1, trans1);
         Matrix4f.transform(trans1, point1, point1);
 
         trans1.setIdentity();
-        Matrix4f.translate(new Vector3f(-(x + offsetx/2), position.y, -(z - 1.0f)), trans1, trans1);
+        Matrix4f.translate(new Vector3f(-(x), -position.y, -(z)), trans1, trans1);
         Matrix4f.transform(trans1, point2, point2);
 
         trans1.setIdentity();
-        Matrix4f.translate(new Vector3f(-(x + offsetx/2), position.y, -(z - 1.0f)), trans1, trans1);
+        Matrix4f.translate(new Vector3f(-(x ), -position.y, -(z)), trans1, trans1);
         Matrix4f.transform(trans1, point3, point3);
 
         trans1.setIdentity();
-        Matrix4f.translate(new Vector3f(-(x + offsetx/2), position.y, -(z - 1.0f)), trans1, trans1);
+        Matrix4f.translate(new Vector3f(-(x ), -position.y, -(z )), trans1, trans1);
         Matrix4f.transform(trans1, point4, point4);
 
 
@@ -226,29 +226,47 @@ public class LaserBeam extends Entity {
         Matrix4f.transform(rot, point4, point4);
 
 
+
+        /*rot.setIdentity();
+        Matrix4f.rotate((float)Math.toRadians(-pitch), new Vector3f(0.0f, 0.0f, 1.0f), rot, rot);
+        Matrix4f.transform(rot, point1, point1);
+
+        rot.setIdentity();
+        Matrix4f.rotate((float)Math.toRadians(-pitch), new Vector3f(0.0f, 0.0f, 1.0f), rot, rot);
+        Matrix4f.transform(rot, point2, point2);
+
+        rot.setIdentity();
+        Matrix4f.rotate((float)Math.toRadians(-pitch), new Vector3f(0.0f, 0.0f, 1.0f), rot, rot);
+        Matrix4f.transform(rot, point3, point3);
+
+        rot.setIdentity();
+        Matrix4f.rotate((float)Math.toRadians(-pitch), new Vector3f(0.0f, 0.0f, 1.0f), rot, rot);
+        Matrix4f.transform(rot, point4, point4);       */
+
+
         Matrix4f trans2 = new Matrix4f();
         trans2.setIdentity();
-        Matrix4f.translate(new Vector3f((x + offsetx/2), -position.y, (z - 1.0f)), trans2, trans2);
+        Matrix4f.translate(new Vector3f((x ), position.y, (z )), trans2, trans2);
         Matrix4f.transform(trans2, point1, point1);
 
         trans2.setIdentity();
-        Matrix4f.translate(new Vector3f((x + offsetx/2), -position.y, (z - 1.0f)), trans2, trans2);
+        Matrix4f.translate(new Vector3f((x ), position.y, (z )), trans2, trans2);
         Matrix4f.transform(trans2, point2, point2);
 
         trans2.setIdentity();
-        Matrix4f.translate(new Vector3f((x + offsetx/2), -position.y, (z - 1.0f)), trans2, trans2);
+        Matrix4f.translate(new Vector3f((x ), position.y, (z )), trans2, trans2);
         Matrix4f.transform(trans2, point3, point3);
 
         trans2.setIdentity();
-        Matrix4f.translate(new Vector3f((x + offsetx/2), -position.y, (z - 1.0f)), trans2, trans2);
+        Matrix4f.translate(new Vector3f((x), position.y, (z )), trans2, trans2);
         Matrix4f.transform(trans2, point4, point4);
 
 
 
         //System.out.println("after " + x+" " + z + "p1 "+ point1.x +" " + point1.z + " " +
-         //       "p2 "+ point2.x +" " + point2.z + " " +
-         //       "p3 "+ point3.x +" " + point3.z + " " +
-         //       "p4 "+ point3.x +" " + point3.z + " " );
+        //       "p2 "+ point2.x +" " + point2.z + " " +
+        //       "p3 "+ point3.x +" " + point3.z + " " +
+        //       "p4 "+ point3.x +" " + point3.z + " " );
         //System.out.println(trans1.m13 + " " + trans1.m23);
         //System.out.println(point1.x + " after " + point1.z);
 

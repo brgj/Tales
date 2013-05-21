@@ -78,7 +78,7 @@ public class GameplayScreen extends Screen {
         //Create Background
         background = new Background();
         //load the model
-        player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f));
+        player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -.7f, -5.0f));
         enemies = new HashMap<Byte, Enemy>();
         enemies.put((byte) -1, new Enemy(new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), new Vector3f(0, 0, 0)));
         terrain = new Terrain("data/terrain/terrain.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f);
@@ -176,7 +176,28 @@ public class GameplayScreen extends Screen {
                 }
             }
             glPopMatrix();
-            //terrain.render();
+            //tempEnemyCollide = false;
+            glPushMatrix();
+            {
+                for (Enemy e : enemies.values()) {
+                    //glLoadIdentity();
+                    if (CheckCollision(e)) {
+                        //DO STUFF
+                        //ex.drawExplosion();
+                        tempEnemyCollide = true;
+                        crash();
+                        if (player.health > 0) {
+                            player.health -= .01f;
+                        }
+                        else if(player.health < 0)
+                        {
+                            player.health = 0;
+                        }
+                    }
+                }
+            }
+            glPopMatrix();
+            glPopMatrix();
             glMatrixMode(GL_PROJECTION);
             //endregion
         }
@@ -186,14 +207,15 @@ public class GameplayScreen extends Screen {
 
         glMatrixMode(GL_MODELVIEW);
 
-        tempEnemyCollide = false;
+        //tempEnemyCollide = false;
 
         //Check collisions
-        for (Enemy e : enemies.values()) {
+        /*for (Enemy e : enemies.values()) {
             //glLoadIdentity();
             if (CheckCollision(e)) {
                 //DO STUFF
-                //ex.drawExplosion();
+                System.out.println("collision");
+                ex.drawExplosion();
                 tempEnemyCollide = true;
                 crash();
                 if (player.health > 0) {
@@ -204,7 +226,7 @@ public class GameplayScreen extends Screen {
                     player.health = 0;
                 }
             }
-        }
+        }               */
 
         //Laser collision TESTING WITH ENEMY
         for (LaserBeam e : lasers) {
