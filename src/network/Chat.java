@@ -35,7 +35,7 @@ public class Chat {
         // First message on screen lets client know where they've connected
         log.add("Client connected to " + client.host + " using port " + client.port);
 
-        // Create font, push Texture to avoid messing with model texture
+        // Create font
         Font font = new Font("Courier New", Font.PLAIN, 13);
         glPushAttrib(GL_TEXTURE_BIT);
         chatFont = new TrueTypeFont(font, true);

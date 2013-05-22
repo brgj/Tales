@@ -4,10 +4,7 @@ import entity.Enemy;
 import entity.LaserBeam;
 import environment.Model;
 import helpers.Delegate;
-import network.Chat;
-import network.Client;
-import network.MessageType;
-import network.Server;
+import network.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -29,7 +26,9 @@ public class MultiGameScreen extends GameplayScreen {
     Server server;
     Client client;
     Chat chat;
+    Scoreboard scoreboard;
     private boolean chatting = false;
+    private boolean checkScore = false;
 
     public MultiGameScreen(Delegate d) {
         super(d);
@@ -52,6 +51,7 @@ public class MultiGameScreen extends GameplayScreen {
 
         client = new Client(ip.val, PORT);
         chat = new Chat(client);
+        scoreboard = new Scoreboard();
     }
 
     @Override
@@ -60,6 +60,8 @@ public class MultiGameScreen extends GameplayScreen {
 
         if (chatting)
             chat.render();
+        else if (checkScore)
+            scoreboard.render();
     }
 
     @Override
@@ -75,6 +77,12 @@ public class MultiGameScreen extends GameplayScreen {
             broadcastMove();
             if (Keyboard.isKeyDown(Keyboard.KEY_C)) {
                 chatting = true;
+            } else if (keyPressed && Keyboard.getEventKeyState() && Keyboard.isKeyDown(Keyboard.KEY_TAB)) {
+                checkScore = !checkScore;
+            }
+            //TODO: Delete this, placeholder to show that score communication works
+            if(Keyboard.isKeyDown(Keyboard.KEY_Z)) {
+                broadcastScoreChange((byte)0);
             }
         } else if (keyPressed && Keyboard.getEventKeyState()) {
             int key = Keyboard.getEventKey();
@@ -143,7 +151,7 @@ public class MultiGameScreen extends GameplayScreen {
             dataStream.writeFloat(origin.getZ());
             dataStream.writeFloat(yaw);
             dataStream.writeFloat(pitch);
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return;
         }
@@ -163,11 +171,35 @@ public class MultiGameScreen extends GameplayScreen {
         }
     }
 
+    private void broadcastScoreChange(byte id) {
+        scoreboard.myScore--;
+        scoreboard.scores.put(id, scoreboard.scores.get(id) + 1);
+
+        byte[] data = new byte[3];
+        // Set the option byte to Score
+        data[0] = (byte) (MessageType.Score.ordinal() << 4);
+        // The packet is only one byte long
+        data[1] = 1;
+        // The id is sent
+        data[2] = id;
+
+        try {
+            client.sendData(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Exit();
+        }
+    }
+
     private void updateEnemies(Set<Map.Entry<Byte, byte[]>> actionSet) {
         for (Map.Entry<Byte, byte[]> entry : actionSet) {
             byte key = entry.getKey();
             byte id = (byte) (key & 0x0F);
             MessageType option = MessageType.values()[key >> 4 & 0x0F];
+
+            if (!scoreboard.scores.containsKey(id)) {
+                scoreboard.scores.put(id, 0);
+            }
 
             if (!enemies.containsKey(id))
                 enemies.put(id, new Enemy(new Model("data/DarkFighter/dark_fighter_2.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), new Vector3f(0, 0, -5)));
@@ -179,6 +211,8 @@ public class MultiGameScreen extends GameplayScreen {
                 case Laser:
                     addLaser(id, entry.getValue());
                     break;
+                case Score:
+                    updateScore(id, entry.getValue());
                 case Disconnect:
                     enemies.remove(id);
                     break;
@@ -216,6 +250,15 @@ public class MultiGameScreen extends GameplayScreen {
         }
 
         lasers.add(new LaserBeam(new Vector3f(fArr[0], fArr[1], fArr[2]), fArr[3], fArr[4], id));
+    }
+
+    private void updateScore(byte id, byte[] data) {
+
+        scoreboard.scores.put(id, scoreboard.scores.get(id) - 1);
+        if(scoreboard.scores.containsKey(data[0]))
+            scoreboard.scores.put(data[0], scoreboard.scores.get(data[0]) + 1);
+        else
+            scoreboard.myScore++;
     }
 
     @Override
