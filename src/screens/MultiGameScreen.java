@@ -97,15 +97,16 @@ public class MultiGameScreen extends GameplayScreen {
     private void broadcastMove() {
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         DataOutputStream dataStream = new DataOutputStream(byteStream);
-        Vector3f vec = cam.getPosition();
-        float pitch = cam.getPitch();// - player.model.pitch;
-        float yaw = cam.getYaw();// - player.model.yaw;
-        float roll = cam.getRoll();// - player.model.roll;
+        Vector3f vec = new Vector3f();
+        Vector3f.sub(player.offset, cam.getPosition(), vec);
+        float pitch = cam.getPitch() - player.model.pitch;
+        float yaw = cam.getYaw() - player.model.yaw;
+        float roll = cam.getRoll() - player.model.roll;
 
         try {
-            dataStream.writeFloat(-vec.getX());
-            dataStream.writeFloat(-vec.getY());
-            dataStream.writeFloat(-vec.getZ());
+            dataStream.writeFloat(vec.getX());
+            dataStream.writeFloat(vec.getY());
+            dataStream.writeFloat(vec.getZ());
             dataStream.writeFloat(-pitch);
             dataStream.writeFloat(-yaw);
             dataStream.writeFloat(-roll);
@@ -199,8 +200,6 @@ public class MultiGameScreen extends GameplayScreen {
 
         enemies.get(id).model.updatePosition(fArr[0], fArr[1], fArr[2]);
         enemies.get(id).model.updateRotation(fArr[3], fArr[4], fArr[5]);
-
-        enemies.get(id).setOffset(-fArr[4], -fArr[3], 5);
     }
 
     private void addLaser(byte id, byte[] data) {
@@ -222,6 +221,7 @@ public class MultiGameScreen extends GameplayScreen {
     @Override
     protected void shootLaser() {
         LaserBeam temp = new LaserBeam(cam, player.offset, player.hud);
+        temp.ownerID = -50;
         lasers.add(temp);
         broadcastLaser(temp);
     }

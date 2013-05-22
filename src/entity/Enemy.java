@@ -18,7 +18,6 @@ public class Enemy extends Entity {
 
     public Enemy(Model model, Vector3f offset) {
         super(model);
-        this.offset = offset;
     }
 
     public float getSpeed() {
@@ -30,7 +29,6 @@ public class Enemy extends Entity {
     }
 
     public void Render() {
-        GL11.glTranslatef(offset.x, offset.y, offset.z);
         model.transform();
         model.render();
     }

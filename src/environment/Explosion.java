@@ -1,12 +1,9 @@
 package environment;
 
-import glapp.GLApp;
 import helpers.GLHelper;
 import org.lwjgl.Sys;
 import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
 import org.newdawn.slick.opengl.Texture;
-import org.lwjgl.Sys;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -21,55 +18,70 @@ public class Explosion {
 
     float alpha;
     float scale;
+    float speed;
     Vector3f position;
     Texture texture;
     public long initial;
-    public Explosion() {
 
+    public Explosion(float scale, float speed, Vector3f position) {
         texture = GLHelper.LoadTexture("png", "images/explosion.png");
-        //texture = GLHelper.LoadTexture("png", "images/glow/laser.png");
-        position = new Vector3f();
-        Initialize();
         alpha = 1.0f;
-        scale = 0.5f;
+        this.speed = speed;
+        this.scale = scale;
+        this.position = new Vector3f(position);
         initial = Sys.getTime();
+        Initialize();
     }
 
     public void Initialize() {
-        alpha = 1.0f;
-        scale = 0.5f;
+
     }
-    public void reset()
-    {
+
+    public void reset() {
         this.alpha = 1.0f;
         this.scale = 0.5f;
     }
-    public void resetTime()
+
+    public float getAlpha()
     {
+        return alpha;
+    }
+
+    public void resetTime() {
         this.initial = Sys.getTime();
     }
+
     public int getTimepassed() {
         return (int) ((Sys.getTime() - this.initial) / 1000);
     }
-    public void drawExplosion() {
+
+    public void render() {
         glPushAttrib(GL_ENABLE_BIT);
         {
             glDisable(GL_CULL_FACE);
             glEnable(GL_BLEND);
+            //Adding this fixes other clipping, but not the player because its a layer above
+            //glDisable(GL_DEPTH_TEST);
+            //This enables the material to be colored. Defaulted to be disabled
+            glEnable(GL_COLOR_MATERIAL);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             texture.bind();
             if (alpha >= 0) {
                 glPushMatrix();
-                alpha -= 0.01f;
-                scale += 0.03f;
+                alpha -= .01f;
+                scale += speed;
 
-                glColor4f(1, 1, 0, alpha);
+                glColor4f(alpha, alpha, alpha, alpha);
                 glScalef(scale, scale, scale);
+
+                glTranslatef(position.getX() / scale,
+                        position.getY() / scale,
+                        position.getZ() / scale);
 
                 glBegin(GL_QUADS);
                 {
                     glTexCoord2f(0, 0);
-                    glVertex3f(1.0f, 1.0f,1.0f);
+                    glVertex3f(1.0f, 1.0f, 1.0f);
                     glTexCoord2f(1, 0);
                     glVertex3f(-1.0f, 1.0f, 1.0f);
                     glTexCoord2f(1, 1);

@@ -40,6 +40,7 @@ public class GameplayScreen extends Screen {
     //TODO: get rid of these
     static boolean tempEnemyCollide = false;
     static boolean tempTerrainCollide = false;
+    static boolean lastFired = false;
     Camera cam;
     Terrain terrain;
     Player player;
@@ -47,7 +48,7 @@ public class GameplayScreen extends Screen {
     Light l;
     Laser laser1;
     ArrayList<LaserBeam> lasers;
-    Explosion ex;
+    ArrayList<Explosion> explosions;
     HashMap<Byte, Enemy> enemies = new HashMap<Byte, Enemy>();
 
     public GameplayScreen(Delegate d) {
@@ -82,17 +83,16 @@ public class GameplayScreen extends Screen {
         //Create Background
         background = new Background();
         //load the model
-        player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -.7f, -5.0f));
+        player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f));
         enemies = new HashMap<Byte, Enemy>();
         enemies.put((byte) -1, new Enemy(new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, -6.0f, 5.0f, -10.0f), new Vector3f(0, 0, 0)));
         terrain = new Terrain("data/terrain/terrain.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f);
         laser1 = new Laser(cam);
 
         lasers = new ArrayList<LaserBeam>();
+        explosions = new ArrayList<Explosion>();
 
         enemies.get((byte) -1).Initialize();
-
-        ex = new Explosion();
     }
 
     public void Render() {
@@ -100,6 +100,11 @@ public class GameplayScreen extends Screen {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glMatrixMode(GL_PROJECTION);
+
+        //Player position accounting for offset and camera position
+        Vector3f playerPos = new Vector3f();
+        Vector3f.sub(player.offset, cam.getPosition(), playerPos);
+        player.fatalCrashPos = new Vector3f(playerPos);
 
         // true if enemy is in crosshairs
         boolean enemyInTarget = false;
@@ -119,22 +124,23 @@ public class GameplayScreen extends Screen {
             background.drawSkybox(50.0f);
 
             //Render the model the camera is focusing
-            glPushMatrix();
-            {
-                glLoadIdentity();
-                player.Render();
-                Vector3f vec;
-                if (tempEnemyCollide) {
-                    vec = new Vector3f(0.0f, 1.0f, 0.0f);
-                } else if (tempTerrainCollide) {
-                    vec = new Vector3f(0.0f, 0.0f, 1.0f);
-                } else {
-                    vec = new Vector3f(1.0f, 1.0f, 1.0f);
+            if (player.state != Entity.State.Dead) {
+                glPushMatrix();
+                {
+                    glLoadIdentity();
+                    player.Render();
+                    Vector3f vec;
+                    if (tempEnemyCollide) {
+                        vec = new Vector3f(0.0f, 1.0f, 0.0f);
+                    } else if (tempTerrainCollide) {
+                        vec = new Vector3f(0.0f, 0.0f, 1.0f);
+                    } else {
+                        vec = new Vector3f(1.0f, 1.0f, 1.0f);
+                    }
+                    GLHelper.renderSphere(player.center, player.radius, vec);
                 }
-                GLHelper.renderSphere(player.center, player.radius, vec);
-                //laser1.render();
+                glPopMatrix();
             }
-            glPopMatrix();
 
             //Translate camera
             cam.setCameraPosition();
@@ -146,11 +152,39 @@ public class GameplayScreen extends Screen {
             }
             glPopMatrix();
 
+            //Render active lasers and perform cleanup
+            glPushMatrix();
+            {
+                for (Iterator<LaserBeam> i = lasers.iterator(); i.hasNext(); ) {
+                    LaserBeam laser = i.next();
+                    GLHelper.renderSphere(new Vector3f(laser.getPosition().x, laser.getPosition().y, laser.getPosition().z),
+                            laser.radius, new Vector3f(1, 0, 0));
+                    if (laser.isExpired) {
+                        i.remove();
+                    } else {
+                        laser.Render();
+                    }
+                }
+            }
+            glPopMatrix();
+
+            //Render active Explosions
+            glPushMatrix();
+            {
+                for (Iterator<Explosion> i = explosions.iterator(); i.hasNext(); ) {
+                    Explosion explosion = i.next();
+                    if (explosion.getAlpha() <= 0) {
+                        i.remove();
+                    } else {
+                        explosion.render();
+                    }
+                }
+            }
+            glPopMatrix();
+
             Vector2f chPos = player.hud.crosshairPos;
 
-            for (LaserBeam e : lasers) {
-                GLHelper.renderSphere(new Vector3f(-e.getPosition().x, -e.getPosition().y, -e.getPosition().z), e.radius, new Vector3f(1, 0, 0));
-            }
+            tempEnemyCollide = false;
 
             //Draw other 3d models not focused by the camera and check for intersection with crosshairs
             for (Enemy enemy : enemies.values()) {
@@ -161,29 +195,10 @@ public class GameplayScreen extends Screen {
                     if (!enemyInTarget)
                         enemyInTarget = CheckPickingRay(chPos.x + Display.getWidth() / 2, chPos.y + Display.getHeight() / 2, enemy);
 //                    enemy.setTarget(cam.getPosition());
-                }
-                glPopMatrix();
-            }
-            glPushMatrix();
-            {
-                for (Iterator<LaserBeam> i = lasers.iterator(); i.hasNext(); ) {
-                    LaserBeam laser = i.next();
-                    if (laser.isExpired) {
-                        i.remove();
-                    } else {
-                        laser.Render();
-                    }
-                }
-            }
-            glPopMatrix();
-            tempEnemyCollide = false;
-            glPushMatrix();
-            {
-                for (Enemy e : enemies.values()) {
-                    //glLoadIdentity();
-                    if (CheckCollisionWithPlayer(e)) {
-                        //DO STUFF
-                        ex.drawExplosion();
+                    if (CheckCollisionWithPlayer(enemy)) {
+                        //Create explosion on collision
+                        //Explosion ex = new Explosion(1, playerPos);
+                        //explosions.add(ex);
                         tempEnemyCollide = true;
                         crash();
                         if (player.health > 0) {
@@ -192,78 +207,68 @@ public class GameplayScreen extends Screen {
                             player.health = 0;
                         }
                     }
-                }
-            }
-            glPopMatrix();
-            glPushMatrix();
-            {
-                for (Iterator<LaserBeam> it = lasers.iterator(); it.hasNext();) {
-                    LaserBeam l = it.next();
-                    for (Enemy enemy : enemies.values()) {
-                        if (CheckCollision2(l, enemy)) {
-                            System.out.print("HIT!");
-                            ex.drawExplosion();
-                            ex.reset();
-                            it.remove();
+
+                    //Check collisions with active lasers
+                    for (LaserBeam laser : lasers) {
+                        if (enemies.get(laser.ownerID) != enemy && CheckCollision2(laser.getPosition(), enemy.getPosition(),
+                                laser.radius, enemy.radius)) {
+
+                            //Create explosion on collision and delete laser
+                            Explosion ex = new Explosion(.5f, .01f, enemy.getPosition());
+                            explosions.add(ex);
+                            laser.isExpired = true;
                         }
                     }
                 }
+                glPopMatrix();
             }
-            glPopMatrix();
+
+            // Player laser collision
+            for (LaserBeam laser : lasers) {
+                if (laser.ownerID != -50 && CheckCollision2(laser.getPosition(), playerPos, laser.radius, player.radius)) {
+
+                    //Create explosion on collision and delete laser
+                    Explosion ex = new Explosion(.5f, .01f, playerPos);
+                    explosions.add(ex);
+                    laser.isExpired = true;
+                }
+            }
+
+            //Terrain Collision
+            if (terrain.checkHeightMap(playerPos, player.radius)) {
+                tempTerrainCollide = true;
+                crash();
+            } else {
+                tempTerrainCollide = false;
+            }
+
             glMatrixMode(GL_PROJECTION);
             //endregion
         }
         glPopMatrix();
 
         player.hud.render(enemyInTarget, player.health);
-
-        glMatrixMode(GL_MODELVIEW);
-
-        //tempEnemyCollide = false;
-
-        //Check collisions
-        /*for (Enemy e : enemies.values()) {
-            //glLoadIdentity();
-            if (CheckCollision(e)) {
-                //DO STUFF
-                System.out.println("collision");
-                ex.drawExplosion();
-                tempEnemyCollide = true;
-                crash();
-                if (player.health > 0) {
-                    player.health -= .01f;
-                }
-                else if(player.health < 0)
-                {
-                    player.health = 0;
-                }
-            }
-        }               */
-
-        //Laser collision TESTING WITH ENEMY
-        /*for (LaserBeam e : lasers) {
-            if (CheckCollision2(e, enemies.get((byte) -1))) {
-                System.out.print("HIT!");
-            }
-        }  */
-
-        Vector3f playerPos = new Vector3f();
-        Vector3f.sub(player.offset, cam.getPosition(), playerPos);
-        if (terrain.checkHeightMap(playerPos, player.radius)) {
-            tempTerrainCollide = true;
-            crash();
-        } else {
-            tempTerrainCollide = false;
-        }
     }
 
-    static boolean lastFired = false;
-
     public void Update() {
-        rotate(0.005f, player.hud);
 //        moveXYZ(0.5f, 0);
+
+        //Logic to handle camera movement in different states of animation / gameplay
+        if (player.state != Entity.State.FatalCrash && player.state != Entity.State.Dead) {
+            rotate(0.005f, player.hud);
+        }
+        //Camera follows ship slightly down when destroyed
+        else if (player.state == Entity.State.FatalCrash) {
+            cam.setPitch(.2f);
+            if (tempTerrainCollide) {
+                player.state = Entity.State.Dead;
+                Explosion ex = new Explosion(.5f, .05f, player.fatalCrashPos);
+                explosions.add(ex);
+            }
+        }
+
         player.Update();
-        player.setOffset(cam.getYaw(), cam.getPitch(), -player.model.getPosition().z);
+        player.setOffset(cam.getYaw(), cam.getPitch(), new Vector3f(player.model.getPosition().x, player.model.getPosition().y, -player.model.getPosition().z));
 
         //Update Lasers
         for (LaserBeam laser : lasers) {
@@ -274,28 +279,31 @@ public class GameplayScreen extends Screen {
             enemy.Update();
         }
 
+        //Player input
         if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             Exit();
             return;
         }
-        if (Mouse.isButtonDown(0)) {
-            if(!lastFired)
-                shootLaser();
-            lastFired = true;
-        } else {
-            lastFired = false;
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-            moveXZ(0.2f, 90);
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-            moveXZ(0.2f, 270);
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-            moveXYZ(0.2f, 0);
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-            moveXYZ(0.2f, 180);
+        if (player.state != Entity.State.FatalCrash && player.state != Entity.State.Dead) {
+            if (Mouse.isButtonDown(0)) {
+                if (!lastFired)
+                    shootLaser();
+                lastFired = true;
+            } else {
+                lastFired = false;
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+                moveXZ(0.2f, 90);
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+                moveXZ(0.2f, 270);
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+                moveXYZ(0.2f, 0);
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+                moveXYZ(0.2f, 180);
+            }
         }
     }
 
@@ -314,11 +322,12 @@ public class GameplayScreen extends Screen {
 
     protected void shootLaser() {
         LaserBeam temp = new LaserBeam(cam, player.offset, player.hud);
+        temp.ownerID = -50;
         lasers.add(temp);
     }
 
     private void crash() {
-        moveXYZ(5.0f, 180);
+        //moveXYZ(5.0f, 180);
         player.crash();
     }
 
@@ -351,23 +360,23 @@ public class GameplayScreen extends Screen {
         float px;
         float py;
 
-// Retrieve the projection matrix from OpenGL
+        // Retrieve the projection matrix from OpenGL
         float[] proj = new float[16];
         GLHelper.glGetFloatv(GL_PROJECTION_MATRIX, proj);
 
-// Use the scaling in the projection matrix to adjust the x and y positions
+        // Use the scaling in the projection matrix to adjust the x and y positions
         px = (((2.0f * x) / Display.getWidth()) - 1.0f) / proj[0];
         py = (((-2.0f * y) / Display.getHeight()) + 1.0f) / proj[5];
 
-// Create the Ray with an initial position of 0 and the direction of the mouse click
+        // Create the Ray with an initial position of 0 and the direction of the mouse click
         Ray ray = new Ray();
         ray.origin = new Vector4f(0, 0, 0, 1);
         ray.direction = new Vector4f(px, py, 1, 0);
 
-// Get the current camera coords + enemy coords and invert them
+        // Get the current camera coords + enemy coords and invert them
         Matrix4f world = GLHelper.getInverseModelViewMatrix();
 
-// Transform the ray by the inverse of the absolute world coords of the enemy
+        // Transform the ray by the inverse of the absolute world coords of the enemy
         TransformRay(ray, world);
 
         return ray;
@@ -384,24 +393,24 @@ public class GameplayScreen extends Screen {
         // Create a vector from the center of the enemy to the origin of the ray
         Vector3f v = new Vector3f(ray.origin.x - enemy.center.x, ray.origin.y - enemy.center.y, ray.origin.z - enemy.center.z);
 
-// Form the quadratic equation, leaving out A because u is normalized, so A = u * u = 1
+        // Form the quadratic equation, leaving out A because u is normalized, so A = u * u = 1
         float b = 2.0f * Vector3f.dot(new Vector3f(ray.direction.x, ray.direction.y, ray.direction.z), v); // B=2*(u.v)
         float c = Vector3f.dot(v, v) - (enemy.radius * enemy.radius); // C=v.v-r^2
 
-// calc the discriminant of the quadratic
+        // calc the discriminant of the quadratic
         double discriminant = (b * b) - (4 * c);
 
-// If we are trying to sqrt a negative, i.e. number is imaginary, return false
+        // If we are trying to sqrt a negative, i.e. number is imaginary, return false
         if (discriminant < 0.0)
             return false;
 
         discriminant = Math.sqrt(discriminant);
 
-// Find both solutions to the quadratic
+        // Find both solutions to the quadratic
         double s0 = (-b + discriminant) / 2.0;
         double s1 = (-b - discriminant) / 2.0;
 
-// If at least one is positive, intersection has occurred
+        // If at least one is positive, intersection has occurred
         return (s0 >= 0.0 || s1 >= 0.0);
     }
 
@@ -422,8 +431,7 @@ public class GameplayScreen extends Screen {
      */
     private boolean CheckCollisionWithPlayer(Entity entity) {
         // Get the position of the player and entity and create a vector from the player to the entity
-        Vector3f entityPos = new Vector3f();
-        Vector3f.add(entity.offset, entity.getPosition(), entityPos);
+        Vector3f entityPos = entity.getPosition();
 
         Vector3f playerPos = new Vector3f();
         Vector3f.sub(player.offset, cam.getPosition(), playerPos);
@@ -431,7 +439,7 @@ public class GameplayScreen extends Screen {
         Vector3f v = new Vector3f();
         Vector3f.sub(playerPos, entityPos, v);
 
-// Calculate the magnitude of vector v as the distance and create a minimum acceptable distance for collision
+        // Calculate the magnitude of vector v as the distance and create a minimum acceptable distance for collision
         float dist = v.x * v.x + v.y * v.y + v.z * v.z;
         float minDist = player.radius + entity.radius;
 
@@ -439,20 +447,15 @@ public class GameplayScreen extends Screen {
     }
 
     //TODO: Delete this later, testing
-    private boolean CheckCollision2(Entity entity, Entity entity2) {
+    private boolean CheckCollision2(Vector3f entityPos, Vector3f entity2Pos, float entityRadius, float entity2Radius) {
         // Get the position of the player and entity and create a vector from the player to the entity
-        Vector3f entityPos = new Vector3f();
-        entity.getPosition().negate(entityPos);
-
-        Vector3f entity2Pos = entity2.getPosition();
-        Vector3f.add(entity2.offset, entity2.getPosition(), entity2Pos);
 
         Vector3f v = new Vector3f();
-        Vector3f.sub(entity2Pos, entityPos, v);
+        Vector3f.sub(entityPos, entity2Pos, v);
 
-// Calculate the magnitude of vector v as the distance and create a minimum acceptable distance for collision
+        // Calculate the magnitude of vector v as the distance and create a minimum acceptable distance for collision
         float dist = v.x * v.x + v.y * v.y + v.z * v.z;
-        float minDist = entity2.radius + entity.radius;
+        float minDist = entityRadius + entity2Radius;
 
         return dist <= minDist * minDist;
     }

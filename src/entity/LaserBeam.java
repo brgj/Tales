@@ -86,7 +86,7 @@ public class LaserBeam extends Entity {
     }
 
     public Vector3f getPosition() {
-        return position;
+        return new Vector3f(-position.x, -position.y, -position.z);
     }
 
     public void setPosition(Vector3f position) {
@@ -261,19 +261,19 @@ public class LaserBeam extends Entity {
 
         Matrix4f trans2 = new Matrix4f();
         trans2.setIdentity();
-        Matrix4f.translate(new Vector3f((x ), position.y, (z )), trans2, trans2);
+        Matrix4f.translate(new Vector3f((x), position.y, (z)), trans2, trans2);
         Matrix4f.transform(trans2, point1, point1);
 
         trans2.setIdentity();
-        Matrix4f.translate(new Vector3f((x ), position.y, (z )), trans2, trans2);
+        Matrix4f.translate(new Vector3f((x), position.y, (z)), trans2, trans2);
         Matrix4f.transform(trans2, point2, point2);
 
         trans2.setIdentity();
-        Matrix4f.translate(new Vector3f((x ), position.y, (z )), trans2, trans2);
+        Matrix4f.translate(new Vector3f((x), position.y, (z)), trans2, trans2);
         Matrix4f.transform(trans2, point3, point3);
 
         trans2.setIdentity();
-        Matrix4f.translate(new Vector3f((x), position.y, (z )), trans2, trans2);
+        Matrix4f.translate(new Vector3f((x), position.y, (z)), trans2, trans2);
         Matrix4f.transform(trans2, point4, point4);
 
 
