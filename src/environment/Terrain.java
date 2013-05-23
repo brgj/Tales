@@ -16,7 +16,7 @@ import java.util.HashMap;
  */
 public class Terrain extends Model {
     private HashMap<Point, Float> heightMap;
-    private float minY;
+    private float minY, maxY, minX, minZ, maxX, maxZ;
 
     public Terrain(String filename) {
         super(filename);
@@ -70,8 +70,18 @@ public class Terrain extends Model {
             addPointToMap(x, y, z);
         }
 
-        float tempY = Math.min(y0, y1);
-        if (tempY < minY) minY = tempY;
+        float tempMinX = Math.min(x0, x1);
+        float tempMinY = Math.min(y0, y1);
+        float tempMinZ = Math.min(z0, z1);
+        float tempMaxX = Math.max(x0, x1);
+        float tempMaxY = Math.max(y0, y1);
+        float tempMaxZ = Math.max(z0, z1);
+        if (tempMinX < minX) minX = tempMinX;
+        if (tempMinY < minY) minY = tempMinY;
+        if (tempMinZ < minZ) minZ = tempMinZ;
+        if (tempMaxX > maxX) maxX = tempMaxX;
+        if (tempMaxY > maxY) maxY = tempMaxY;
+        if (tempMaxZ > maxZ) maxZ = tempMaxZ;
     }
 
     public void addPointToMap(int x, float y, int z) {
@@ -109,5 +119,29 @@ public class Terrain extends Model {
         if (diff > radius)
             return null;
         return result;
+    }
+
+    public float getMinX() {
+        return minX;
+    }
+
+    public float getMinY() {
+        return minY;
+    }
+
+    public float getMinZ() {
+        return minZ;
+    }
+
+    public float getMaxX() {
+        return maxX;
+    }
+
+    public float getMaxY() {
+        return maxY;
+    }
+
+    public float getMaxZ() {
+        return maxZ;
     }
 }
