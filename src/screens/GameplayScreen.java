@@ -283,8 +283,19 @@ public class GameplayScreen extends Screen {
             laser.Update();
         }
         //Update Enemies
-        for (Enemy enemy : enemies.values()) {
+        for (byte id : enemies.keySet()) {
+            Enemy enemy = enemies.get(id);
             enemy.Update();
+            if(enemy.isAI() && enemy.ai.isShooting){
+                LaserBeam temp = new LaserBeam(
+                        new Vector3f(-enemy.model.transX, -enemy.model.transY, -enemy.model.transZ),
+                        enemy.model.yaw,
+                        enemy.model.pitch,
+                        id);
+                System.out.println("Enemy pitch, yaw: " +enemy.model.pitch + ", "+ enemy.model.yaw);
+                System.out.println("Laser pitch, yaw: " +temp.pitch + ", " + temp.yaw);
+                lasers.add(temp);
+            }
         }
 
         //Player input

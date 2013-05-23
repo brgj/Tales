@@ -20,11 +20,10 @@ public class Explosion {
     float scale;
     float speed;
     Vector3f position;
-    Texture texture;
+    static Texture texture = GLHelper.LoadTexture("png", "images/explosion.png");
     public long initial;
 
     public Explosion(float scale, float speed, Vector3f position) {
-        texture = GLHelper.LoadTexture("png", "images/explosion.png");
         alpha = 1.0f;
         this.speed = speed;
         this.scale = scale;
