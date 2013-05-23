@@ -47,7 +47,11 @@ public class AI {
     }
 
     private float calculatePitch(Vector3f v) {
-        return 0 - (float)Math.atan(v.getY() / v.getZ());
+        float temp = v.getZ();
+        if(temp < 5) {
+            temp = 5;
+        }
+        return 0 - (float)Math.atan(v.getY() / temp);
     }
 
     private float calculateYaw(Vector3f v) {
