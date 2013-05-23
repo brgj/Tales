@@ -1,5 +1,6 @@
 package screens;
 
+import ai.AI;
 import display.Camera;
 import display.HUD;
 import display.Ray;
@@ -85,7 +86,7 @@ public class GameplayScreen extends Screen {
         //load the model
         player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f));
         enemies = new HashMap<Byte, Enemy>();
-        enemies.put((byte) -1, new Enemy(new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, -6.0f, 5.0f, -10.0f), new Vector3f(0, 0, 0)));
+        enemies.put((byte) -1, new Enemy(new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -7.5f), new AI()));
         terrain = new Terrain("data/terrain/terrain.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f);
         laser1 = new Laser(cam);
 
@@ -137,6 +138,9 @@ public class GameplayScreen extends Screen {
                     } else {
                         vec = new Vector3f(1.0f, 1.0f, 1.0f);
                     }
+
+                    float scale = player.model.getScaleRatio();
+                    glScalef(1.0f / scale, 1.0f / scale, 1.0f / scale);
                     GLHelper.renderSphere(player.center, player.radius, vec);
                 }
                 glPopMatrix();
@@ -191,10 +195,10 @@ public class GameplayScreen extends Screen {
                 glPushMatrix();
                 {
                     enemy.Render();
-                    GLHelper.renderSphere(enemy.center, enemy.radius, new Vector3f(1.0f, 0.0f, 0.0f));
                     if (!enemyInTarget)
                         enemyInTarget = CheckPickingRay(chPos.x + Display.getWidth() / 2, chPos.y + Display.getHeight() / 2, enemy);
-//                    enemy.setTarget(cam.getPosition());
+                    if(enemy.isAI())
+                        enemy.setTarget(playerPos);
                     if (CheckCollisionWithPlayer(enemy)) {
                         //Create explosion on collision
                         //Explosion ex = new Explosion(1, playerPos);
@@ -219,6 +223,10 @@ public class GameplayScreen extends Screen {
                             laser.isExpired = true;
                         }
                     }
+
+                    float scale = enemy.model.getScaleRatio();
+                    glScalef(1.0f / scale, 1.0f / scale, 1.0f / scale);
+                    GLHelper.renderSphere(enemy.center, enemy.radius, new Vector3f(1.0f, 0.0f, 0.0f));
                 }
                 glPopMatrix();
             }
@@ -400,6 +408,8 @@ public class GameplayScreen extends Screen {
         // calc the discriminant of the quadratic
         double discriminant = (b * b) - (4 * c);
 
+        discriminant += HUD.TARGETY / 2;
+
         // If we are trying to sqrt a negative, i.e. number is imaginary, return false
         if (discriminant < 0.0)
             return false;
@@ -431,13 +441,11 @@ public class GameplayScreen extends Screen {
      */
     private boolean CheckCollisionWithPlayer(Entity entity) {
         // Get the position of the player and entity and create a vector from the player to the entity
-        Vector3f entityPos = entity.getPosition();
-
         Vector3f playerPos = new Vector3f();
         Vector3f.sub(player.offset, cam.getPosition(), playerPos);
 
         Vector3f v = new Vector3f();
-        Vector3f.sub(playerPos, entityPos, v);
+        Vector3f.sub(playerPos, entity.getPosition(), v);
 
         // Calculate the magnitude of vector v as the distance and create a minimum acceptable distance for collision
         float dist = v.x * v.x + v.y * v.y + v.z * v.z;

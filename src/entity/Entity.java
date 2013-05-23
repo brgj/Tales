@@ -47,7 +47,7 @@ public abstract class Entity {
 
     public void Initialize()
     {
-        radius = model.getRadius() * model.getScaleRatio() * 0.75f;
+        radius = model.getRadius() * model.getScaleRatio() * 0.4f;
         center = model.getCenter();
         center.scale(model.getScaleRatio());
     }

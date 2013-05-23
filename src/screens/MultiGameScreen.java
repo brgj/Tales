@@ -202,7 +202,7 @@ public class MultiGameScreen extends GameplayScreen {
             }
 
             if (!enemies.containsKey(id))
-                enemies.put(id, new Enemy(new Model("data/DarkFighter/dark_fighter_2.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), new Vector3f(0, 0, -5)));
+                enemies.put(id, new Enemy(new Model("data/DarkFighter/dark_fighter_2.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f)));
 
             switch (option) {
                 case Movement:

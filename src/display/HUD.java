@@ -17,9 +17,9 @@ public class HUD {
     //Buffer for the side of the screen. Target will be BUFFER away from edge
     private static final int BUFFER = 10;
     //Target X radius
-    private static final int TARGETX = 40;
+    public static final int TARGETX = 40;
     //Target Y radius
-    private static final int TARGETY = 25;
+    public static final int TARGETY = 25;
     //Stores the position of the crosshair
     public Vector2f crosshairPos;
 
