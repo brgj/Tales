@@ -1,6 +1,8 @@
 package screens;
 
+import display.Camera;
 import entity.Enemy;
+import entity.Entity;
 import entity.LaserBeam;
 import environment.Model;
 import helpers.Delegate;
@@ -168,28 +170,18 @@ public class MultiGameScreen extends GameplayScreen {
     }
 
     private void broadcastScoreChange(byte id) {
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-        DataOutputStream dataStream = new DataOutputStream(byteStream);
-        scoreboard.myScore--;
-        scoreboard.scores.put(id, scoreboard.scores.get(id) + 1);
-
-        try {
-            dataStream.writeInt(scoreboard.myScore);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
+        scoreboard.myScore = player.score;
+        if(id != -1) {
+            scoreboard.scores.put(id, scoreboard.scores.get(id) + 1);
         }
 
-        byte[] data = new byte[7];
+        byte[] data = new byte[3];
         // Set the option byte to Score
         data[0] = (byte) (MessageType.Score.ordinal() << 4);
-        // The packet is five bytes long
-        data[1] = 5;
+        // The packet is only one byte long
+        data[1] = 1;
         // The id is sent
         data[2] = id;
-
-        // The current player's score is sent
-        System.arraycopy(byteStream.toByteArray(), 0, data, 3, data.length - 3);
 
         try {
             client.sendData(data);
@@ -262,26 +254,15 @@ public class MultiGameScreen extends GameplayScreen {
     }
 
     private void updateScore(byte id, byte[] data) {
-        byte[] temp = new byte[data.length - 1];
-        System.arraycopy(temp, 0, data, 1, temp.length);
-        ByteArrayInputStream byteStream = new ByteArrayInputStream(temp);
-        DataInputStream dataStream = new DataInputStream(byteStream);
-        int score;
-
-        try {
-            score = dataStream.readInt();
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            return;
-        }
-
-        scoreboard.scores.put(id, score);
+        scoreboard.scores.put(id, scoreboard.scores.get(id) - 1);
         if(data[0] == -1)
             return;
         if(scoreboard.scores.containsKey(data[0]))
             scoreboard.scores.put(data[0], scoreboard.scores.get(data[0]) + 1);
-        else
+        else {
             scoreboard.myScore++;
+            player.score++;
+        }
     }
 
     @Override
@@ -290,6 +271,12 @@ public class MultiGameScreen extends GameplayScreen {
         temp.ownerID = 16;
         lasers.add(temp);
         broadcastLaser(temp);
+    }
+
+    @Override
+    protected void spawnPlayer() {
+        super.spawnPlayer();
+        broadcastScoreChange(player.lastHitBy);
     }
 
     @Override

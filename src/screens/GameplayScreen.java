@@ -95,7 +95,11 @@ public class GameplayScreen extends Screen {
         lasers = new ArrayList<LaserBeam>();
         explosions = new ArrayList<Explosion>();
 
-        spawnPlayer();
+        player.Initialize();
+        Vector3f temp = randomizePosition();
+        cam = new Camera(new Vector3f(temp.x, -temp.y, temp.z));
+        cam.initializePitchYaw();
+
         for(int i = 0; i < numEnemies; i++) {
             spawnEnemy();
         }
@@ -183,7 +187,8 @@ public class GameplayScreen extends Screen {
             //Draw other 3d models not focused by the camera and check for intersection with crosshairs
             HashMap<Byte, Enemy> tempEnemies = new HashMap<Byte, Enemy>();
             tempEnemies.putAll(enemies);
-            for (Enemy enemy : tempEnemies.values()) {
+            for (Byte id : tempEnemies.keySet()) {
+                Enemy enemy = tempEnemies.get(id);
                 glPushMatrix();
                 {
                     enemy.Render();
@@ -197,6 +202,7 @@ public class GameplayScreen extends Screen {
                         explosions.add(ex);
                         tempEnemyCollide = true;
                         crash(2);
+                        player.lastHitBy = id;
                         if (player.health > 0) {
                             player.health -= .21f;
                         } else if (player.health < 0) {
@@ -247,6 +253,7 @@ public class GameplayScreen extends Screen {
                     laser.isExpired = true;
 
                     crash(0);
+                    player.lastHitBy = laser.ownerID;
                     if (player.health > 0) {
                         player.health -= .21f;
                     } else if (player.health < 0) {
@@ -262,6 +269,8 @@ public class GameplayScreen extends Screen {
                 Explosion ex = new Explosion(.5f, .01f, playerPos);
                 explosions.add(ex);
                 crash(val);
+                if(player.state != Entity.State.FatalCrash)
+                    player.lastHitBy = -1;
                 if (player.health > 0) {
                     player.health -= .21f;
                 } else if (player.health < 0) {
@@ -314,7 +323,7 @@ public class GameplayScreen extends Screen {
     }
 
     public void Update() {
-        moveXYZ(0.5f, 0);
+//        moveXYZ(0.5f, 0);
 
         //Logic to handle camera movement in different states of animation / gameplay
         if (player.state == Entity.State.Invincible || player.state == Entity.State.Alive) {
@@ -327,6 +336,7 @@ public class GameplayScreen extends Screen {
                 player.state = Entity.State.Dead;
                 Explosion ex = new Explosion(.5f, .05f, player.fatalCrashPos);
                 explosions.add(ex);
+                player.score--;
                 spawnPlayer();
             }
         }
@@ -596,7 +606,7 @@ public class GameplayScreen extends Screen {
         enemies.put((byte)-(enemies.size() + 1), enemy);
     }
 
-    private void spawnPlayer() {
+    protected void spawnPlayer() {
         player.Initialize();
         Vector3f temp = randomizePosition();
         cam = new Camera(new Vector3f(temp.x, -temp.y, temp.z));

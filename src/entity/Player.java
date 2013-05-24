@@ -24,7 +24,8 @@ public class Player extends Entity {
     public float boundaryDirection;
     private boolean crashed, posTilt;
     private int crashTilt;
-    public int score;
+    public int score = 0;
+    public byte lastHitBy;
 
     public Player(Model model) {
         super(model);
@@ -36,7 +37,7 @@ public class Player extends Entity {
 
     public void Update() {
         if (state == State.Dead) {
-            score--;
+//            score--;
             respawn();
         }
 
@@ -97,7 +98,6 @@ public class Player extends Entity {
         state = State.Alive;
         fatalCrashPos = new Vector3f();
         offset = new Vector3f();
-        score = 0;
         health = 1;
         model.updatePosition(0,0,-5);
         health = 1;
