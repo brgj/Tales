@@ -47,7 +47,8 @@ public class Player extends Entity {
         } else {
             if (crashed)
                 doCrash();
-            model.updateRotation(-hud.crosshairPos.y * .1f, -hud.crosshairPos.x * .1f, -hud.crosshairPos.x * .1f);
+            else
+                model.updateRotation(-hud.crosshairPos.y * .1f, -hud.crosshairPos.x * .1f, -hud.crosshairPos.x * .1f);
         }
     }
 

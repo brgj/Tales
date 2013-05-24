@@ -249,7 +249,7 @@ public class MultiGameScreen extends GameplayScreen {
             }
         }
 
-        lasers.add(new LaserBeam(new Vector3f(fArr[0], fArr[1], fArr[2]), fArr[3], fArr[4], id));
+        lasers.add(new LaserBeam(new Vector3f(fArr[0], fArr[1], fArr[2]), fArr[3], fArr[4], id, 1));
     }
 
     private void updateScore(byte id, byte[] data) {

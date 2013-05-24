@@ -91,19 +91,24 @@ public class Terrain extends Model {
         }
     }
 
-    public boolean checkHeightMap(Vector3f vec, float radius) {
+    public int checkHeightMap(Vector3f vec, float radius) {
         return checkHeightMap(new Point((int) vec.x, (int) vec.z), vec.y, radius);
     }
 
-    public boolean checkHeightMap(Point p, float y, float radius) {
+    public int checkHeightMap(Point p, float y, float radius) {
         if (!heightMap.containsKey(p)) {
             p = findClosestMatch(p, radius);
             if (y - radius < minY)
-                return true;
+                return 1;
             else if (p == null)
-                return false;
+                return 0;
         }
-        return heightMap.get(p) > y - radius;
+        float yVal = heightMap.get(p);
+        int result = 0;
+        if(yVal > y - radius) {
+            result = yVal > y ? 2 : 1;
+        }
+        return result;
     }
 
     private Point findClosestMatch(Point point, float radius) {

@@ -32,8 +32,7 @@ public class AI {
                 target.getZ() - pos.getZ());
 //        calculate the new pitch and yaw
         model.yaw = (float) Math.toDegrees(calculateYaw(ET));
-        model.pitch = (float) Math.toDegrees(calculatePitch(new Vector3f(ET.x, ET.y, Math.abs(ET.z))));
-
+        model.pitch = (float) Math.toDegrees(calculatePitch(ET));
 
         double radPitch = Math.toRadians(model.pitch);
         double radYaw = Math.toRadians(model.yaw);
@@ -49,7 +48,7 @@ public class AI {
     }
 
     private float calculatePitch(Vector3f v) {
-        float temp = v.getZ();
+        float temp = Math.abs(v.getZ());
         if(temp < 5) {
             temp = 5;
         }

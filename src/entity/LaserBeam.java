@@ -26,7 +26,7 @@ public class LaserBeam extends Entity {
     public Vector3f origin;
     public Vector3f initialDir = new Vector3f(0.0f, 0.0f, 1.0f);
     public Vector3f position;
-    public Texture material = GLHelper.LoadTexture("png", "images/glow/laser3.png");
+    static public Texture material = GLHelper.LoadTexture("png", "images/glow/laser3.png");
     public float movement;
     public float speed;
     public float yaw;
@@ -35,9 +35,11 @@ public class LaserBeam extends Entity {
     public int timecounter;
     public byte ownerID;
     public boolean isExpired;
+    private int multiplier;
 
     public LaserBeam(Camera cam, Vector3f offset, HUD hud) {
-        this.origin = (Vector3f.sub(cam.getPosition(), offset, origin));
+        origin = new Vector3f();
+        Vector3f.sub(cam.getPosition(), offset, origin);
         movement = 0.0f;
         initial = Sys.getTime();
         timecounter = 0;
@@ -47,10 +49,11 @@ public class LaserBeam extends Entity {
         pitch = cam.getPitch();
         position = new Vector3f(origin);
         isExpired = false;
+        multiplier = 1;
         Initialize(hud.crosshairPos);
     }
 
-    public LaserBeam(Vector3f origin, float yaw, float pitch, byte id) {
+    public LaserBeam(Vector3f origin, float yaw, float pitch, byte id, int multiplier) {
         this.origin = origin;
         movement = 0.0f;
         initial = Sys.getTime();
@@ -62,6 +65,7 @@ public class LaserBeam extends Entity {
         position = new Vector3f(origin);
         isExpired = false;
         ownerID = id;
+        this.multiplier = multiplier;
     }
 
     public void Initialize(Vector2f chPosition) {
@@ -108,7 +112,7 @@ public class LaserBeam extends Entity {
         //Updates the position of the laser
         double rad = Math.toRadians(yaw);
         position.x -= speed * (float) Math.sin(rad);
-        position.z += speed * (float) Math.cos(rad);
+        position.z += (speed * (float) Math.cos(rad)) * multiplier;
         rad = Math.toRadians(pitch);
         position.y += speed * (float) Math.sin(rad);
 
@@ -137,16 +141,16 @@ public class LaserBeam extends Entity {
             glTexCoord2f(1, 1);
             glVertex3f(x, y+0.1f, z - 2.0f);  */
             glTexCoord2f(1, 0);
-            glVertex3f(rot[0].x, y , rot[0].z );
+            glVertex3f(rot[0].x, y , -rot[0].z );
 
             glTexCoord2f(0, 0);
-            glVertex3f(rot[1].x, y , rot[1].z );
+            glVertex3f(rot[1].x, y , -rot[1].z );
 
             glTexCoord2f(0, 1);
-            glVertex3f(rot[2].x, y , rot[2].z);
+            glVertex3f(rot[2].x, y , -rot[2].z);
 
             glTexCoord2f(1, 1);
-            glVertex3f(rot[3].x, y , rot[3].z);
+            glVertex3f(rot[3].x, y , -rot[3].z);
 
         }
         glColor4f(0.0f, 1.0f, 0.0f, 0.8f);
@@ -178,16 +182,16 @@ public class LaserBeam extends Entity {
             glTexCoord2f(1, 1);
             glVertex3f(x + 0.1f, y + 0.1f, z  - 2.0f);*/
             glTexCoord2f(1, 0);
-            glVertex3f(rot[0].x, y , rot[0].z );
+            glVertex3f(rot[0].x, y , -rot[0].z );
 
             glTexCoord2f(0, 0);
-            glVertex3f(rot[1].x, y , rot[1].z );
+            glVertex3f(rot[1].x, y , -rot[1].z );
 
             glTexCoord2f(0, 1);
-            glVertex3f(rot[2].x, y  , rot[2].z);
+            glVertex3f(rot[2].x, y  , -rot[2].z);
 
             glTexCoord2f(1, 1);
-            glVertex3f(rot[3].x, y , rot[3].z);
+            glVertex3f(rot[3].x, y , -rot[3].z);
 
         }
 

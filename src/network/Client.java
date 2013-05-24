@@ -19,7 +19,10 @@ public class Client {
     /**
      * Maps specific actions and their owners to an array of bytes representing details of those actions
      * 0: Chat message
-     * 1: ID message
+     * 1: Movement
+     * 2: Laser
+     * 3: Score
+     * 4: Disconnect
      */
     private final Map<Byte, byte[]> actionMap;
     private Sender sender;
@@ -44,6 +47,8 @@ public class Client {
         }
         // Creates a Receiver object based on the DatagramSocket created in the sender
         receiver = new ReceiverThread(sender.getSocket(), messageQueue, actionMap);
+        // Sends an initial message to the server announcing client's arrival
+        sendMessage("Connected");
         // Start polling the server for messages
         receiver.start();
     }

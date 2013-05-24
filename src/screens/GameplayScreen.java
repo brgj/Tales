@@ -210,7 +210,7 @@ public class GameplayScreen extends Screen {
                         //Explosion ex = new Explosion(1, playerPos);
                         //explosions.add(ex);
                         tempEnemyCollide = true;
-                        crash();
+                        crash(2);
                         if (player.health > 0) {
                             player.health -= .01f;
                         } else if (player.health < 0) {
@@ -240,7 +240,6 @@ public class GameplayScreen extends Screen {
             // Player laser collision
             for (LaserBeam laser : lasers) {
                 if (laser.ownerID != -50 && CheckCollision2(laser.getPosition(), playerPos, laser.radius, player.radius)) {
-
                     //Create explosion on collision and delete laser
                     Explosion ex = new Explosion(.5f, .01f, playerPos);
                     explosions.add(ex);
@@ -249,9 +248,10 @@ public class GameplayScreen extends Screen {
             }
 
             //Terrain Collision
-            if (terrain.checkHeightMap(playerPos, player.radius)) {
+            int val = terrain.checkHeightMap(playerPos, player.radius);
+            if (val != 0) {
                 tempTerrainCollide = true;
-                crash();
+                crash(val);
             } else {
                 tempTerrainCollide = false;
             }
@@ -298,9 +298,7 @@ public class GameplayScreen extends Screen {
                         new Vector3f(-enemy.model.transX, -enemy.model.transY, -enemy.model.transZ),
                         enemy.model.yaw,
                         enemy.model.pitch,
-                        id);
-                System.out.println("Enemy pitch, yaw: " +enemy.model.pitch + ", "+ enemy.model.yaw);
-                System.out.println("Laser pitch, yaw: " +temp.pitch + ", " + temp.yaw);
+                        id, -1);
                 lasers.add(temp);
             }
         }
@@ -352,8 +350,16 @@ public class GameplayScreen extends Screen {
         lasers.add(temp);
     }
 
-    private void crash() {
-        //moveXYZ(5.0f, 180);
+    private void crash(int val) {
+        if(val == 1) {
+            cam.setPitch(-5);
+        } else {
+            if(cam.getYaw() > 0)
+                cam.setYaw(20);
+            else
+                cam.setYaw(-20);
+            //moveXYZ(5.0f, 180);
+        }
         player.crash();
     }
 
