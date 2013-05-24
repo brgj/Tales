@@ -23,15 +23,10 @@ public class Player extends Entity {
     public Boolean turning, rollActive;
     public float boundaryDirection;
     private boolean crashed, posTilt;
-<<<<<<< Updated upstream
-    private int crashTilt;
     public int score = 0;
     public byte lastHitBy;
-=======
     private int crashTilt, barrelRollTilt;
-    public int score;
     private float brCooldown, invincibleTime;
->>>>>>> Stashed changes
 
     public Player(Model model) {
         super(model);
@@ -42,7 +37,6 @@ public class Player extends Entity {
     }
 
     public void Update() {
-        System.out.println(model.pitch);
         if (state == State.Dead) {
 //            score--;
             respawn();
@@ -65,14 +59,10 @@ public class Player extends Entity {
         {
             if (crashed)
                 doCrash();
-<<<<<<< Updated upstream
-            else if(state == State.Turning)
-=======
             if(turning)
->>>>>>> Stashed changes
                 doTurn();
-            else
-                model.updateRotation(-hud.crosshairPos.y * .1f, -hud.crosshairPos.x * .1f, -hud.crosshairPos.x * .1f);
+
+            model.updateRotation(-hud.crosshairPos.y * .1f, -hud.crosshairPos.x * .1f, -hud.crosshairPos.x * .1f);
         }
     }
 
@@ -89,7 +79,6 @@ public class Player extends Entity {
         {
             brCooldown = Sys.getTime();
             barrelRollTilt = 0;
-            model.updateRotation(model.pitch, model.yaw, 0);
         }
     }
 
@@ -124,10 +113,10 @@ public class Player extends Entity {
 
     private void doABarrelRoll()
     {
-        if(Math.round(model.roll) % 360 == 1)
+        if(barrelRollTilt < 60)
         {
             barrelRollTilt++;
-            model.updateRotation(model.pitch, model.yaw, model.roll+ 15);
+            model.updateRotation(model.pitch, model.yaw, model.roll+ 6f);
         }
     }
 

@@ -88,13 +88,9 @@ public class GameplayScreen extends Screen {
         //load the model
         player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f));
         enemies = new HashMap<Byte, Enemy>();
-<<<<<<< Updated upstream
-        terrain = new Terrain("data/terrain/terrain_final_2.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f);
+        terrain = new Terrain("data/terrain/untitled.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f);
         mountain = new Model("data/terrain/mountain.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.2f, 0.0f);
-=======
-        terrain = new Terrain("data/terrain/terrain.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f);
         //mountain = new Model("data/terrain/mountain.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.2f, 0.0f);
->>>>>>> Stashed changes
 
         lasers = new ArrayList<LaserBeam>();
         explosions = new ArrayList<Explosion>();
@@ -208,17 +204,9 @@ public class GameplayScreen extends Screen {
                         explosions.add(ex);
                         tempEnemyCollide = true;
                         crash(2);
-<<<<<<< Updated upstream
                         player.lastHitBy = id;
-                        if (player.health > 0) {
-                            player.health -= .21f;
-                        } else if (player.health < 0) {
-                            player.health = 0;
-                        }
-=======
                         if (player.health > 0)
                             player.setHealth(.21f);
->>>>>>> Stashed changes
                         if(enemy.isAI()) {
                             spawnEnemy(enemy);
                         }
@@ -264,17 +252,9 @@ public class GameplayScreen extends Screen {
                     laser.isExpired = true;
 
                     crash(0);
-<<<<<<< Updated upstream
                     player.lastHitBy = laser.ownerID;
-                    if (player.health > 0) {
-                        player.health -= .21f;
-                    } else if (player.health < 0) {
-                        player.health = 0;
-                    }
-=======
                     if (player.health > 0)
                         player.setHealth(.21f);
->>>>>>> Stashed changes
                 }
             }
 
@@ -285,18 +265,10 @@ public class GameplayScreen extends Screen {
                 Explosion ex = new Explosion(.5f, .01f, playerPos);
                 explosions.add(ex);
                 crash(val);
-<<<<<<< Updated upstream
                 if(player.state != Entity.State.FatalCrash)
                     player.lastHitBy = -1;
-                if (player.health > 0) {
-                    player.health -= .21f;
-                } else if (player.health < 0) {
-                    player.health = 0;
-                }
-=======
                 if (player.health > 0)
                     player.setHealth(.21f);
->>>>>>> Stashed changes
             } else {
                 tempTerrainCollide = false;
             }
