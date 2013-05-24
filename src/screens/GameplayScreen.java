@@ -88,8 +88,13 @@ public class GameplayScreen extends Screen {
         //load the model
         player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f));
         enemies = new HashMap<Byte, Enemy>();
+<<<<<<< Updated upstream
         terrain = new Terrain("data/terrain/terrain_final_2.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f);
         mountain = new Model("data/terrain/mountain.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.2f, 0.0f);
+=======
+        terrain = new Terrain("data/terrain/terrain.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f);
+        //mountain = new Model("data/terrain/mountain.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.2f, 0.0f);
+>>>>>>> Stashed changes
 
         lasers = new ArrayList<LaserBeam>();
         explosions = new ArrayList<Explosion>();
@@ -105,6 +110,8 @@ public class GameplayScreen extends Screen {
     }
 
     public void Render() {
+        System.out.println(player.state);
+        System.out.println(player.turning);
         // Clear colour and depth buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -201,12 +208,17 @@ public class GameplayScreen extends Screen {
                         explosions.add(ex);
                         tempEnemyCollide = true;
                         crash(2);
+<<<<<<< Updated upstream
                         player.lastHitBy = id;
                         if (player.health > 0) {
                             player.health -= .21f;
                         } else if (player.health < 0) {
                             player.health = 0;
                         }
+=======
+                        if (player.health > 0)
+                            player.setHealth(.21f);
+>>>>>>> Stashed changes
                         if(enemy.isAI()) {
                             spawnEnemy(enemy);
                         }
@@ -252,12 +264,17 @@ public class GameplayScreen extends Screen {
                     laser.isExpired = true;
 
                     crash(0);
+<<<<<<< Updated upstream
                     player.lastHitBy = laser.ownerID;
                     if (player.health > 0) {
                         player.health -= .21f;
                     } else if (player.health < 0) {
                         player.health = 0;
                     }
+=======
+                    if (player.health > 0)
+                        player.setHealth(.21f);
+>>>>>>> Stashed changes
                 }
             }
 
@@ -268,6 +285,7 @@ public class GameplayScreen extends Screen {
                 Explosion ex = new Explosion(.5f, .01f, playerPos);
                 explosions.add(ex);
                 crash(val);
+<<<<<<< Updated upstream
                 if(player.state != Entity.State.FatalCrash)
                     player.lastHitBy = -1;
                 if (player.health > 0) {
@@ -275,6 +293,10 @@ public class GameplayScreen extends Screen {
                 } else if (player.health < 0) {
                     player.health = 0;
                 }
+=======
+                if (player.health > 0)
+                    player.setHealth(.21f);
+>>>>>>> Stashed changes
             } else {
                 tempTerrainCollide = false;
             }
@@ -293,7 +315,7 @@ public class GameplayScreen extends Screen {
             }
 
             int boundaryHit = terrain.checkBoundary(playerPos);
-            if(boundaryHit != -1 && player.state != Entity.State.Turning)
+            if(boundaryHit != -1)
             {
                 int destination;
                 float yaw = cam.getYaw();
@@ -301,7 +323,8 @@ public class GameplayScreen extends Screen {
                 if(yaw < 0)
                     yaw = 360 - (yaw * -1);
 
-                player.state = Entity.State.Turning;
+                player.turning = true;
+                player.state = Entity.State.Invincible;
                 destination = (boundaryHit + 180) % 360;
                 if(destination == 0)
                     destination = 1;
@@ -325,7 +348,7 @@ public class GameplayScreen extends Screen {
         moveXYZ(0.7f, 0);
 
         //Logic to handle camera movement in different states of animation / gameplay
-        if (player.state == Entity.State.Invincible || player.state == Entity.State.Alive) {
+        if ((player.state == Entity.State.Invincible || player.state == Entity.State.Alive) && !player.turning) {
             rotate(0.005f, player.hud);
         }
         //Camera follows ship slightly down when destroyed
@@ -340,14 +363,17 @@ public class GameplayScreen extends Screen {
             }
         }
         //Logic to handle boundaries
-        else if(player.state == Entity.State.Turning)
+        else if(player.turning)
         {
             if(checkCorrectDirection())
             {
+                player.hud.crosshairReset();
                 if(terrain.checkBoundary(playerPos) == -1)
+                {
                     player.state = Entity.State.Alive;
-                    player.hud.crosshairReset();
+                    player.turning = false;
                 }
+            }
             else
             {
                 cam.setYaw(.005f * player.hud.crosshairPos.x);
@@ -382,7 +408,7 @@ public class GameplayScreen extends Screen {
             Exit();
             return;
         }
-        if (player.state == Entity.State.Alive || player.state == Entity.State.Invincible) {
+        if ((player.state == Entity.State.Alive || player.state == Entity.State.Invincible) && !player.turning) {
             if (Mouse.isButtonDown(0)) {
                 if (!lastFired)
                     shootLaser();
@@ -401,6 +427,9 @@ public class GameplayScreen extends Screen {
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
                 moveXYZ(0.3f, 180);
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+                player.barrelRoll();
             }
         }
     }

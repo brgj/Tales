@@ -2,6 +2,7 @@ package entity;
 
 import display.HUD;
 import environment.Model;
+import org.lwjgl.Sys;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
@@ -19,11 +20,18 @@ public class Player extends Entity {
     public float health;
     public Vector3f fatalCrashPos;
     public Vector3f offset;
+    public Boolean turning, rollActive;
     public float boundaryDirection;
     private boolean crashed, posTilt;
+<<<<<<< Updated upstream
     private int crashTilt;
     public int score = 0;
     public byte lastHitBy;
+=======
+    private int crashTilt, barrelRollTilt;
+    public int score;
+    private float brCooldown, invincibleTime;
+>>>>>>> Stashed changes
 
     public Player(Model model) {
         super(model);
@@ -34,6 +42,7 @@ public class Player extends Entity {
     }
 
     public void Update() {
+        System.out.println(model.pitch);
         if (state == State.Dead) {
 //            score--;
             respawn();
@@ -42,10 +51,25 @@ public class Player extends Entity {
         if (health <= 0 && state != State.Dead) {
             state = State.FatalCrash;
             doFatalCrash();
-        } else {
+        }
+        if((Sys.getTime() - brCooldown) / 1000 < 2)
+        {
+            state = State.Invincible;
+            doABarrelRoll();
+        }
+        else if(state == State.Invincible && !turning)
+        {
+            state = State.Alive;
+        }
+        else
+        {
             if (crashed)
                 doCrash();
+<<<<<<< Updated upstream
             else if(state == State.Turning)
+=======
+            if(turning)
+>>>>>>> Stashed changes
                 doTurn();
             else
                 model.updateRotation(-hud.crosshairPos.y * .1f, -hud.crosshairPos.x * .1f, -hud.crosshairPos.x * .1f);
@@ -58,6 +82,15 @@ public class Player extends Entity {
 
     public void crash() {
         crashed = true;
+    }
+    public void barrelRoll()
+    {
+        if((Sys.getTime() - brCooldown) / 1000 > 5)
+        {
+            brCooldown = Sys.getTime();
+            barrelRollTilt = 0;
+            model.updateRotation(model.pitch, model.yaw, 0);
+        }
     }
 
     private void doTurn()
@@ -89,10 +122,29 @@ public class Player extends Entity {
         model.updateRotation(crashPitch, 0.0f, crashTilt);
     }
 
+    private void doABarrelRoll()
+    {
+        if(Math.round(model.roll) % 360 == 1)
+        {
+            barrelRollTilt++;
+            model.updateRotation(model.pitch, model.yaw, model.roll+ 15);
+        }
+    }
+
+    public void setHealth(float value)
+    {
+        if(state != State.Invincible)
+        {
+            health -= value;
+        }
+    }
+
     public void Initialize() {
         super.Initialize();
         hud = new HUD();
         posTilt = false;
+        turning = false;
+        rollActive = true;
         crashTilt = 0;
         state = State.Alive;
         fatalCrashPos = new Vector3f();
@@ -101,6 +153,7 @@ public class Player extends Entity {
         model.updatePosition(0,0,-5);
         health = 1;
         model.updatePosition(0,0,-5);
+        brCooldown = Sys.getTime();
     }
 
     public void setOffset(float yaw, float pitch, Vector3f pos) {

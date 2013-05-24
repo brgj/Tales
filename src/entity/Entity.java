@@ -36,7 +36,6 @@ public abstract class Entity {
     public enum State
     {
         Invincible,
-        Turning,
         FatalCrash,
         Dead,
         Alive

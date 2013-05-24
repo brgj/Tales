@@ -129,15 +129,36 @@ public class Terrain extends Model {
     //Returns the pitch angle of the wall if it is beyond it. Otherwise return -1
     public int checkBoundary(Vector3f playerPos)
     {
+        int max = -1;
         if(playerPos.x > maxX)
-            return 90;
+        {
+            if(Math.abs(maxX - playerPos.x) > max)
+            {
+                max = 90;
+            }
+        }
         if(playerPos.x <= minX)
-            return 270;
+        {
+            if(Math.abs(minX - playerPos.x) > max)
+            {
+                max = 270;
+            }
+        }
         if(playerPos.z > maxZ)
-            return 180;
+        {
+            if(Math.abs(maxZ - playerPos.z) > max)
+            {
+                max = 180;
+            }
+        }
         if(playerPos.z <= minZ)
-            return 0;
-        return -1;
+        {
+            if(Math.abs(minZ - playerPos.z) > max)
+            {
+                max = 0;
+            }
+        }
+        return max;
     }
 
     public float getMinX() {
