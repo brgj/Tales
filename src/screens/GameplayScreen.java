@@ -88,7 +88,7 @@ public class GameplayScreen extends Screen {
         //load the model
         player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f));
         enemies = new HashMap<Byte, Enemy>();
-        terrain = new Terrain("data/terrain/untitled.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f);
+        terrain = new Terrain("data/terrain/terrain.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f);
         mountain = new Model("data/terrain/mountain.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.2f, 0.0f);
         //mountain = new Model("data/terrain/mountain.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.2f, 0.0f);
 
@@ -106,8 +106,6 @@ public class GameplayScreen extends Screen {
     }
 
     public void Render() {
-        System.out.println(player.state);
-        System.out.println(player.turning);
         // Clear colour and depth buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -587,7 +585,6 @@ public class GameplayScreen extends Screen {
                 x = minX;
                 break;
         }
-        System.out.println("Respawn Point: " + x + ", " + y + ", " + z);
         return new Vector3f(x, y, z);
     }
 
