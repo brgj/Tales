@@ -44,6 +44,7 @@ public class GameplayScreen extends Screen {
     static boolean lastFired = false;
     Camera cam;
     Terrain terrain;
+    Model mountain;            // surround boundary and doesnt do anything
     Player player;
     Background background;
     Light l;
@@ -87,7 +88,8 @@ public class GameplayScreen extends Screen {
         player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f));
         enemies = new HashMap<Byte, Enemy>();
         enemies.put((byte) -1, new Enemy(new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -7.5f), new AI()));
-        terrain = new Terrain("data/terrain/terrain.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f);
+        terrain = new Terrain("data/terrain/terrain_final.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f);
+        mountain = new Model("data/terrain/mountain.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.2f, 0.0f);
         laser1 = new Laser(cam);
 
         lasers = new ArrayList<LaserBeam>();
@@ -153,9 +155,13 @@ public class GameplayScreen extends Screen {
             {
                 terrain.transform();
                 terrain.render();
+                mountain.render();
             }
             glPopMatrix();
-
+            glPushMatrix();
+            {
+            }
+            glPopMatrix();
             //Render active lasers and perform cleanup
             glPushMatrix();
             {
