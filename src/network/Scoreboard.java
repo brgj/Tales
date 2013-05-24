@@ -74,7 +74,7 @@ public class Scoreboard {
     private void drawText() {
         int i = 1;
         for (byte id : scores.keySet()) {
-            scoreFont.drawString(0, i * 22, "Enemy " + id + ": " + scores.get(id), org.newdawn.slick.Color.white);
+            scoreFont.drawString(0, i++ * 22, "Enemy " + id + ": " + scores.get(id), org.newdawn.slick.Color.white);
         }
         scoreFont.drawString(0, 0, "You: " + myScore, org.newdawn.slick.Color.yellow);
     }
