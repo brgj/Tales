@@ -19,7 +19,7 @@ public class AI {
     private long startTime;
 
     public AI() {
-        speed = 0.1f;
+        speed = 0.25f;
         isShooting = false;
         shotTime = 0;
         target = new Vector3f(0.0f, 0.0f, 0.0f);
@@ -41,7 +41,7 @@ public class AI {
                 pos.getZ() + (speed * (float)Math.cos(radYaw)));
 
         // checks to see if the ai is close enough to the player to shoot
-        if(calcTargetDistance(ET) < 15.0f && timePassed(0.3f))
+        if(calcTargetDistance(ET) < 25.0f && timePassed(0.1f))
             isShooting = true;
         else
             isShooting = false;
@@ -83,4 +83,6 @@ public class AI {
         float timeDelta = (System.currentTimeMillis() - startTime )/ 1000;
         return sec < timeDelta;
     }
+
+
 }

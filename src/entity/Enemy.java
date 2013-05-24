@@ -5,6 +5,8 @@ import environment.Model;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
 
+import java.util.Random;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Owner

@@ -6,6 +6,8 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import java.util.Random;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Owner
@@ -24,12 +26,7 @@ public class Player extends Entity {
 
     public Player(Model model) {
         super(model);
-        hud = new HUD();
-        posTilt = false;
-        crashTilt = 0;
-        state = State.Alive;
-        fatalCrashPos = new Vector3f();
-        offset = new Vector3f();
+        Initialize();
     }
 
     public void Render() {
@@ -86,7 +83,14 @@ public class Player extends Entity {
 
     public void Initialize() {
         super.Initialize();
-        health = 1f;
+        hud = new HUD();
+        posTilt = false;
+        crashTilt = 0;
+        state = State.Alive;
+        fatalCrashPos = new Vector3f();
+        offset = new Vector3f();
+        health = 1;
+        model.updatePosition(0,0,-5);
     }
 
     public void setOffset(float yaw, float pitch, Vector3f pos) {
@@ -106,4 +110,6 @@ public class Player extends Entity {
 
         offset = new Vector3f(position.x, position.y, -position.z);
     }
+
+
 }

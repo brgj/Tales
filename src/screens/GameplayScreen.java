@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Random;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -222,11 +223,13 @@ public class GameplayScreen extends Screen {
                     for (LaserBeam laser : lasers) {
                         if (enemies.get(laser.ownerID) != enemy && CheckCollision2(laser.getPosition(), enemy.getPosition(),
                                 laser.radius, enemy.radius)) {
-
                             //Create explosion on collision and delete laser
                             Explosion ex = new Explosion(.5f, .01f, enemy.getPosition());
                             explosions.add(ex);
                             laser.isExpired = true;
+                            enemy.Initialize();
+                            Vector3f temp = randomizePosition();
+                            enemy.model.updatePosition(temp.x, temp.y, temp.z);
                         }
                     }
 
@@ -278,7 +281,12 @@ public class GameplayScreen extends Screen {
                 player.state = Entity.State.Dead;
                 Explosion ex = new Explosion(.5f, .05f, player.fatalCrashPos);
                 explosions.add(ex);
+                player.Initialize();
+                Vector3f temp = randomizePosition();
+                cam = new Camera(new Vector3f(temp.x, -temp.y, temp.z));
+                cam.initializePitchYaw();
             }
+
         }
 
         player.Update();
@@ -492,4 +500,32 @@ public class GameplayScreen extends Screen {
         return dist <= minDist * minDist;
     }
 
+    private Vector3f randomizePosition(float maxX, float maxY, float maxZ, float minX, float minZ){
+        Random rand = new Random();
+        int wallNum = rand.nextInt(4);
+        float x = rand.nextInt((int)maxX - 25) +25 ,
+                y = rand.nextInt((int)maxY),
+                z = rand.nextInt((int)maxZ - 25) +25;
+        switch(wallNum){
+            case 0:
+                z = minZ;
+                break;
+            case 1:
+                x = maxX;
+                break;
+            case 2:
+                z = maxZ;
+                break;
+            case 3:
+                x = minX;
+                break;
+        }
+        System.out.println("Respawn Point: " + x + ", " + y + ", " + z);
+        return new Vector3f(x, y, z);
+    }
+
+    private Vector3f randomizePosition(){
+        return randomizePosition(terrain.getMaxX(), terrain.getMaxY(), terrain.getMaxZ(),
+                terrain.getMinX(), terrain.getMinZ());
+    }
 }

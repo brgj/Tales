@@ -132,5 +132,8 @@ public class Camera {
         this.roll += roll;
     }
 
+    public void initializePitchYaw(){
+        this.yaw = -(float)Math.toDegrees(Math.atan2(position.z, -position.x)) -90;
+    }
     //endregion
 }
