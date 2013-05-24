@@ -46,7 +46,7 @@ public class Player extends Entity {
             state = State.FatalCrash;
             doFatalCrash();
         }
-        if((Sys.getTime() - brCooldown) / 1000 < 2)
+        else if((Sys.getTime() - brCooldown) / 1000 < 2)
         {
             state = State.Invincible;
             doABarrelRoll();
@@ -142,6 +142,7 @@ public class Player extends Entity {
         model.updatePosition(0,0,-5);
         health = 1;
         model.updatePosition(0,0,-5);
+        model.updateRotation(0, 0, 0);
         brCooldown = Sys.getTime();
     }
 
