@@ -114,6 +114,7 @@ public class Camera {
 
     public void setYaw(float yaw) {
         this.yaw += yaw;
+        this.yaw %= 360;
     }
 
     public float getPitch() {

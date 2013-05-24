@@ -21,6 +21,7 @@ public class Player extends Entity {
     public float health;
     public Vector3f fatalCrashPos;
     public Vector3f offset;
+    public float boundaryDirection;
     private boolean crashed, posTilt;
     private int crashTilt;
     public int score;
@@ -45,8 +46,9 @@ public class Player extends Entity {
         } else {
             if (crashed)
                 doCrash();
-            else
-                model.updateRotation(-hud.crosshairPos.y * .1f, -hud.crosshairPos.x * .1f, -hud.crosshairPos.x * .1f);
+            if(state == State.Turning)
+                doTurn();
+            model.updateRotation(-hud.crosshairPos.y * .1f, -hud.crosshairPos.x * .1f, -hud.crosshairPos.x * .1f);
         }
     }
 
@@ -56,6 +58,11 @@ public class Player extends Entity {
 
     public void crash() {
         crashed = true;
+    }
+
+    private void doTurn()
+    {
+        hud.setCrosshairX((int)(boundaryDirection / Math.abs(boundaryDirection)));
     }
 
     private void doFatalCrash() {

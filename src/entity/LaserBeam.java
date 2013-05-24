@@ -97,8 +97,8 @@ public class LaserBeam extends Entity {
     }
 
     public void Render() {
-        renderLeft();
-        renderRight();
+        //renderLeft();
+        //renderRight();
     }
 
     public void Update() {

@@ -20,7 +20,7 @@ public class Explosion {
     float scale;
     float speed;
     Vector3f position;
-    static Texture texture = GLHelper.LoadTexture("png", "images/explosion.png");
+    Texture texture = GLHelper.LoadTexture("png", "images/explosion.png");
     public long initial;
 
     public Explosion(float scale, float speed, Vector3f position) {
@@ -28,30 +28,15 @@ public class Explosion {
         this.speed = speed;
         this.scale = scale;
         this.position = new Vector3f(position);
-        initial = Sys.getTime();
         Initialize();
     }
 
     public void Initialize() {
-
-    }
-
-    public void reset() {
-        this.alpha = 1.0f;
-        this.scale = 0.5f;
     }
 
     public float getAlpha()
     {
         return alpha;
-    }
-
-    public void resetTime() {
-        this.initial = Sys.getTime();
-    }
-
-    public int getTimepassed() {
-        return (int) ((Sys.getTime() - this.initial) / 1000);
     }
 
     public void render() {
@@ -110,110 +95,5 @@ public class Explosion {
             glDisable(GL_BLEND);
         }
         glPopAttrib();
-        /*glPushAttrib(GL_ENABLE_BIT);
-        {
-            glEnable(GL_BLEND);
-            glEnable(GL_TEXTURE_2D);
-            glDisable(GL_DEPTH_TEST);
-            glEnable(GL_LIGHTING);
-            if (alpha >= 0) {
-                glPushMatrix();
-                alpha -= 0.01f;
-                scale += 0.03f;
-
-                glColor4f(1, 1, 0, alpha);
-                glScalef(scale, scale, scale);
-
-//                glTranslatef(position.getX() / scale,
-//                        position.getY() / scale,
-//                        position.getZ() / scale);
-
-                texture.bind();
-                glBegin(GL_QUADS);
-                {
-                    glTexCoord2f(0, 0);
-                    glVertex3f(50, 50, 50);
-                    glTexCoord2f(1, 0);
-                    glVertex3f(-50, 50, 50);
-                    glTexCoord2f(1, 1);
-                    glVertex3f(-50, -50, 50);
-                    glTexCoord2f(0, 1);
-                    glVertex3f(50, -50, 50);
-                }
-                glEnd();
-
-                glBegin(GL_QUADS);
-                {
-                    glRotatef(90, 0.0f, 1f, 0.0f);
-                    glTexCoord2f(0, 0);
-                    glVertex3f(50, 50, 50);
-                    glTexCoord2f(1, 0);
-                    glVertex3f(-50, 50, 50);
-                    glTexCoord2f(1, 1);
-                    glVertex3f(-50, -50, 50);
-                    glTexCoord2f(0, 1);
-                    glVertex3f(50, -50, 50);
-                }
-                glEnd();
-
-                glPopMatrix();
-            }
-            glDisable(GL_BLEND);
-            glEnable(GL_DEPTH_TEST);
-        }
-        glPopAttrib();      */
-       /*glPushAttrib(GL_ENABLE_BIT);
-        {
-            glEnable(GL_BLEND);
-            glEnable(GL_TEXTURE_2D);
-            glDisable(GL_DEPTH_TEST);
-            glEnable(GL_LIGHTING);
-            if (alpha >= 0) {
-                glPushMatrix();
-                alpha -= 0.01f;
-                scale += 0.03f;
-
-                glColor4f(1, 1, 0, alpha);
-                glScalef(scale, scale, scale);
-
-//                glTranslatef(position.getX() / scale,
-//                        position.getY() / scale,
-//                        position.getZ() / scale);
-
-                texture.bind();
-                glBegin(GL_QUADS);
-                {
-                    glTexCoord2f(0, 0);
-                    glVertex3f(50, 50, 50);
-                    glTexCoord2f(1, 0);
-                    glVertex3f(-50, 50, 50);
-                    glTexCoord2f(1, 1);
-                    glVertex3f(-50, -50, 50);
-                    glTexCoord2f(0, 1);
-                    glVertex3f(50, -50, 50);
-                }
-                glEnd();
-
-                glBegin(GL_QUADS);
-                {
-                    glRotatef(90, 0.0f, 1f, 0.0f);
-                    glTexCoord2f(0, 0);
-                    glVertex3f(50, 50, 50);
-                    glTexCoord2f(1, 0);
-                    glVertex3f(-50, 50, 50);
-                    glTexCoord2f(1, 1);
-                    glVertex3f(-50, -50, 50);
-                    glTexCoord2f(0, 1);
-                    glVertex3f(50, -50, 50);
-                }
-                glEnd();
-
-                glPopMatrix();
-            }
-            glDisable(GL_BLEND);
-            glEnable(GL_DEPTH_TEST);
-        }
-        glPopAttrib();      */
     }
-    //TODO: Displose of explosion properly after use (when alpha < 0)
 }

@@ -43,6 +43,7 @@ public class GameplayScreen extends Screen {
     static boolean tempEnemyCollide = false;
     static boolean tempTerrainCollide = false;
     static boolean lastFired = false;
+    Vector3f playerPos;
     Camera cam;
     Terrain terrain;
     Model mountain;            // surround boundary and doesnt do anything
@@ -107,7 +108,7 @@ public class GameplayScreen extends Screen {
         glMatrixMode(GL_PROJECTION);
 
         //Player position accounting for offset and camera position
-        Vector3f playerPos = new Vector3f();
+        playerPos = new Vector3f();
         Vector3f.sub(player.offset, cam.getPosition(), playerPos);
         player.fatalCrashPos = new Vector3f(playerPos);
 
@@ -157,7 +158,6 @@ public class GameplayScreen extends Screen {
             {
                 terrain.transform();
                 terrain.render();
-                mountain.render();
             }
             glPopMatrix();
             //Render active lasers and perform cleanup
@@ -283,6 +283,26 @@ public class GameplayScreen extends Screen {
                     }
                 }
             }
+
+            int boundaryHit = terrain.checkBoundary(playerPos);
+            if(boundaryHit != -1 && player.state != Entity.State.Turning)
+            {
+                int destination;
+                float yaw = cam.getYaw();
+
+                if(yaw < 0)
+                    yaw = 360 - (yaw * -1);
+
+                player.state = Entity.State.Turning;
+                destination = (boundaryHit + 180) % 360;
+                if(destination == 0)
+                    destination = 1;
+
+                if(yaw < boundaryHit || (boundaryHit == 0 && yaw >= 270))
+                    destination *= -1;
+                player.boundaryDirection = destination;
+            }
+
             glPopMatrix();
 
             glMatrixMode(GL_PROJECTION);
@@ -297,19 +317,33 @@ public class GameplayScreen extends Screen {
         moveXYZ(0.5f, 0);
 
         //Logic to handle camera movement in different states of animation / gameplay
-        if (player.state != Entity.State.FatalCrash && player.state != Entity.State.Dead) {
+        if (player.state == Entity.State.Invincible || player.state == Entity.State.Alive) {
             rotate(0.005f, player.hud);
         }
         //Camera follows ship slightly down when destroyed
         else if (player.state == Entity.State.FatalCrash) {
             cam.setPitch(.2f);
-            if (tempTerrainCollide) {
+            if (tempTerrainCollide || player.model.pitch < -90) {
                 player.state = Entity.State.Dead;
                 Explosion ex = new Explosion(.5f, .05f, player.fatalCrashPos);
                 explosions.add(ex);
                 spawnPlayer();
             }
-
+        }
+        //Logic to handle boundaries
+        else if(player.state == Entity.State.Turning)
+        {
+            if(checkCorrectDirection())
+            {
+                if(terrain.checkBoundary(playerPos) == -1)
+                    player.state = Entity.State.Alive;
+                    player.hud.crosshairReset();
+                }
+            else
+            {
+                cam.setYaw(.005f * player.hud.crosshairPos.x);
+                cam.setPitch(-cam.getPitch());
+            }
         }
 
         player.Update();
@@ -339,7 +373,7 @@ public class GameplayScreen extends Screen {
             Exit();
             return;
         }
-        if (player.state != Entity.State.FatalCrash && player.state != Entity.State.Dead) {
+        if (player.state == Entity.State.Alive || player.state == Entity.State.Invincible) {
             if (Mouse.isButtonDown(0)) {
                 if (!lastFired)
                     shootLaser();
@@ -352,9 +386,6 @@ public class GameplayScreen extends Screen {
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
                 moveXZ(0.2f, 270);
-            }
-            if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-                moveXYZ(0.2f, 0);
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
                 moveXYZ(0.2f, 180);
@@ -571,4 +602,28 @@ public class GameplayScreen extends Screen {
         cam = new Camera(new Vector3f(temp.x, -temp.y, temp.z));
         cam.initializePitchYaw();
     }
+
+    //Check if the camera is facing the correct direction from OOB. Accounts for approximations and special case
+    private boolean checkCorrectDirection()
+    {
+        float yaw = cam.getYaw();
+
+        if(yaw < 0)
+            yaw = 360 - (yaw * -1);
+
+        if(Math.abs(player.boundaryDirection) == 1)
+        {
+            if(yaw > 350 || yaw < 10)
+                return true;
+            else
+                return false;
+        }
+
+        else if(yaw > Math.abs(player.boundaryDirection) - 10 && yaw < Math.abs(player.boundaryDirection) + 10)
+        {
+            return true;
+        }
+        return false;
+    }
 }
+
