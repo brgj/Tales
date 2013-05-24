@@ -323,7 +323,7 @@ public class GameplayScreen extends Screen {
     }
 
     public void Update() {
-//        moveXYZ(0.5f, 0);
+        moveXYZ(0.5f, 0);
 
         //Logic to handle camera movement in different states of animation / gameplay
         if (player.state == Entity.State.Invincible || player.state == Entity.State.Alive) {
