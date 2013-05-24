@@ -1,6 +1,5 @@
 package ai;
 
-import entity.LaserBeam;
 import environment.Model;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -19,7 +18,7 @@ public class AI {
     private long startTime;
 
     public AI() {
-        speed = 0.25f;
+        speed = 0.75f;
         isShooting = false;
         shotTime = 0;
         target = new Vector3f(0.0f, 0.0f, 0.0f);

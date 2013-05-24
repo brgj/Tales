@@ -2,6 +2,10 @@ package display;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
+import org.newdawn.slick.*;
+
+import java.awt.*;
+import java.awt.Font;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -22,12 +26,20 @@ public class HUD {
     public static final int TARGETY = 25;
     //Stores the position of the crosshair
     public Vector2f crosshairPos;
+    // The font to draw the score with
+    TrueTypeFont font;
 
     public HUD() {
         crosshairPos = new Vector2f(0, 0);
+
+        // Create font
+        Font f = new Font("Arial", Font.PLAIN, 25);
+        glPushAttrib(GL_TEXTURE_BIT);
+        font = new TrueTypeFont(f, true);
+        glPopAttrib();
     }
 
-    public void render(boolean enemyInTarget, float health) {
+    public void render(boolean enemyInTarget, float health, int score) {
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 //        glTranslatef(0.375f, 0.375f, 0.0f);
@@ -38,10 +50,12 @@ public class HUD {
             glDisable(GL_DEPTH_TEST); // Depth is disabled to prevent clipping
             glDisable(GL_TEXTURE_2D); // Texture 2D is disabled so no textures are incorporated
             glDisable(GL_LIGHTING); // Lighting is turned off for 2D
+            glEnable(GL_BLEND);
 
             //Call HUD functions
             drawCrossHair(enemyInTarget);
             drawHealth(health);
+            drawScore(score);
         }
         glPopAttrib();
     }
@@ -88,6 +102,11 @@ public class HUD {
         glVertex2d(BUFFER + health * 500, BUFFER + 50);
         glVertex2d(BUFFER, BUFFER + 50);
         glEnd();
+    }
+
+    public void drawScore(int score) {
+        font.drawString(Display.getWidth() - 30, 0, Integer.toString(score), org.newdawn.slick.Color.yellow);
+
     }
 
     //Resets the crosshair gradually to the center.

@@ -1,5 +1,7 @@
 package helpers;
 
+import glmodel.GL_Mesh;
+import glmodel.GL_OBJ_Importer;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
@@ -88,5 +90,10 @@ public class GLHelper {
             glEnd();
         }
         glPopAttrib();
+    }
+
+    public static GL_Mesh loadMesh(String filename) {
+        GL_OBJ_Importer importer = new GL_OBJ_Importer();
+        return importer.load(filename);
     }
 }

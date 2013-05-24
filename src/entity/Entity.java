@@ -1,9 +1,8 @@
 package entity;
 
 import environment.Model;
-import org.lwjgl.util.vector.Matrix4f;
+import glmodel.GL_Mesh;
 import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,6 +17,10 @@ public abstract class Entity {
     public float radius;
     public Vector3f center;
     public State state;
+
+    public Entity(GL_Mesh mesh) {
+        this.model = new Model(mesh);
+    }
 
     public Entity(Model model)
     {

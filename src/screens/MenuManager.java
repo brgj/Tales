@@ -31,7 +31,7 @@ public class MenuManager implements ScreenManager {
         screens = new Screen[]{
                 new MainMenuScreen(d),
                 new SettingsScreen(d),
-                new GameplayScreen(d),
+                new GameplayScreen(d, 5),
                 new MultiplayerManager(d)};
 
         CurrentScreen = screens[0];

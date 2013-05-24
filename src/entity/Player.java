@@ -23,10 +23,10 @@ public class Player extends Entity {
     public Vector3f offset;
     private boolean crashed, posTilt;
     private int crashTilt;
+    public int score;
 
     public Player(Model model) {
         super(model);
-        Initialize();
     }
 
     public void Render() {
@@ -35,6 +35,7 @@ public class Player extends Entity {
 
     public void Update() {
         if (state == State.Dead) {
+            score--;
             respawn();
         }
 
@@ -89,6 +90,9 @@ public class Player extends Entity {
         state = State.Alive;
         fatalCrashPos = new Vector3f();
         offset = new Vector3f();
+        score = 0;
+        health = 1;
+        model.updatePosition(0,0,-5);
         health = 1;
         model.updatePosition(0,0,-5);
     }

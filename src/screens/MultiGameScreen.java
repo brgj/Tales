@@ -31,11 +31,11 @@ public class MultiGameScreen extends GameplayScreen {
     private boolean checkScore = false;
 
     public MultiGameScreen(Delegate d) {
-        super(d);
+        super(d, 0);
     }
 
     public MultiGameScreen(Delegate d, IPPlaceHolder ip) {
-        super(d);
+        super(d, 0);
         this.ip = ip;
     }
 
@@ -79,10 +79,6 @@ public class MultiGameScreen extends GameplayScreen {
                 chatting = true;
             } else if (keyPressed && Keyboard.getEventKeyState() && Keyboard.isKeyDown(Keyboard.KEY_TAB)) {
                 checkScore = !checkScore;
-            }
-            //TODO: Delete this, placeholder to show that score communication works
-            if(Keyboard.isKeyDown(Keyboard.KEY_Z)) {
-                broadcastScoreChange((byte)0);
             }
         } else if (keyPressed && Keyboard.getEventKeyState()) {
             int key = Keyboard.getEventKey();
@@ -172,16 +168,28 @@ public class MultiGameScreen extends GameplayScreen {
     }
 
     private void broadcastScoreChange(byte id) {
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        DataOutputStream dataStream = new DataOutputStream(byteStream);
         scoreboard.myScore--;
         scoreboard.scores.put(id, scoreboard.scores.get(id) + 1);
 
-        byte[] data = new byte[3];
+        try {
+            dataStream.writeInt(scoreboard.myScore);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        byte[] data = new byte[7];
         // Set the option byte to Score
         data[0] = (byte) (MessageType.Score.ordinal() << 4);
-        // The packet is only one byte long
-        data[1] = 1;
+        // The packet is five bytes long
+        data[1] = 5;
         // The id is sent
         data[2] = id;
+
+        // The current player's score is sent
+        System.arraycopy(byteStream.toByteArray(), 0, data, 3, data.length - 3);
 
         try {
             client.sendData(data);
@@ -202,7 +210,7 @@ public class MultiGameScreen extends GameplayScreen {
             }
 
             if (!enemies.containsKey(id))
-                enemies.put(id, new Enemy(new Model("data/DarkFighter/dark_fighter_2.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f)));
+                enemies.put(id, new Enemy(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f)));
 
             switch (option) {
                 case Movement:
@@ -246,6 +254,7 @@ public class MultiGameScreen extends GameplayScreen {
                 fArr[i] = dataStream.readFloat();
             } catch (IOException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                return;
             }
         }
 
@@ -253,8 +262,22 @@ public class MultiGameScreen extends GameplayScreen {
     }
 
     private void updateScore(byte id, byte[] data) {
+        byte[] temp = new byte[data.length - 1];
+        System.arraycopy(temp, 0, data, 1, temp.length);
+        ByteArrayInputStream byteStream = new ByteArrayInputStream(temp);
+        DataInputStream dataStream = new DataInputStream(byteStream);
+        int score;
 
-        scoreboard.scores.put(id, scoreboard.scores.get(id) - 1);
+        try {
+            score = dataStream.readInt();
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            return;
+        }
+
+        scoreboard.scores.put(id, score);
+        if(data[0] == -1)
+            return;
         if(scoreboard.scores.containsKey(data[0]))
             scoreboard.scores.put(data[0], scoreboard.scores.get(data[0]) + 1);
         else
@@ -264,7 +287,7 @@ public class MultiGameScreen extends GameplayScreen {
     @Override
     protected void shootLaser() {
         LaserBeam temp = new LaserBeam(cam, player.offset, player.hud);
-        temp.ownerID = -50;
+        temp.ownerID = 16;
         lasers.add(temp);
         broadcastLaser(temp);
     }

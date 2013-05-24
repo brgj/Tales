@@ -26,6 +26,10 @@ public class GLModel {
         mesh = loadMesh(filename);
     }
 
+    public GLModel(GL_Mesh mesh) {
+        this.mesh = mesh;
+    }
+
     /**
      * read the given .obj file into a GL_Mesh object
      * @param filename (must end in .obj)

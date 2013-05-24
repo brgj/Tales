@@ -2,7 +2,6 @@ package entity;
 
 import display.Camera;
 import display.HUD;
-import entity.Entity;
 import glapp.GLApp;
 import helpers.GLHelper;
 import org.lwjgl.Sys;

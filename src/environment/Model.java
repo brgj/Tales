@@ -1,6 +1,7 @@
 package environment;
 
 import glmodel.GLModel;
+import glmodel.GL_Mesh;
 import glmodel.GL_Vector;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
@@ -20,6 +21,11 @@ public class Model {
 
     public Model(String filename) {
         model = new GLModel(filename);
+        model.regenerateNormals();
+    }
+
+    public Model(GL_Mesh mesh) {
+        model = new GLModel(mesh);
         model.regenerateNormals();
     }
 
