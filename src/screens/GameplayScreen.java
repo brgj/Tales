@@ -287,6 +287,7 @@ public class GameplayScreen extends Screen {
             Enemy enemy = enemies.get(id);
             enemy.Update();
             if(enemy.isAI() && enemy.ai.isShooting){
+                enemy.ai.resetTimer();
                 LaserBeam temp = new LaserBeam(
                         new Vector3f(-enemy.model.transX, -enemy.model.transY, -enemy.model.transZ),
                         enemy.model.yaw,
