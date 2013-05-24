@@ -2,12 +2,9 @@ package entity;
 
 import ai.AI;
 import environment.Model;
-import glmodel.GLModel;
 import glmodel.GL_Mesh;
 import helpers.GLHelper;
 import org.lwjgl.util.vector.Vector3f;
-
-import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.

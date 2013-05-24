@@ -2,10 +2,9 @@ package display;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
-import org.newdawn.slick.*;
+import org.newdawn.slick.TrueTypeFont;
 
 import java.awt.*;
-import java.awt.Font;
 
 import static org.lwjgl.opengl.GL11.*;
 

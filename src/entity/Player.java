@@ -6,8 +6,6 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-import java.util.Random;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Owner
@@ -47,9 +45,10 @@ public class Player extends Entity {
         } else {
             if (crashed)
                 doCrash();
-            if(state == State.Turning)
+            else if(state == State.Turning)
                 doTurn();
-            model.updateRotation(-hud.crosshairPos.y * .1f, -hud.crosshairPos.x * .1f, -hud.crosshairPos.x * .1f);
+            else
+                model.updateRotation(-hud.crosshairPos.y * .1f, -hud.crosshairPos.x * .1f, -hud.crosshairPos.x * .1f);
         }
     }
 

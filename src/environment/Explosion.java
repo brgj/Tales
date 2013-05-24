@@ -1,7 +1,6 @@
 package environment;
 
 import helpers.GLHelper;
-import org.lwjgl.Sys;
 import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
 

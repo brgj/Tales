@@ -1,8 +1,6 @@
 package screens;
 
-import display.Camera;
 import entity.Enemy;
-import entity.Entity;
 import entity.LaserBeam;
 import environment.Model;
 import helpers.Delegate;
@@ -202,7 +200,7 @@ public class MultiGameScreen extends GameplayScreen {
             }
 
             if (!enemies.containsKey(id))
-                enemies.put(id, new Enemy(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f)));
+                enemies.put(id, new Enemy(new Model("data/DarkFighter/dark_fighter.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f)));
 
             switch (option) {
                 case Movement:

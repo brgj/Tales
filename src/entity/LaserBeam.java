@@ -42,8 +42,8 @@ public class LaserBeam extends Entity {
         movement = 0.0f;
         initial = Sys.getTime();
         timecounter = 0;
-        radius = 1f;
-        speed = radius * 2;
+        radius = 0.5f;
+        speed = radius * 3;
         yaw = cam.getYaw();
         pitch = cam.getPitch();
         position = new Vector3f(origin);

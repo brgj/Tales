@@ -1,6 +1,5 @@
 package screens;
 
-import ai.AI;
 import display.Camera;
 import display.HUD;
 import display.Ray;
@@ -89,7 +88,7 @@ public class GameplayScreen extends Screen {
         //load the model
         player = new Player(new Model("data/Arwing/arwing.obj", 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -5.0f));
         enemies = new HashMap<Byte, Enemy>();
-        terrain = new Terrain("data/terrain/terrain_final.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f);
+        terrain = new Terrain("data/terrain/terrain_final_2.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.0f, 0.0f);
         mountain = new Model("data/terrain/mountain.obj", 20, 0.0f, 0.0f, 0.0f, 0.0f, -10.2f, 0.0f);
 
         lasers = new ArrayList<LaserBeam>();
@@ -139,18 +138,18 @@ public class GameplayScreen extends Screen {
                 {
                     glLoadIdentity();
                     player.Render();
-                    Vector3f vec;
-                    if (tempEnemyCollide) {
-                        vec = new Vector3f(0.0f, 1.0f, 0.0f);
-                    } else if (tempTerrainCollide) {
-                        vec = new Vector3f(0.0f, 0.0f, 1.0f);
-                    } else {
-                        vec = new Vector3f(1.0f, 1.0f, 1.0f);
-                    }
-
-                    float scale = player.model.getScaleRatio();
-                    glScalef(1.0f / scale, 1.0f / scale, 1.0f / scale);
-                    GLHelper.renderSphere(player.center, player.radius, vec);
+//                    Vector3f vec;
+//                    if (tempEnemyCollide) {
+//                        vec = new Vector3f(0.0f, 1.0f, 0.0f);
+//                    } else if (tempTerrainCollide) {
+//                        vec = new Vector3f(0.0f, 0.0f, 1.0f);
+//                    } else {
+//                        vec = new Vector3f(1.0f, 1.0f, 1.0f);
+//                    }
+//
+//                    float scale = player.model.getScaleRatio();
+//                    glScalef(1.0f / scale, 1.0f / scale, 1.0f / scale);
+//                    GLHelper.renderSphere(player.center, player.radius, vec);
                 }
                 glPopMatrix();
             }
@@ -170,7 +169,7 @@ public class GameplayScreen extends Screen {
                 for (Iterator<LaserBeam> i = lasers.iterator(); i.hasNext(); ) {
                     LaserBeam laser = i.next();
                     GLHelper.renderSphere(new Vector3f(laser.getPosition().x, laser.getPosition().y, laser.getPosition().z),
-                            laser.radius, new Vector3f(1, 0, 0));
+                            laser.radius, new Vector3f(0, 0, 1));
                     if (laser.isExpired) {
                         i.remove();
                     } else {
@@ -323,7 +322,7 @@ public class GameplayScreen extends Screen {
     }
 
     public void Update() {
-        moveXYZ(0.5f, 0);
+        moveXYZ(0.7f, 0);
 
         //Logic to handle camera movement in different states of animation / gameplay
         if (player.state == Entity.State.Invincible || player.state == Entity.State.Alive) {
@@ -391,14 +390,17 @@ public class GameplayScreen extends Screen {
             } else {
                 lastFired = false;
             }
+            if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+                moveXZ(0.3f, 0);
+            }
             if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-                moveXZ(0.2f, 90);
+                moveXZ(0.3f, 90);
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-                moveXZ(0.2f, 270);
+                moveXZ(0.3f, 270);
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-                moveXYZ(0.2f, 180);
+                moveXYZ(0.3f, 180);
             }
         }
     }
@@ -427,10 +429,10 @@ public class GameplayScreen extends Screen {
             cam.setPitch(-20);
         } else if (val == 2) {
             if (cam.getYaw() > 0)
-                cam.setYaw(20);
+                cam.setYaw(45);
             else
-                cam.setYaw(-20);
-            //moveXYZ(5.0f, 180);
+                cam.setYaw(-45);
+            moveXYZ(5.0f, 180);
         }
         player.crash();
     }
